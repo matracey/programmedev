@@ -8,10 +8,10 @@ const STORAGE_KEY = "nci_pds_mvp_programme_v1";
 
 const steps = [
   { key: "identity", title: "Identity" },
+  { key: "outcomes", title: "PLOs" },
   { key: "versions", title: "Programme Versions" },
   { key: "stages", title: "Stage Structure" },
   { key: "structure", title: "Credits & Modules" },
-  { key: "outcomes", title: "PLOs" },
   { key: "mimlos", title: "MIMLOs" },
   { key: "mapping", title: "Mapping" },
   { key: "snapshot", title: "QQI Snapshot" },
@@ -46,6 +46,18 @@ const AWARD_TYPE_OPTIONS = [
   "Micro-credential",
   "Other",
 ];
+// ---- Award standards loader (assets/standards.json) ----
+let _standardsPromise = null;
+async function getAwardStandard(){
+  if (_standardsPromise) return _standardsPromise;
+  _standardsPromise = (async () => {
+    const res = await fetch("./assets/standards.json", { cache: "no-store" });
+    if (!res.ok) throw new Error("Could not load assets/standards.json");
+    return await res.json();
+  })();
+  return _standardsPromise;
+}
+// -------------------------------------------------------
 
 function bloomsGuidanceHtml(level, contextLabel) {
   const lvl = Number(level || 0);
@@ -97,11 +109,13 @@ const defaultProgramme = () => ({
   awardTypeIsOther: false,
   nfqLevel: null,
   school: "",
+  awardStandardId: "",
+  awardStandardName: "",
 
   // Programme-level structure
   totalCredits: 0,
   modules: [], // {id, code, title, credits, mimlos:[]}
-  plos: [],    // {id, text}
+  plos: [],    // {id, text, standardMappings: [{criteria, thread}]}
   ploToModules: {}, // ploId -> [moduleId]
 
   // Versions (FT/PT/Online variants)
@@ -460,12 +474,24 @@ function render() {
               <label class="form-label fw-semibold">NFQ level</label>
               <input type="number" min="6" max="9" step="1" class="form-control" id="levelInput" value="${p.nfqLevel ?? ""}">
             </div>
-            <div class="col-md-8">
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Total credits (ECTS)</label>
+              <input type="number" min="1" step="1" class="form-control" id="totalCreditsInput" value="${p.totalCredits ?? ""}" placeholder="e.g., 180 / 240">
+            </div>
+            <div class="col-md-4">
               <label class="form-label fw-semibold">School / Discipline</label>
               <select class="form-select" id="schoolSelect">
                 <option value="" disabled ${!p.school?"selected":""}>Select a School</option>
                 ${schoolOpts}
               </select>
+            </div>
+            <div class="col-md-12">
+              <label class="form-label fw-semibold">QQI award standard</label>
+              <select class="form-select" id="standardSelect">
+                <option value="" disabled ${!p.awardStandardId?"selected":""}>Select a standard</option>
+                <option value="qqi-computing-l6-9" ${p.awardStandardId==="qqi-computing-l6-9"?"selected":""}>Computing (Levels 6–9)</option>
+              </select>
+              <div class="form-text">This will drive PLO mapping and autocompletion.</div>
             </div>
             <div class="col-12">
               <label class="form-label fw-semibold">Intake months</label>
@@ -750,8 +776,8 @@ if (step === "structure") {
 
           <div class="row g-3 mb-3">
             <div class="col-md-4">
-              <label class="form-label fw-semibold">Total programme credits</label>
-              <input type="number" class="form-control" id="totalCredits" value="${Number(p.totalCredits||0)}">
+              <label class="form-label fw-semibold">Total programme credits (from Identity)</label>
+              <input type="number" class="form-control" id="totalCredits" value="${Number(p.totalCredits||0)}" disabled>
             </div>
             <div class="col-md-8 d-flex align-items-end">
               <div class="small-muted">Tip: keep the module list light at MVP stage — codes can be placeholders.</div>
@@ -767,17 +793,50 @@ if (step === "structure") {
   }
 
   if (step === "outcomes") {
-    const rows = (p.plos||[]).map((o, idx) => `
+    const rows = (p.plos||[]).map((o, idx) => {
+      const mappings = (o.standardMappings||[]).map((m,i)=>`
+        <span class="badge text-bg-light border me-2 mb-2">
+          ${escapeHtml(m.criteria)} / ${escapeHtml(m.thread)}
+          <button type="button" class="btn btn-sm btn-link text-danger p-0 ms-2" data-remove-plo-map="${o.id}" data-remove-plo-map-index="${i}" title="Remove">×</button>
+        </span>
+      `).join("");
+
+      return `
       <div class="card border-0 bg-white shadow-sm mb-3">
         <div class="card-body">
           <div class="d-flex justify-content-between align-items-center mb-2">
             <div class="fw-semibold">PLO ${idx+1}</div>
             <button class="btn btn-outline-danger btn-sm" data-remove-plo="${o.id}">Remove</button>
           </div>
-          <textarea class="form-control" data-plo-id="${o.id}" rows="3" placeholder="e.g., Critically evaluate… / Design and implement…">${escapeHtml(o.text||"")}</textarea>
+
+          <textarea class="form-control" data-plo-id="${o.id}" rows="3" placeholder="e.g., Analyse… / Design and implement…">${escapeHtml(o.text||"")}</textarea>
+
+          <div class="mt-3">
+            <div class="fw-semibold small mb-2">Map this PLO to QQI award standards</div>
+            ${!p.awardStandardId ? `
+              <div class="small text-danger">Select a QQI award standard in Identity to enable mapping.</div>
+            ` : `
+              <div class="d-flex flex-wrap gap-2 align-items-end">
+                <div style="min-width:220px">
+                  <label class="form-label small mb-1">Criteria</label>
+                  <select class="form-select form-select-sm" data-plo-map-criteria="${o.id}"></select>
+                </div>
+                <div style="min-width:260px">
+                  <label class="form-label small mb-1">Thread</label>
+                  <select class="form-select form-select-sm" data-plo-map-thread="${o.id}"></select>
+                </div>
+                <button type="button" class="btn btn-outline-primary btn-sm" data-add-plo-map="${o.id}">Add mapping</button>
+              </div>
+              <div class="small text-secondary mt-2" data-plo-map-desc="${o.id}"></div>
+              <div class="mt-2" data-plo-map-list="${o.id}">
+                ${mappings || `<div class="small text-secondary">No mappings yet for this PLO.</div>`}
+              </div>
+            `}
+          </div>
         </div>
       </div>
-    `).join("");
+    `;
+    }).join("");
 
     content.innerHTML = `
       <div class="card shadow-sm">
@@ -789,6 +848,9 @@ if (step === "structure") {
           ${bloomsGuidanceHtml(p.nfqLevel, "Programme Learning Outcomes")}
           <div class="small-muted mb-3">Aim for ~6–12 clear, assessable outcomes. Keep them measurable and assessable.</div>
           ${rows || `<div class="small text-secondary">No PLOs added yet.</div>`}
+          <hr class="my-4"/>
+          <h6 class="mb-2">PLO ↔ Award Standard Mapping Snapshot</h6>
+          <div id="ploMappingSnapshot" class="small"></div>
         </div>
       </div>
     `;
@@ -956,10 +1018,14 @@ if (step === "structure") {
     `;
   }).join("");
 
+  const isComplete100 = completionPercent(p) === 100;
+
   content.innerHTML = `
     <div class="card shadow-sm">
       <div class="card-body">
         <h5 class="card-title mb-3">QQI Snapshot (copy/paste-ready)</h5>
+
+        ${isComplete100 ? `<div class="d-flex gap-2 mb-3"><button id="exportWordBtn" class="btn btn-success btn-sm">Export Programme Descriptor (Word)</button><span class="small text-secondary align-self-center">Generates a .docx using the template in assets.</span></div>` : `<div class="small text-secondary mb-3">Complete all sections to enable Word export (100%).</div>`}
 
         <div class="row g-3">
           <div class="col-md-6">
@@ -1015,6 +1081,19 @@ if (step === "structure") {
     await navigator.clipboard.writeText(JSON.stringify(state.programme, null, 2));
   };
   document.getElementById("downloadJsonBtn").onclick = () => downloadJson("programme-design.json", state.programme);
+  // Word export (enabled only when button is rendered, i.e., completion is 100%)
+  const exportBtn = document.getElementById("exportWordBtn");
+  if (exportBtn) {
+    exportBtn.onclick = async () => {
+      try {
+        await exportProgrammeDescriptorWord(state.programme);
+      } catch (err) {
+        console.error(err);
+        alert(err?.message || String(err));
+      }
+    };
+  }
+
 }
 
 function getVersionById(id){
@@ -1254,8 +1333,29 @@ function wireIdentity(){
     });
   }
   document.getElementById("levelInput").addEventListener("input", (e)=>{ p.nfqLevel = e.target.value ? Number(e.target.value) : null; saveDebounced(); renderFlags(); });
+  const tc = document.getElementById("totalCreditsInput");
+  if (tc) tc.addEventListener("input", (e)=>{ p.totalCredits = e.target.value ? Number(e.target.value) : ""; saveDebounced(); });
   const schoolSelect = document.getElementById("schoolSelect");
   if (schoolSelect) schoolSelect.addEventListener("change", (e)=>{ p.school = e.target.value; saveDebounced(); });
+  const standardSelect = document.getElementById("standardSelect");
+  if (standardSelect) {
+    standardSelect.addEventListener("change", async (e) => {
+      p.awardStandardId = e.target.value || "";
+      try {
+        if (p.awardStandardId === "qqi-computing-l6-9") {
+          const s = await getAwardStandard();
+          p.awardStandardName = s.standard_name || "QQI Computing Awards Standards (Levels 6–9)";
+        } else {
+          p.awardStandardName = "";
+        }
+      } catch (err) {
+        // If standards.json can't be loaded (e.g., file://), keep the selection but leave name generic.
+        p.awardStandardName = p.awardStandardId ? "QQI Award Standard" : "";
+      }
+      saveDebounced();
+      renderFlags();
+    });
+  }
   document.getElementById("intakeInput").addEventListener("input", (e)=>{ p.intakeMonths = e.target.value.split(",").map(s=>s.trim()).filter(Boolean); saveDebounced(); });
 }
 
@@ -1328,7 +1428,6 @@ function wireCapacity(){
 
 function wireStructure(){
   const p = state.programme;
-  document.getElementById("totalCredits").addEventListener("input", (e)=>{ p.totalCredits = Number(e.target.value||0); saveDebounced(); renderFlags(); });
   document.getElementById("addModuleBtn").onclick = () => {
     p.modules.push({ id: uid("mod"), code: "", title: "New module", credits: 0, mimlos: [] });
     saveDebounced();
@@ -1364,8 +1463,12 @@ function wireStructure(){
 
 function wireOutcomes(){
   const p = state.programme;
+
+  // Ensure each PLO has a mapping array (for older imports)
+  p.plos = (p.plos||[]).map(o => ({ ...o, standardMappings: Array.isArray(o.standardMappings) ? o.standardMappings : [] }));
+
   document.getElementById("addPloBtn").onclick = () => {
-    p.plos.push({ id: uid("plo"), text: "" });
+    p.plos.push({ id: uid("plo"), text: "", standardMappings: [] });
     saveDebounced();
     render();
   };
@@ -1389,6 +1492,126 @@ function wireOutcomes(){
       o.text = e.target.value;
       saveDebounced();
     });
+  });
+
+  // Standards mapping UI (only enabled once an award standard is selected)
+  if (!p.awardStandardId) return;
+
+  getAwardStandard().then(std => {
+    const level = String(p.nfqLevel || "");
+    const criteriaList = Object.keys(std.index || {}).sort((a,b)=>a.localeCompare(b));
+
+    // Snapshot table
+    const snap = document.getElementById("ploMappingSnapshot");
+    if (snap) {
+      const plos = p.plos || [];
+      if (!plos.length) {
+        snap.innerHTML = `<div class="text-secondary">Add PLOs to see a mapping snapshot.</div>`;
+      } else {
+        const rowsHtml = plos.map((o, i) => {
+          const maps = (o.standardMappings || []).map(m => {
+            const desc = (std.index?.[m.criteria]?.[m.thread]?.[level] || "").toString();
+            const shortDesc = desc.length > 180 ? (desc.slice(0, 180) + "…") : desc;
+            return `<li><span class="fw-semibold">${escapeHtml(m.criteria)} / ${escapeHtml(m.thread)}</span><div class="text-secondary">${escapeHtml(shortDesc)}</div></li>`;
+          }).join("");
+          const mapsBlock = maps ? `<ul class="mb-0 ps-3">${maps}</ul>` : `<span class="text-secondary">No mappings yet</span>`;
+          return `<tr><td class="text-nowrap">PLO ${i+1}</td><td>${escapeHtml(o.text||"")}</td><td>${mapsBlock}</td></tr>`;
+        }).join("");
+        snap.innerHTML = `
+          <div class="table-responsive">
+            <table class="table table-sm align-middle">
+              <thead>
+                <tr>
+                  <th style="width:90px;">PLO</th>
+                  <th>PLO Text</th>
+                  <th>Mapped Standards (at NFQ Level ${escapeHtml(level||"")})</th>
+                </tr>
+              </thead>
+              <tbody>${rowsHtml}</tbody>
+            </table>
+          </div>
+        `;
+      }
+    }
+
+
+    function setOptions(el, opts, placeholder="Select..."){
+      el.innerHTML = "";
+      const ph = document.createElement("option");
+      ph.value = "";
+      ph.textContent = placeholder;
+      el.appendChild(ph);
+      opts.forEach(o=>{
+        const opt = document.createElement("option");
+        opt.value=o;
+        opt.textContent=o;
+        el.appendChild(opt);
+      });
+    }
+
+    document.querySelectorAll("[data-plo-map-criteria]").forEach(sel => {
+      const ploId = sel.getAttribute("data-plo-map-criteria");
+      const threadSel = document.querySelector(`[data-plo-map-thread="${ploId}"]`);
+      const descEl = document.querySelector(`[data-plo-map-desc="${ploId}"]`);
+
+      setOptions(sel, criteriaList, "Select criteria...");
+      setOptions(threadSel, [], "Select thread...");
+
+      function updateDesc(){
+        const c = sel.value;
+        const t = threadSel.value;
+        const d = (((std.index||{})[c]||{})[t]||{})[level] || "";
+        descEl.textContent = d ? d : (c && t ? "No descriptor found for this level." : "");
+      }
+
+      sel.addEventListener("change", () => {
+        const threads = Object.keys((std.index||{})[sel.value] || {}).sort((a,b)=>a.localeCompare(b));
+        setOptions(threadSel, threads, "Select thread...");
+        updateDesc();
+      });
+
+      threadSel.addEventListener("change", updateDesc);
+      updateDesc();
+    });
+
+    document.querySelectorAll("[data-add-plo-map]").forEach(btn => {
+      btn.onclick = () => {
+        const ploId = btn.getAttribute("data-add-plo-map");
+        const critSel = document.querySelector(`[data-plo-map-criteria="${ploId}"]`);
+        const threadSel = document.querySelector(`[data-plo-map-thread="${ploId}"]`);
+        const c = critSel?.value || "";
+        const t = threadSel?.value || "";
+        if (!c || !t) return alert("Select both Criteria and Thread first.");
+
+        const o = p.plos.find(x => x.id === ploId);
+        if (!o) return;
+
+        // Avoid duplicates
+        const exists = (o.standardMappings||[]).some(x => x.criteria===c && x.thread===t);
+        if (!exists) {
+          o.standardMappings.push({ criteria: c, thread: t });
+          saveDebounced();
+          renderFlags();
+          render();
+        }
+      };
+    });
+
+    document.querySelectorAll("[data-remove-plo-map]").forEach(btn => {
+      btn.onclick = () => {
+        const ploId = btn.getAttribute("data-remove-plo-map");
+        const i = Number(btn.getAttribute("data-remove-plo-map-index"));
+        const o = p.plos.find(x => x.id === ploId);
+        if (!o) return;
+        o.standardMappings = (o.standardMappings||[]).filter((_,idx)=>idx!==i);
+        saveDebounced();
+        renderFlags();
+        render();
+      };
+    });
+
+  }).catch(err => {
+    console.warn("Standards load failed:", err);
   });
 }
 
@@ -1460,6 +1683,32 @@ function initNavButtons(){
     render();
   };
   document.getElementById("nextBtn").onclick = () => {
+    const stepKey = steps[state.stepIndex].key;
+
+    if (stepKey === "identity") {
+      if (!state.programme.totalCredits) {
+        alert("Enter the total programme credits (ECTS) in Identity before continuing.");
+        return;
+      }
+      if (!state.programme.awardStandardId) {
+        alert("Select a QQI award standard in Identity before continuing.");
+        return;
+      }
+    }
+
+    if (stepKey === "outcomes") {
+      const plos = state.programme.plos || [];
+      if (plos.length === 0) {
+        alert("Add at least one PLO before continuing.");
+        return;
+      }
+      const missing = plos.filter(o => !Array.isArray(o.standardMappings) || o.standardMappings.length === 0);
+      if (missing.length) {
+        alert("Each PLO must be mapped to at least one QQI award standard strand/thread before continuing.");
+        return;
+      }
+    }
+
     state.stepIndex = Math.min(steps.length - 1, state.stepIndex + 1);
     render();
   };
@@ -1493,6 +1742,73 @@ function initNavButtons(){
     render();
   };
 }
+
+
+// ===== Word export (Programme Descriptor) =====
+async function exportProgrammeDescriptorWord(p) {
+  if (typeof window.PizZip === "undefined" || typeof window.docxtemplater === "undefined") {
+    throw new Error("Missing Word export libraries (PizZip/docxtemplater). Check index.html includes the CDN scripts.");
+  }
+  if (typeof window.saveAs === "undefined") {
+    throw new Error("Missing FileSaver (saveAs). Check index.html includes FileSaver.");
+  }
+
+  // Load template (docx) from assets
+  const tplRes = await fetch("./assets/programme_descriptor_template.docx");
+  if (!tplRes.ok) throw new Error("Could not load Word template from ./assets/programme_descriptor_template.docx");
+  const tplBuf = await tplRes.arrayBuffer();
+
+  const zip = new window.PizZip(tplBuf);
+  const doc = new window.docxtemplater(zip, {
+    paragraphLoop: true,
+    linebreaks: true
+  });
+
+  const plos = Array.isArray(p.plos) ? p.plos : [];
+  const miplosText = plos.length
+    ? plos.map((o, i) => `${i + 1}. ${o.text || ""}`).join("\n")
+    : "";
+
+  const mappingSnapshot = plos.length
+    ? plos.map((o, i) => {
+        const maps = (o.standardMappings || []).map(m => `${m.criteria} / ${m.thread}`).join("; ");
+        return `${i + 1}. ${o.text || ""}\n   Mapped: ${maps || "—"}`;
+      }).join("\n\n")
+    : "";
+
+  // Minimal data mapping to the placeholder template you’re testing (Option A)
+  const data = {
+    provider_name: "", // add to Identity later if you want
+    programme_title: p.title || "",
+    nfq_level: p.nfqLevel ?? "",
+    award_class: p.awardType || "",
+    ects: String(p.totalCredits || ""),
+    programme_synopsis: "", // add field later if desired
+    graduate_attributes: "", // add field later if desired
+    award_standard_name: p.awardStandardName || p.awardStandardId || "",
+    miplos: miplosText,
+    programme_rationale: "",
+    atp: "",
+    tla_strategy: "",
+    assessment_integrity: "",
+    resources: "",
+    programme_management: "",
+    // Extra (not in template yet, but useful for future placeholders)
+    plo_standard_mapping_snapshot: mappingSnapshot
+  };
+
+  doc.setData(data);
+  doc.render();
+
+  const out = doc.getZip().generate({
+    type: "blob",
+    mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+  });
+
+  const safeTitle = (p.title || "programme").replace(/[^a-z0-9\-\s]/gi, "").trim().replace(/\s+/g, "_");
+  window.saveAs(out, `${safeTitle || "programme"}_programme_descriptor.docx`);
+}
+// ===== End Word export =====
 
 // Boot
 load();
