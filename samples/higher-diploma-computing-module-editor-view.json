@@ -19,7 +19,7 @@
       "plos": true
     }
   },
-  "updatedAt": "2026-01-15T14:30:00.000Z",
+  "updatedAt": "2026-01-16T23:38:20.134Z",
   "modules": [
     {
       "id": "mod_sd",
@@ -66,10 +66,22 @@
         }
       },
       "mimlos": [
-        { "id": "mimlo_sd_1", "text": "Design and implement object-oriented software solutions using industry-standard programming languages" },
-        { "id": "mimlo_sd_2", "text": "Apply software development methodologies to manage the software development lifecycle" },
-        { "id": "mimlo_sd_3", "text": "Evaluate and select appropriate data structures and algorithms for specific problem domains" },
-        { "id": "mimlo_sd_4", "text": "Demonstrate proficiency in version control and collaborative development practices" }
+        {
+          "id": "mimlo_sd_1",
+          "text": "Design and implement object-oriented software solutions using industry-standard programming languages"
+        },
+        {
+          "id": "mimlo_sd_2",
+          "text": "Apply software development methodologies to manage the software development lifecycle"
+        },
+        {
+          "id": "mimlo_sd_3",
+          "text": "Evaluate and select appropriate data structures and algorithms for specific problem domains"
+        },
+        {
+          "id": "mimlo_sd_4",
+          "text": "Demonstrate proficiency in version control and collaborative development practices"
+        }
       ],
       "assessments": [
         {
@@ -78,7 +90,11 @@
           "type": "Project",
           "weighting": 50,
           "mode": "Hybrid",
-          "integrity": { "originalityCheck": true, "aiDeclaration": true, "viva": true },
+          "integrity": {
+            "originalityCheck": true,
+            "aiDeclaration": true,
+            "viva": true
+          },
           "mimloIds": ["mimlo_sd_1", "mimlo_sd_2", "mimlo_sd_4"],
           "notes": "Individual software development project with viva presentation"
         },
@@ -88,7 +104,10 @@
           "type": "Report/Essay",
           "weighting": 20,
           "mode": "Online",
-          "integrity": { "originalityCheck": true, "aiDeclaration": true },
+          "integrity": {
+            "originalityCheck": true,
+            "aiDeclaration": true
+          },
           "mimloIds": ["mimlo_sd_2", "mimlo_sd_3"],
           "notes": "Analysis of software development approaches"
         },
@@ -98,7 +117,9 @@
           "type": "Practical/Lab",
           "weighting": 30,
           "mode": "Hybrid",
-          "integrity": { "inClass": true },
+          "integrity": {
+            "inClass": true
+          },
           "mimloIds": ["mimlo_sd_1", "mimlo_sd_3", "mimlo_sd_4"],
           "notes": "Weekly lab submissions"
         }
@@ -153,10 +174,22 @@
         }
       },
       "mimlos": [
-        { "id": "mimlo_oop_1", "text": "Apply object-oriented design principles and patterns to software architecture" },
-        { "id": "mimlo_oop_2", "text": "Analyse requirements and create UML models for complex software systems" },
-        { "id": "mimlo_oop_3", "text": "Implement and test software using test-driven development practices" },
-        { "id": "mimlo_oop_4", "text": "Evaluate software quality using appropriate metrics and refactoring techniques" }
+        {
+          "id": "mimlo_oop_1",
+          "text": "Apply object-oriented design principles and patterns to software architecture"
+        },
+        {
+          "id": "mimlo_oop_2",
+          "text": "Analyse requirements and create UML models for complex software systems"
+        },
+        {
+          "id": "mimlo_oop_3",
+          "text": "Implement and test software using test-driven development practices"
+        },
+        {
+          "id": "mimlo_oop_4",
+          "text": "Evaluate software quality using appropriate metrics and refactoring techniques"
+        }
       ],
       "assessments": [
         {
@@ -165,7 +198,11 @@
           "type": "Project",
           "weighting": 60,
           "mode": "Hybrid",
-          "integrity": { "originalityCheck": true, "aiDeclaration": true, "viva": true },
+          "integrity": {
+            "originalityCheck": true,
+            "aiDeclaration": true,
+            "viva": true
+          },
           "mimloIds": ["mimlo_oop_1", "mimlo_oop_2", "mimlo_oop_3"],
           "notes": "Group project with individual viva"
         },
@@ -175,9 +212,23 @@
           "type": "Portfolio",
           "weighting": 40,
           "mode": "Online",
-          "integrity": { "originalityCheck": true },
+          "integrity": {
+            "originalityCheck": true
+          },
           "mimloIds": ["mimlo_oop_2", "mimlo_oop_4"],
           "notes": "Weekly design exercises and reflections"
+        }
+      ],
+      "readingList": [
+        {
+          "id": "reading_a606f8bd-67d6-43c1-ac14-6c9e4f8827e3",
+          "author": "Robert C. Martin",
+          "title": "Clean Code",
+          "publisher": "Prentice Hall",
+          "year": "2008",
+          "isbn": "978-0132350884",
+          "type": "core",
+          "notes": ""
         }
       ]
     },
@@ -219,9 +270,18 @@
         }
       },
       "mimlos": [
-        { "id": "mimlo_db_1", "text": "Design normalised relational database schemas using entity-relationship modelling" },
-        { "id": "mimlo_db_2", "text": "Implement and query databases using SQL" },
-        { "id": "mimlo_db_3", "text": "Evaluate database performance and apply indexing strategies" }
+        {
+          "id": "mimlo_db_1",
+          "text": "Design normalised relational database schemas using entity-relationship modelling"
+        },
+        {
+          "id": "mimlo_db_2",
+          "text": "Implement and query databases using SQL"
+        },
+        {
+          "id": "mimlo_db_3",
+          "text": "Evaluate database performance and apply indexing strategies"
+        }
       ],
       "assessments": [
         {
@@ -230,7 +290,10 @@
           "type": "Project",
           "weighting": 40,
           "mode": "Hybrid",
-          "integrity": { "originalityCheck": true, "aiDeclaration": true },
+          "integrity": {
+            "originalityCheck": true,
+            "aiDeclaration": true
+          },
           "mimloIds": ["mimlo_db_1", "mimlo_db_2"],
           "notes": "Design and implement a database for a given scenario"
         },
@@ -240,9 +303,23 @@
           "type": "Exam (On campus)",
           "weighting": 60,
           "mode": "OnCampus",
-          "integrity": { "proctored": true },
+          "integrity": {
+            "proctored": true
+          },
           "mimloIds": ["mimlo_db_1", "mimlo_db_2", "mimlo_db_3"],
           "notes": "2-hour written exam"
+        }
+      ],
+      "readingList": [
+        {
+          "id": "reading_8c0bca2f-fd67-41f7-98ac-4bff7d478cf5",
+          "author": "Robert C. Martin",
+          "title": "Clean Code",
+          "publisher": "Prentice Hall",
+          "year": "2008",
+          "isbn": "978-0132350884",
+          "type": "core",
+          "notes": ""
         }
       ]
     },
@@ -284,9 +361,18 @@
         }
       },
       "mimlos": [
-        { "id": "mimlo_web_1", "text": "Create responsive web interfaces using HTML5, CSS3, and modern frameworks" },
-        { "id": "mimlo_web_2", "text": "Implement client-side functionality using JavaScript and DOM manipulation" },
-        { "id": "mimlo_web_3", "text": "Apply accessibility standards and usability principles to web design" }
+        {
+          "id": "mimlo_web_1",
+          "text": "Create responsive web interfaces using HTML5, CSS3, and modern frameworks"
+        },
+        {
+          "id": "mimlo_web_2",
+          "text": "Implement client-side functionality using JavaScript and DOM manipulation"
+        },
+        {
+          "id": "mimlo_web_3",
+          "text": "Apply accessibility standards and usability principles to web design"
+        }
       ],
       "assessments": [
         {
@@ -295,7 +381,10 @@
           "type": "Project",
           "weighting": 60,
           "mode": "Online",
-          "integrity": { "originalityCheck": true, "aiDeclaration": true },
+          "integrity": {
+            "originalityCheck": true,
+            "aiDeclaration": true
+          },
           "mimloIds": ["mimlo_web_1", "mimlo_web_2", "mimlo_web_3"],
           "notes": "Build a responsive web application"
         },
@@ -305,9 +394,23 @@
           "type": "Practical/Lab",
           "weighting": 40,
           "mode": "Hybrid",
-          "integrity": { "inClass": true },
+          "integrity": {
+            "inClass": true
+          },
           "mimloIds": ["mimlo_web_1", "mimlo_web_2"],
           "notes": "In-class coding exercises"
+        }
+      ],
+      "readingList": [
+        {
+          "id": "reading_117ec1f4-71d2-4ba3-91fe-256e22a724c4",
+          "author": "Robert C. Martin",
+          "title": "Clean Code",
+          "publisher": "Prentice Hall",
+          "year": "2008",
+          "isbn": "978-0132350884",
+          "type": "core",
+          "notes": ""
         }
       ]
     },
@@ -349,9 +452,18 @@
         }
       },
       "mimlos": [
-        { "id": "mimlo_os_1", "text": "Explain the architecture and operation of modern computer systems" },
-        { "id": "mimlo_os_2", "text": "Configure and manage operating system services and processes" },
-        { "id": "mimlo_os_3", "text": "Design and implement network configurations using TCP/IP protocols" }
+        {
+          "id": "mimlo_os_1",
+          "text": "Explain the architecture and operation of modern computer systems"
+        },
+        {
+          "id": "mimlo_os_2",
+          "text": "Configure and manage operating system services and processes"
+        },
+        {
+          "id": "mimlo_os_3",
+          "text": "Design and implement network configurations using TCP/IP protocols"
+        }
       ],
       "assessments": [
         {
@@ -360,7 +472,10 @@
           "type": "Report/Essay",
           "weighting": 40,
           "mode": "Online",
-          "integrity": { "originalityCheck": true, "aiDeclaration": true },
+          "integrity": {
+            "originalityCheck": true,
+            "aiDeclaration": true
+          },
           "mimloIds": ["mimlo_os_1", "mimlo_os_3"],
           "notes": "Analysis of system architecture"
         },
@@ -370,9 +485,23 @@
           "type": "Exam (On campus)",
           "weighting": 60,
           "mode": "OnCampus",
-          "integrity": { "proctored": true },
+          "integrity": {
+            "proctored": true
+          },
           "mimloIds": ["mimlo_os_1", "mimlo_os_2", "mimlo_os_3"],
           "notes": "2-hour written exam"
+        }
+      ],
+      "readingList": [
+        {
+          "id": "reading_506a07d5-a725-4048-a4d0-51638b82cb1d",
+          "author": "Robert C. Martin",
+          "title": "Clean Code",
+          "publisher": "Prentice Hall",
+          "year": "2008",
+          "isbn": "978-0132350884",
+          "type": "core",
+          "notes": ""
         }
       ]
     },
@@ -414,10 +543,22 @@
         }
       },
       "mimlos": [
-        { "id": "mimlo_agile_1", "text": "Apply Scrum and Kanban methodologies to manage software development projects" },
-        { "id": "mimlo_agile_2", "text": "Implement continuous integration and deployment pipelines" },
-        { "id": "mimlo_agile_3", "text": "Collaborate effectively in cross-functional agile teams" },
-        { "id": "mimlo_agile_4", "text": "Evaluate and improve team processes using agile retrospectives" }
+        {
+          "id": "mimlo_agile_1",
+          "text": "Apply Scrum and Kanban methodologies to manage software development projects"
+        },
+        {
+          "id": "mimlo_agile_2",
+          "text": "Implement continuous integration and deployment pipelines"
+        },
+        {
+          "id": "mimlo_agile_3",
+          "text": "Collaborate effectively in cross-functional agile teams"
+        },
+        {
+          "id": "mimlo_agile_4",
+          "text": "Evaluate and improve team processes using agile retrospectives"
+        }
       ],
       "assessments": [
         {
@@ -426,8 +567,17 @@
           "type": "Project",
           "weighting": 70,
           "mode": "Hybrid",
-          "integrity": { "originalityCheck": true, "aiDeclaration": true, "viva": true },
-          "mimloIds": ["mimlo_agile_1", "mimlo_agile_2", "mimlo_agile_3", "mimlo_agile_4"],
+          "integrity": {
+            "originalityCheck": true,
+            "aiDeclaration": true,
+            "viva": true
+          },
+          "mimloIds": [
+            "mimlo_agile_1",
+            "mimlo_agile_2",
+            "mimlo_agile_3",
+            "mimlo_agile_4"
+          ],
           "notes": "Group project with sprint deliverables"
         },
         {
@@ -436,9 +586,23 @@
           "type": "Reflective Journal",
           "weighting": 30,
           "mode": "Online",
-          "integrity": { "originalityCheck": true },
+          "integrity": {
+            "originalityCheck": true
+          },
           "mimloIds": ["mimlo_agile_3", "mimlo_agile_4"],
           "notes": "Weekly reflections on team collaboration"
+        }
+      ],
+      "readingList": [
+        {
+          "id": "reading_a15b786b-6468-447a-b713-695cb1be96fe",
+          "author": "Robert C. Martin",
+          "title": "Clean Code",
+          "publisher": "Prentice Hall",
+          "year": "2008",
+          "isbn": "978-0132350884",
+          "type": "core",
+          "notes": ""
         }
       ]
     },
@@ -480,10 +644,22 @@
         }
       },
       "mimlos": [
-        { "id": "mimlo_cap_1", "text": "Research, design and implement a substantial software solution addressing a real-world problem" },
-        { "id": "mimlo_cap_2", "text": "Document and present technical work to professional standards" },
-        { "id": "mimlo_cap_3", "text": "Critically evaluate the solution against requirements and industry best practices" },
-        { "id": "mimlo_cap_4", "text": "Demonstrate independent learning and project management skills" }
+        {
+          "id": "mimlo_cap_1",
+          "text": "Research, design and implement a substantial software solution addressing a real-world problem"
+        },
+        {
+          "id": "mimlo_cap_2",
+          "text": "Document and present technical work to professional standards"
+        },
+        {
+          "id": "mimlo_cap_3",
+          "text": "Critically evaluate the solution against requirements and industry best practices"
+        },
+        {
+          "id": "mimlo_cap_4",
+          "text": "Demonstrate independent learning and project management skills"
+        }
       ],
       "assessments": [
         {
@@ -492,8 +668,17 @@
           "type": "Project",
           "weighting": 70,
           "mode": "Hybrid",
-          "integrity": { "originalityCheck": true, "aiDeclaration": true, "viva": true },
-          "mimloIds": ["mimlo_cap_1", "mimlo_cap_2", "mimlo_cap_3", "mimlo_cap_4"],
+          "integrity": {
+            "originalityCheck": true,
+            "aiDeclaration": true,
+            "viva": true
+          },
+          "mimloIds": [
+            "mimlo_cap_1",
+            "mimlo_cap_2",
+            "mimlo_cap_3",
+            "mimlo_cap_4"
+          ],
           "notes": "Final project with demonstration and viva"
         },
         {
@@ -502,9 +687,24 @@
           "type": "Report/Essay",
           "weighting": 30,
           "mode": "Online",
-          "integrity": { "originalityCheck": true, "aiDeclaration": true },
+          "integrity": {
+            "originalityCheck": true,
+            "aiDeclaration": true
+          },
           "mimloIds": ["mimlo_cap_2", "mimlo_cap_3"],
           "notes": "Technical report and user documentation"
+        }
+      ],
+      "readingList": [
+        {
+          "id": "reading_5c4eb6c8-ee9e-4eff-9380-55547d4367b3",
+          "author": "Robert C. Martin",
+          "title": "Clean Code",
+          "publisher": "Prentice Hall",
+          "year": "2008",
+          "isbn": "978-0132350884",
+          "type": "core",
+          "notes": ""
         }
       ]
     }
@@ -514,64 +714,152 @@
       "id": "plo_1",
       "text": "Design, develop and test software applications using object-oriented programming principles and industry-standard development practices",
       "standardMappings": [
-        { "criteria": "Knowledge", "thread": "Breadth" },
-        { "criteria": "Know-how & Skill", "thread": "Range" }
+        {
+          "criteria": "Knowledge",
+          "thread": "Breadth"
+        },
+        {
+          "criteria": "Know-how & Skill",
+          "thread": "Range"
+        },
+        {
+          "criteria": "Competence",
+          "thread": "Competence-Context",
+          "standardId": "qqi-computing-l6-9"
+        },
+        {
+          "criteria": "Competence",
+          "thread": "Competence-Insight",
+          "standardId": "qqi-computing-l6-9"
+        },
+        {
+          "criteria": "Competence",
+          "thread": "Competence-Learning to Learn",
+          "standardId": "qqi-computing-l6-9"
+        },
+        {
+          "criteria": "Competence",
+          "thread": "Competence-Role",
+          "standardId": "qqi-computing-l6-9"
+        },
+        {
+          "criteria": "Know-how & Skill",
+          "thread": "Know-how & Skill-Range",
+          "standardId": "qqi-computing-l6-9"
+        },
+        {
+          "criteria": "Know-how & Skill",
+          "thread": "Know-how & Skill-Selectivity",
+          "standardId": "qqi-computing-l6-9"
+        },
+        {
+          "criteria": "Knowledge",
+          "thread": "Knowledge-Breadth",
+          "standardId": "qqi-computing-l6-9"
+        },
+        {
+          "criteria": "Knowledge",
+          "thread": "Knowledge-Kind",
+          "standardId": "qqi-computing-l6-9"
+        }
       ]
     },
     {
       "id": "plo_2",
       "text": "Apply software engineering methodologies to plan, manage and deliver software projects within professional contexts",
       "standardMappings": [
-        { "criteria": "Know-how & Skill", "thread": "Selectivity" },
-        { "criteria": "Competence", "thread": "Context" }
+        {
+          "criteria": "Know-how & Skill",
+          "thread": "Selectivity"
+        },
+        {
+          "criteria": "Competence",
+          "thread": "Context"
+        }
       ]
     },
     {
       "id": "plo_3",
       "text": "Design and implement database solutions using relational database management systems and SQL",
       "standardMappings": [
-        { "criteria": "Knowledge", "thread": "Kind" },
-        { "criteria": "Know-how & Skill", "thread": "Range" }
+        {
+          "criteria": "Knowledge",
+          "thread": "Kind"
+        },
+        {
+          "criteria": "Know-how & Skill",
+          "thread": "Range"
+        }
       ]
     },
     {
       "id": "plo_4",
       "text": "Create responsive and accessible web applications using modern web technologies and frameworks",
       "standardMappings": [
-        { "criteria": "Know-how & Skill", "thread": "Range" },
-        { "criteria": "Know-how & Skill", "thread": "Selectivity" }
+        {
+          "criteria": "Know-how & Skill",
+          "thread": "Range"
+        },
+        {
+          "criteria": "Know-how & Skill",
+          "thread": "Selectivity"
+        }
       ]
     },
     {
       "id": "plo_5",
       "text": "Demonstrate understanding of computer architecture, operating systems and network fundamentals",
       "standardMappings": [
-        { "criteria": "Knowledge", "thread": "Breadth" },
-        { "criteria": "Knowledge", "thread": "Kind" }
+        {
+          "criteria": "Knowledge",
+          "thread": "Breadth"
+        },
+        {
+          "criteria": "Knowledge",
+          "thread": "Kind"
+        }
       ]
     },
     {
       "id": "plo_6",
       "text": "Work effectively in agile software development teams, applying iterative development practices",
       "standardMappings": [
-        { "criteria": "Competence", "thread": "Role" },
-        { "criteria": "Competence", "thread": "Learning to Learn" }
+        {
+          "criteria": "Competence",
+          "thread": "Role"
+        },
+        {
+          "criteria": "Competence",
+          "thread": "Learning to Learn"
+        }
       ]
     },
     {
       "id": "plo_7",
       "text": "Research, design and implement a substantial software project demonstrating integration of learned skills",
       "standardMappings": [
-        { "criteria": "Competence", "thread": "Insight" },
-        { "criteria": "Competence", "thread": "Context" }
+        {
+          "criteria": "Competence",
+          "thread": "Insight"
+        },
+        {
+          "criteria": "Competence",
+          "thread": "Context"
+        }
       ]
     },
     {
       "id": "plo_8",
       "text": "Communicate technical concepts effectively through documentation and presentations",
       "standardMappings": [
-        { "criteria": "Know-how & Skill", "thread": "Selectivity" },
-        { "criteria": "Competence", "thread": "Role" }
+        {
+          "criteria": "Know-how & Skill",
+          "thread": "Selectivity"
+        },
+        {
+          "criteria": "Competence",
+          "thread": "Role"
+        }
       ]
     }
   ],
@@ -610,25 +898,52 @@
           "id": "stage_ft_1",
           "name": "Stage 1",
           "sequence": 1,
-          "creditsTarget": 30,
-          "exitAward": { "enabled": false, "awardTitle": "" },
+          "creditsTarget": 25,
+          "exitAward": {
+            "enabled": false,
+            "awardTitle": ""
+          },
           "modules": [
-            { "moduleId": "mod_sd", "semester": "Semester 1" },
-            { "moduleId": "mod_db", "semester": "Semester 1" },
-            { "moduleId": "mod_web", "semester": "Semester 1" },
-            { "moduleId": "mod_os", "semester": "Semester 1" }
+            {
+              "moduleId": "mod_sd",
+              "semester": "Semester 1"
+            },
+            {
+              "moduleId": "mod_db",
+              "semester": "Semester 1"
+            },
+            {
+              "moduleId": "mod_web",
+              "semester": "Semester 1"
+            },
+            {
+              "moduleId": "mod_os",
+              "semester": "Semester 1"
+            }
           ]
         },
         {
           "id": "stage_ft_2",
           "name": "Stage 2",
           "sequence": 2,
-          "creditsTarget": 30,
-          "exitAward": { "enabled": false, "awardTitle": "" },
+          "creditsTarget": 35,
+          "exitAward": {
+            "enabled": false,
+            "awardTitle": ""
+          },
           "modules": [
-            { "moduleId": "mod_oop", "semester": "Semester 2" },
-            { "moduleId": "mod_agile", "semester": "Semester 2" },
-            { "moduleId": "mod_capstone", "semester": "Semester 2" }
+            {
+              "moduleId": "mod_oop",
+              "semester": "Semester 2"
+            },
+            {
+              "moduleId": "mod_agile",
+              "semester": "Semester 2"
+            },
+            {
+              "moduleId": "mod_capstone",
+              "semester": "Semester 2"
+            }
           ]
         }
       ]
@@ -658,32 +973,59 @@
           "name": "Year 1 - Semester 1",
           "sequence": 1,
           "creditsTarget": 15,
-          "exitAward": { "enabled": false, "awardTitle": "" },
+          "exitAward": {
+            "enabled": false,
+            "awardTitle": ""
+          },
           "modules": [
-            { "moduleId": "mod_sd", "semester": "S1" },
-            { "moduleId": "mod_db", "semester": "S1" }
+            {
+              "moduleId": "mod_sd",
+              "semester": "S1"
+            },
+            {
+              "moduleId": "mod_db",
+              "semester": "S1"
+            }
           ]
         },
         {
           "id": "stage_ptb_2",
           "name": "Year 1 - Semester 2",
           "sequence": 2,
-          "creditsTarget": 15,
-          "exitAward": { "enabled": false, "awardTitle": "" },
+          "creditsTarget": 20,
+          "exitAward": {
+            "enabled": false,
+            "awardTitle": ""
+          },
           "modules": [
-            { "moduleId": "mod_web", "semester": "S2" },
-            { "moduleId": "mod_os", "semester": "S2" },
-            { "moduleId": "mod_oop", "semester": "S2" }
+            {
+              "moduleId": "mod_web",
+              "semester": "S2"
+            },
+            {
+              "moduleId": "mod_os",
+              "semester": "S2"
+            },
+            {
+              "moduleId": "mod_oop",
+              "semester": "S2"
+            }
           ]
         },
         {
           "id": "stage_ptb_3",
           "name": "Year 2 - Semester 1",
           "sequence": 3,
-          "creditsTarget": 15,
-          "exitAward": { "enabled": false, "awardTitle": "" },
+          "creditsTarget": 10,
+          "exitAward": {
+            "enabled": false,
+            "awardTitle": ""
+          },
           "modules": [
-            { "moduleId": "mod_agile", "semester": "S1" }
+            {
+              "moduleId": "mod_agile",
+              "semester": "S1"
+            }
           ]
         },
         {
@@ -691,9 +1033,15 @@
           "name": "Year 2 - Semester 2",
           "sequence": 4,
           "creditsTarget": 15,
-          "exitAward": { "enabled": false, "awardTitle": "" },
+          "exitAward": {
+            "enabled": false,
+            "awardTitle": ""
+          },
           "modules": [
-            { "moduleId": "mod_capstone", "semester": "S2" }
+            {
+              "moduleId": "mod_capstone",
+              "semester": "S2"
+            }
           ]
         }
       ]
@@ -723,32 +1071,59 @@
           "name": "Year 1 - Semester 1",
           "sequence": 1,
           "creditsTarget": 15,
-          "exitAward": { "enabled": false, "awardTitle": "" },
+          "exitAward": {
+            "enabled": false,
+            "awardTitle": ""
+          },
           "modules": [
-            { "moduleId": "mod_sd", "semester": "S1" },
-            { "moduleId": "mod_db", "semester": "S1" }
+            {
+              "moduleId": "mod_sd",
+              "semester": "S1"
+            },
+            {
+              "moduleId": "mod_db",
+              "semester": "S1"
+            }
           ]
         },
         {
           "id": "stage_pto_2",
           "name": "Year 1 - Semester 2",
           "sequence": 2,
-          "creditsTarget": 15,
-          "exitAward": { "enabled": false, "awardTitle": "" },
+          "creditsTarget": 20,
+          "exitAward": {
+            "enabled": false,
+            "awardTitle": ""
+          },
           "modules": [
-            { "moduleId": "mod_web", "semester": "S2" },
-            { "moduleId": "mod_os", "semester": "S2" },
-            { "moduleId": "mod_oop", "semester": "S2" }
+            {
+              "moduleId": "mod_web",
+              "semester": "S2"
+            },
+            {
+              "moduleId": "mod_os",
+              "semester": "S2"
+            },
+            {
+              "moduleId": "mod_oop",
+              "semester": "S2"
+            }
           ]
         },
         {
           "id": "stage_pto_3",
           "name": "Year 2 - Semester 1",
           "sequence": 3,
-          "creditsTarget": 15,
-          "exitAward": { "enabled": false, "awardTitle": "" },
+          "creditsTarget": 10,
+          "exitAward": {
+            "enabled": false,
+            "awardTitle": ""
+          },
           "modules": [
-            { "moduleId": "mod_agile", "semester": "S1" }
+            {
+              "moduleId": "mod_agile",
+              "semester": "S1"
+            }
           ]
         },
         {
@@ -756,9 +1131,15 @@
           "name": "Year 2 - Semester 2",
           "sequence": 4,
           "creditsTarget": 15,
-          "exitAward": { "enabled": false, "awardTitle": "" },
+          "exitAward": {
+            "enabled": false,
+            "awardTitle": ""
+          },
           "modules": [
-            { "moduleId": "mod_capstone", "semester": "S2" }
+            {
+              "moduleId": "mod_capstone",
+              "semester": "S2"
+            }
           ]
         }
       ]
