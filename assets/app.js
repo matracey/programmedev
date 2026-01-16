@@ -6,6 +6,58 @@
 
 const STORAGE_KEY = "nci_pds_mvp_programme_v1";
 
+
+
+// ===== DEV MODE TOGGLE (UI) =====
+// Add ?dev=true to the URL to show a mode switch in the UI.
+function _isDevModeUI() {
+  try { return new URLSearchParams(window.location.search).get("dev") === "true"; }
+  catch { return false; }
+}
+
+// In-memory mode switcher for testing (does not auto-export).
+window.setMode = function setMode(mode, assignedModuleIds = []) {
+  const p = state?.programme;
+  if (!p) { console.error("Programme not loaded yet."); return; }
+
+  if (mode !== "PROGRAMME_OWNER" && mode !== "MODULE_EDITOR") {
+    console.error("Invalid mode. Use PROGRAMME_OWNER or MODULE_EDITOR");
+    return;
+  }
+
+  p.mode = mode;
+
+  if (mode === "MODULE_EDITOR") {
+    const defaultAssigned = (p.modules || []).map(m => m.id).slice(0, 1);
+    p.moduleEditor = p.moduleEditor || {};
+    p.moduleEditor.assignedModuleIds = assignedModuleIds.length ? assignedModuleIds : defaultAssigned;
+    p.moduleEditor.locks = p.moduleEditor.locks || { programme: true, modulesMeta: true, versions: true, plos: true };
+
+    // If the current step isn't appropriate, jump to MIMLOs (or next best).
+    const currentKey = steps?.[state.stepIndex]?.key;
+    const allowed = new Set(["mimlos", "mapping", "snapshot", "assessments"]);
+    if (!allowed.has(currentKey)) {
+      const idx = steps.findIndex(s => s.key === "mimlos");
+      if (idx >= 0) state.stepIndex = idx;
+    }
+  } else {
+    delete p.moduleEditor;
+    // If we were in a hidden step, return to Identity.
+    const idx = steps.findIndex(s => s.key === "identity");
+    if (idx >= 0 && state.stepIndex == null) state.stepIndex = idx;
+  }
+
+  render();
+};
+
+function wireDevModeToggle() {
+  const t = document.getElementById("devModeToggle");
+  if (!t) return;
+  t.onchange = () => {
+    if (t.checked) window.setMode("MODULE_EDITOR");
+    else window.setMode("PROGRAMME_OWNER");
+  };
+}
 const steps = [
   { key: "identity", title: "Identity" },
   { key: "outcomes", title: "PLOs" },
@@ -13,9 +65,39 @@ const steps = [
   { key: "stages", title: "Stage Structure" },
   { key: "structure", title: "Credits & Modules" },
   { key: "mimlos", title: "MIMLOs" },
+  { key: "assessments", title: "Assessments" },
   { key: "mapping", title: "Mapping" },
   { key: "snapshot", title: "QQI Snapshot" },
 ];
+
+function activeSteps() {
+  const p = state?.programme || {};
+  if (p.mode === "MODULE_EDITOR") {
+    const allowed = new Set(["mimlos", "assessments", "mapping", "snapshot"]);
+    return steps.filter(s => allowed.has(s.key));
+  }
+  return steps;
+}
+
+function editableModuleIds() {
+  const p = state?.programme;
+  if (!p) return [];
+  if (p.mode === "MODULE_EDITOR") {
+    const ids = p.moduleEditor?.assignedModuleIds || [];
+    return ids.length ? ids : (p.modules || []).map(m => m.id);
+  }
+  return (p.modules || []).map(m => m.id);
+}
+
+function getSelectedModuleId() {
+  const ids = editableModuleIds();
+  if (!ids.length) return "";
+  if (!state.selectedModuleId || !ids.includes(state.selectedModuleId)) {
+    state.selectedModuleId = ids[0];
+  }
+  return state.selectedModuleId;
+}
+
 
 function defaultPatternFor(mod){
   if (mod === "F2F") return { syncOnlinePct: 0, asyncDirectedPct: 0, onCampusPct: 100 };
@@ -383,6 +465,7 @@ function tagHtml(type) {
 
 function renderHeader() {
   const p = state.programme;
+  p.mode = p.mode || 'PROGRAMME_OWNER';
   document.getElementById("programmeTitleNav").textContent = p.title.trim() ? p.title : "New Programme (Draft)";
   const comp = completionPercent(p);
   const badge = document.getElementById("completionBadge");
@@ -394,8 +477,16 @@ function renderHeader() {
 
 function renderSteps() {
   const box = document.getElementById("stepList");
+  if (!box) return;
+
+  const aSteps = activeSteps();
   box.innerHTML = "";
-  steps.forEach((s, idx) => {
+
+  // Clamp index if steps changed (e.g., switching modes)
+  if (state.stepIndex < 0) state.stepIndex = 0;
+  if (state.stepIndex >= aSteps.length) state.stepIndex = 0;
+
+  aSteps.forEach((s, idx) => {
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "list-group-item list-group-item-action " + (idx === state.stepIndex ? "active" : "");
@@ -404,9 +495,12 @@ function renderSteps() {
     box.appendChild(btn);
   });
 
-  document.getElementById("backBtn").disabled = state.stepIndex === 0;
-  document.getElementById("nextBtn").disabled = state.stepIndex === steps.length - 1;
+  const backBtn = document.getElementById("backBtn") || document.getElementById("prevBtn");
+  const nextBtn = document.getElementById("nextBtn");
+  if (backBtn) backBtn.disabled = state.stepIndex === 0;
+  if (nextBtn) nextBtn.disabled = state.stepIndex === aSteps.length - 1;
 }
+
 
 function renderFlags() {
   const flags = validateProgramme(state.programme);
@@ -427,6 +521,203 @@ function escapeHtml(s){
   return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#39;");
 }
 
+// ===== MIMLO object helpers (schemaVersion 2) =====
+function mimloText(x) {
+  return (typeof x === "string") ? x : (x && typeof x === "object" ? (x.text || "") : "");
+}
+function ensureMimloObjects(module) {
+  module.mimlos = module.mimlos || [];
+  // migrate string[] -> {id,text}[]
+  if (module.mimlos.length && typeof module.mimlos[0] === "string") {
+    module.mimlos = module.mimlos.map(t => ({ id: "mimlo_" + crypto.randomUUID(), text: String(t || "") }));
+  }
+}
+
+
+// ===== ASSESSMENT REPORTS (simple + extensible) =====
+const ASSESSMENT_REPORT_TYPES = [
+  { id: "byStageType", label: "By stage: assessment types + weighting" },
+  { id: "byModule", label: "By module: assessment types + weighting" },
+  { id: "coverage", label: "MIMLO coverage (unassessed outcomes)" }
+];
+
+function getVersionById(p, versionId) {
+  return (p.versions || []).find(v => v.id === versionId) || (p.versions || [])[0] || null;
+}
+
+function formatPct(n) {
+  const x = Number(n || 0);
+  return `${x}%`;
+}
+
+function reportByStageType(p, versionId) {
+  const v = getVersionById(p, versionId);
+  if (!v) return `<div class="alert alert-warning mb-0">No versions found.</div>`;
+
+  const modMap = new Map((p.modules || []).map(m => [m.id, m]));
+
+  const stageAgg = [];
+  (v.stages || []).forEach(stg => {
+    const typeMap = new Map();
+    (stg.modules || []).forEach(ref => {
+      const m = modMap.get(ref.moduleId);
+      if (!m) return;
+      (m.assessments || []).forEach(a => {
+        const t = a.type || "Unspecified";
+        const rec = typeMap.get(t) || { weight: 0, count: 0 };
+        rec.weight += Number(a.weighting || 0);
+        rec.count += 1;
+        typeMap.set(t, rec);
+      });
+    });
+
+    const rows = Array.from(typeMap.entries())
+      .sort((a,b) => (b[1].weight - a[1].weight))
+      .map(([type, rec]) => `
+        <tr>
+          <td>${escapeHtml(type)}</td>
+          <td>${rec.count}</td>
+          <td>${formatPct(rec.weight)}</td>
+        </tr>
+      `).join("") || `<tr><td colspan="3" class="text-muted">No assessments found in this stage.</td></tr>`;
+
+    stageAgg.push(`
+      <div class="card border-0 bg-white shadow-sm mb-3">
+        <div class="card-body">
+          <div class="fw-semibold mb-2">${escapeHtml(stg.name || "Stage")}</div>
+          <div class="table-responsive">
+            <table class="table table-sm align-middle mb-0">
+              <thead>
+                <tr>
+                  <th>Assessment type</th>
+                  <th class="text-nowrap">Count</th>
+                  <th class="text-nowrap">Total weighting</th>
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    `);
+  });
+
+  return stageAgg.join("") || `<div class="text-muted">No stages configured.</div>`;
+}
+
+function reportByModule(p) {
+  const rows = (p.modules || []).map(m => {
+    const typeMap = new Map();
+    (m.assessments || []).forEach(a => {
+      const t = a.type || "Unspecified";
+      const rec = typeMap.get(t) || { weight: 0, count: 0 };
+      rec.weight += Number(a.weighting || 0);
+      rec.count += 1;
+      typeMap.set(t, rec);
+    });
+
+    const summary = Array.from(typeMap.entries())
+      .sort((a,b)=>b[1].weight-a[1].weight)
+      .map(([t, rec]) => `${t} (${rec.count}, ${rec.weight}%)`)
+      .join("; ");
+
+    return `
+      <tr>
+        <td class="text-nowrap">${escapeHtml(m.code || "")}</td>
+        <td>${escapeHtml(m.title || "")}</td>
+        <td class="text-nowrap">${escapeHtml(summary || "—")}</td>
+      </tr>
+    `;
+  }).join("") || `<tr><td colspan="3" class="text-muted">No modules.</td></tr>`;
+
+  return `
+    <div class="card border-0 bg-white shadow-sm">
+      <div class="card-body">
+        <div class="fw-semibold mb-2">By module</div>
+        <div class="table-responsive">
+          <table class="table table-sm align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Module</th>
+                <th>Assessment mix</th>
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function reportCoverage(p) {
+  const items = (p.modules || []).map(m => {
+    ensureMimloObjects(m);
+    const mimlos = m.mimlos || [];
+    const assessed = new Set();
+    (m.assessments || []).forEach(a => (a.mimloIds || []).forEach(id => assessed.add(id)));
+
+    const unassessed = mimlos.filter(mi => !assessed.has(mi.id));
+    if (!unassessed.length) {
+      return `
+        <div class="card border-0 bg-white shadow-sm mb-2">
+          <div class="card-body">
+            <div class="fw-semibold">${escapeHtml(m.code||"")} — ${escapeHtml(m.title||"")}</div>
+            <div class="small text-success">✓ All MIMLOs are assessed.</div>
+          </div>
+        </div>
+      `;
+    }
+    return `
+      <div class="card border-0 bg-white shadow-sm mb-2">
+        <div class="card-body">
+          <div class="fw-semibold">${escapeHtml(m.code||"")} — ${escapeHtml(m.title||"")}</div>
+          <div class="small text-warning mb-2">Unassessed MIMLOs (${unassessed.length}):</div>
+          <ul class="small mb-0">
+            ${unassessed.map(mi => `<li>${escapeHtml(mi.text||"")}</li>`).join("")}
+          </ul>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  return items || `<div class="text-muted">No modules.</div>`;
+}
+
+function buildAssessmentReportHtml(p, reportId, versionId) {
+  switch (reportId) {
+    case "byStageType": return reportByStageType(p, versionId);
+    case "byModule": return reportByModule(p);
+    case "coverage": return reportCoverage(p);
+    default: return `<div class="text-muted">Select a report.</div>`;
+  }
+}
+
+function openReportInNewTab(html, title = "Report") {
+  const w = window.open("", "_blank");
+  if (!w) return alert("Popup blocked. Allow popups to open report in a new tab.");
+  w.document.open();
+  w.document.write(`
+    <!doctype html>
+    <html>
+      <head>
+        <meta charset="utf-8"/>
+        <title>${title}</title>
+        <link rel="stylesheet" href="./assets/styles.css">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+      </head>
+      <body class="p-3">
+        <h4 class="mb-3">${title}</h4>
+        ${html}
+      </body>
+    </html>
+  `);
+  w.document.close();
+}
+
+
+
 function setField(path, value) {
   // path is string like "title" or "modules[0].title"
   // For MVP we update manually in handlers; this helper kept minimal.
@@ -441,8 +732,19 @@ function render() {
   renderSteps();
   renderFlags();
   const p = state.programme;
+  p.mode = p.mode || 'PROGRAMME_OWNER';
   const content = document.getElementById("content");
-  const step = steps[state.stepIndex].key;
+  const step = activeSteps()[state.stepIndex].key;
+  const devModeToggleHtml = (_isDevModeUI() ? `
+    <div class="d-flex justify-content-end align-items-center mb-2">
+      <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="devModeToggle" ${state.programme.mode === "MODULE_EDITOR" ? "checked" : ""}>
+        <label class="form-check-label small" for="devModeToggle">
+          ${state.programme.mode === "MODULE_EDITOR" ? "Module Editor Mode" : "Programme Owner Mode"}
+        </label>
+      </div>
+    </div>
+  ` : "");
 
   if (step === "identity") {
     const schoolOpts = SCHOOL_OPTIONS.map(s => `<option value="${escapeHtml(s)}" ${p.school===s?"selected":""}>${escapeHtml(s)}</option>`).join("");
@@ -451,7 +753,9 @@ function render() {
       return `<option value="${escapeHtml(a)}" ${(!p.awardTypeIsOther && p.awardType===a)?"selected":""}>${escapeHtml(a)}</option>`;
     }).join("");
 
-    content.innerHTML = `
+    content.innerHTML = devModeToggleHtml + `
+    // Dev-only UI toggle wiring
+    wireDevModeToggle();
       <div class="card shadow-sm">
         <div class="card-body">
           <h5 class="card-title mb-3">Identity (QQI-critical)</h5>
@@ -501,6 +805,7 @@ function render() {
         </div>
       </div>
     `;
+    wireDevModeToggle();
     wireIdentity();
     return;
   }
@@ -621,7 +926,9 @@ function render() {
       `;
     }).join("");
 
-    content.innerHTML = `
+    content.innerHTML = devModeToggleHtml + `
+    // Dev-only UI toggle wiring
+    wireDevModeToggle();
       <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
         <div>
           <h4 class="mb-1">Programme Versions</h4>
@@ -633,6 +940,7 @@ function render() {
         ${vCards || `<div class="alert alert-info mb-0">No versions yet. Add at least one version to continue.</div>`}
       </div>
     `;
+    wireDevModeToggle();
 
     wireVersions();
     return;
@@ -641,7 +949,10 @@ function render() {
   if (step === "stages") {
     const versions = Array.isArray(p.versions) ? p.versions : [];
     if (!versions.length) {
-      content.innerHTML = `<div class="alert alert-warning">Add at least one Programme Version first.</div>`;
+      content.innerHTML = devModeToggleHtml + `<div class="alert alert-warning">Add at least one Programme Version first.</div>`;
+    // Dev-only UI toggle wiring
+    wireDevModeToggle();
+    wireDevModeToggle();
       return;
     }
     if (!state.selectedVersionId) state.selectedVersionId = versions[0].id;
@@ -716,7 +1027,9 @@ function render() {
       `;
     }).join("");
 
-    content.innerHTML = `
+    content.innerHTML = devModeToggleHtml + `
+    // Dev-only UI toggle wiring
+    wireDevModeToggle();
       <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
         <div>
           <h4 class="mb-1">Stage Structure</h4>
@@ -734,6 +1047,7 @@ function render() {
         ${stageCards || `<div class="alert alert-info mb-0">No stages yet for this version. Add a stage to begin.</div>`}
       </div>
     `;
+    wireDevModeToggle();
 
     wireStages();
     return;
@@ -766,7 +1080,9 @@ if (step === "structure") {
       </div>
     `).join("");
 
-    content.innerHTML = `
+    content.innerHTML = devModeToggleHtml + `
+    // Dev-only UI toggle wiring
+    wireDevModeToggle();
       <div class="card shadow-sm">
         <div class="card-body">
           <div class="d-flex justify-content-between align-items-center mb-3">
@@ -788,6 +1104,7 @@ if (step === "structure") {
         </div>
       </div>
     `;
+    wireDevModeToggle();
     wireStructure();
     return;
   }
@@ -838,7 +1155,9 @@ if (step === "structure") {
     `;
     }).join("");
 
-    content.innerHTML = `
+    content.innerHTML = devModeToggleHtml + `
+    // Dev-only UI toggle wiring
+    wireDevModeToggle();
       <div class="card shadow-sm">
         <div class="card-body">
           <div class="d-flex justify-content-between align-items-center mb-3">
@@ -854,6 +1173,7 @@ if (step === "structure") {
         </div>
       </div>
     `;
+    wireDevModeToggle();
     wireOutcomes();
     return;
   }
@@ -862,7 +1182,7 @@ if (step === "structure") {
     const blocks = (p.modules||[]).map(m => {
       const items = (m.mimlos||[]).map((t, i) => `
         <div class="d-flex gap-2 mb-2">
-          <input class="form-control" data-mimlo-module="${m.id}" data-mimlo-index="${i}" value="${escapeHtml(t)}">
+          <input class="form-control" data-mimlo-module="${m.id}" data-mimlo-index="${i}" value="${escapeHtml(mimloText(t))}">
           <button class="btn btn-outline-danger" data-remove-mimlo="${m.id}" data-remove-mimlo-index="${i}">Remove</button>
         </div>
       `).join("");
@@ -878,7 +1198,9 @@ if (step === "structure") {
       `;
     }).join("");
 
-    content.innerHTML = `
+    content.innerHTML = devModeToggleHtml + `
+    // Dev-only UI toggle wiring
+    wireDevModeToggle();
       <div class="card shadow-sm">
         <div class="card-body">
           <h5 class="card-title mb-3">MIMLOs (Minimum Intended Module Learning Outcomes)</h5>
@@ -887,13 +1209,193 @@ if (step === "structure") {
         </div>
       </div>
     `;
+    wireDevModeToggle();
     wireMimlos();
     return;
   }
 
+
+if (step === "assessments") {
+  const editableIds = editableModuleIds();
+  const selectedId = getSelectedModuleId();
+  const modules = (p.modules || []).filter(m => editableIds.includes(m.id));
+  const typeOpts = [
+    "Report/Essay","Project","Presentation","Portfolio","Practical/Lab",
+    "Exam (On campus)","Exam (Online)","Reflective Journal","Other"
+  ];
+
+  const modulePicker = (editableIds.length > 1) ? `
+    <div class="row g-3 mb-3">
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Assigned module</label>
+        <select class="form-select" id="modulePicker">
+          ${modules.map(m => `<option value="${m.id}" ${m.id===selectedId?"selected":""}>${escapeHtml(m.code || "")} — ${escapeHtml(m.title || "")}</option>`).join("")}
+        </select>
+      </div>
+    </div>
+  ` : "";
+
+  const cards = modules.map(m => {
+    ensureMimloObjects(m);
+    m.assessments = m.assessments || [];
+    const total = m.assessments.reduce((acc,a)=>acc+(Number(a.weighting)||0),0);
+    const totalBadge = (total === 100)
+      ? `<span class="badge text-bg-success">Total ${total}%</span>`
+      : `<span class="badge text-bg-warning">Total ${total}% (should be 100)</span>`;
+
+    const mimloList = (m.mimlos||[]).map(mi => `
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox"
+          data-asm-mimlo="${m.id}"
+          data-asm-mimlo-id="${mi.id}">
+        <label class="form-check-label small">${escapeHtml(mi.text||"")}</label>
+      </div>
+    `).join("");
+
+    const asmCards = (m.assessments||[]).map(a => {
+      const mode = a.mode || "Online";
+      const integ = a.integrity || {};
+      return `
+        <div class="card border-0 bg-white shadow-sm mb-3">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <div class="fw-semibold">${escapeHtml(a.title || "Assessment")}</div>
+              <button class="btn btn-outline-danger btn-sm" data-remove-asm="${m.id}" data-asm-id="${a.id}">Remove</button>
+            </div>
+
+            <div class="row g-2">
+              <div class="col-md-4">
+                <label class="form-label small fw-semibold">Title</label>
+                <input class="form-control" data-asm-title="${m.id}" data-asm-id="${a.id}" value="${escapeHtml(a.title||"")}">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label small fw-semibold">Type</label>
+                <select class="form-select" data-asm-type="${m.id}" data-asm-id="${a.id}">
+                  ${typeOpts.map(t=>`<option value="${escapeHtml(t)}" ${(a.type||"")==t?"selected":""}>${escapeHtml(t)}</option>`).join("")}
+                </select>
+              </div>
+              <div class="col-md-2">
+                <label class="form-label small fw-semibold">Weighting %</label>
+                <input type="number" min="0" max="100" step="1" class="form-control"
+                  data-asm-weight="${m.id}" data-asm-id="${a.id}" value="${a.weighting ?? ""}">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label small fw-semibold">Mode</label>
+                <select class="form-select" data-asm-mode="${m.id}" data-asm-id="${a.id}">
+                  ${["Online","OnCampus","Hybrid"].map(x=>`<option value="${x}" ${mode===x?"selected":""}>${x}</option>`).join("")}
+                </select>
+              </div>
+            </div>
+
+            <div class="row g-2 mt-2">
+              <div class="col-md-6">
+                <div class="fw-semibold small mb-1">Map to MIMLOs</div>
+                <div class="border rounded p-2" data-asm-mimlo-box="${m.id}" data-asm-id="${a.id}">
+                  ${(m.mimlos||[]).map(mi => {
+                    const checked = (a.mimloIds||[]).includes(mi.id);
+                    return `
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox"
+                          data-asm-map="${m.id}" data-asm-id="${a.id}" data-mimlo-id="${mi.id}" ${checked?"checked":""}>
+                        <label class="form-check-label small">${escapeHtml(mi.text||"")}</label>
+                      </div>
+                    `;
+                  }).join("")}
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="fw-semibold small mb-1">Integrity controls</div>
+                <div class="border rounded p-2">
+                  ${[
+                    ["proctored","Proctored"],
+                    ["viva","Viva/oral"],
+                    ["inClass","In-class component"],
+                    ["originalityCheck","Originality check"],
+                    ["aiDeclaration","AI declaration"]
+                  ].map(([k,label]) => `
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox"
+                        data-asm-int="${m.id}" data-asm-id="${a.id}" data-int-key="${k}" ${integ[k] ? "checked":""}>
+                      <label class="form-check-label small">${label}</label>
+                    </div>
+                  `).join("")}
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-2">
+              <label class="form-label small fw-semibold">Notes</label>
+              <textarea class="form-control" rows="2" data-asm-notes="${m.id}" data-asm-id="${a.id}">${escapeHtml(a.notes||"")}</textarea>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    return `
+      <div class="card border-0 bg-white shadow-sm mb-3" ${p.mode==="MODULE_EDITOR" && m.id!==selectedId ? 'style="display:none"' : ""} data-module-card="${m.id}">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <div class="fw-semibold">${escapeHtml(m.code||"")} — ${escapeHtml(m.title||"")}</div>
+            ${totalBadge}
+          </div>
+          <button class="btn btn-outline-primary btn-sm mb-3" data-add-asm="${m.id}">+ Add assessment</button>
+          ${asmCards || `<div class="text-muted small">No assessments yet.</div>`}
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  content.innerHTML = devModeToggleHtml + `
+    <div class="d-flex align-items-center justify-content-between mb-3">
+      <div>
+        <div class="h5 mb-0">Assessments</div>
+        <div class="text-muted small">Create assessments per module, set weightings, and map to MIMLOs.</div>
+      </div>
+    </div>
+    
+<div class="card border-0 bg-white shadow-sm mb-3">
+  <div class="card-body">
+    <div class="row g-2 align-items-end">
+      <div class="col-md-4">
+        <label class="form-label small fw-semibold">Report type</label>
+        <select class="form-select" id="reportTypeSelect">
+          ${ASSESSMENT_REPORT_TYPES.map(r => `<option value="${r.id}" ${(state.reportTypeId || "byStageType") === r.id ? "selected" : ""}>${escapeHtml(r.label)}</option>`).join("")}
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label small fw-semibold">Version</label>
+        <select class="form-select" id="reportVersionSelect">
+          ${(p.versions||[]).map(v => `<option value="${v.id}" ${(state.reportVersionId || (p.versions?.[0]?.id)) === v.id ? "selected" : ""}>${escapeHtml(v.label || v.code || "Version")}</option>`).join("")}
+        </select>
+      </div>
+      <div class="col-md-4 d-flex gap-2">
+        <button class="btn btn-outline-primary w-50" id="runReportInlineBtn" type="button">Show below</button>
+        <button class="btn btn-outline-secondary w-50" id="runReportNewTabBtn" type="button">Open in new tab</button>
+      </div>
+    </div>
+    <div class="mt-3" id="reportOutput" style="display:none;"></div>
+  </div>
+</div>
+
+${modulePicker}
+    ${cards || `<div class="alert alert-warning">No modules available to edit.</div>`}
+  `;
+
+  wireDevModeToggle();
+  wireAssessments();
+  return;
+}
+
+
+
   if (step === "mapping") {
     if (!p.plos.length || !p.modules.length) {
-      content.innerHTML = `<div class="card shadow-sm"><div class="card-body"><h5 class="card-title">Mapping</h5><div class="small text-secondary">Add PLOs and modules first.</div></div></div>`;
+      content.innerHTML = devModeToggleHtml + `<div class="card shadow-sm"><div class="card-body"><h5 class="card-title">Mapping</h5><div class="small text-secondary">Add PLOs and modules first.</div></div></div>`;
+    // Dev-only UI toggle wiring
+    wireDevModeToggle();
+    wireDevModeToggle();
       return;
     }
 
@@ -917,7 +1419,9 @@ if (step === "structure") {
       `;
     }).join("");
 
-    content.innerHTML = `
+    content.innerHTML = devModeToggleHtml + `
+    // Dev-only UI toggle wiring
+    wireDevModeToggle();
       <div class="card shadow-sm">
         <div class="card-body">
           <h5 class="card-title mb-3">Map PLOs to modules (QQI-critical)</h5>
@@ -925,6 +1429,7 @@ if (step === "structure") {
         </div>
       </div>
     `;
+    wireDevModeToggle();
     wireMapping();
     return;
   }
@@ -1020,7 +1525,9 @@ if (step === "structure") {
 
   const isComplete100 = completionPercent(p) === 100;
 
-  content.innerHTML = `
+  content.innerHTML = devModeToggleHtml + `
+    // Dev-only UI toggle wiring
+    wireDevModeToggle();
     <div class="card shadow-sm">
       <div class="card-body">
         <h5 class="card-title mb-3">QQI Snapshot (copy/paste-ready)</h5>
@@ -1076,6 +1583,7 @@ if (step === "structure") {
       </div>
     </div>
   `;
+    wireDevModeToggle();
 
   document.getElementById("copyJsonBtn").onclick = async () => {
     await navigator.clipboard.writeText(JSON.stringify(state.programme, null, 2));
@@ -1094,6 +1602,9 @@ if (step === "structure") {
     };
   }
 
+
+  // Dev-only UI toggle wiring
+  wireDevModeToggle();
 }
 
 function getVersionById(id){
@@ -1102,6 +1613,7 @@ function getVersionById(id){
 
 function wireVersions() {
   const p = state.programme;
+  p.mode = p.mode || 'PROGRAMME_OWNER';
   if (!Array.isArray(p.versions)) p.versions = [];
 
   const addBtn = document.getElementById("addVersionBtn");
@@ -1208,6 +1720,7 @@ function wireVersions() {
 
 function wireStages() {
   const p = state.programme;
+  p.mode = p.mode || 'PROGRAMME_OWNER';
   if (!Array.isArray(p.versions)) p.versions = [];
   const versions = p.versions;
 
@@ -1303,6 +1816,7 @@ function wireStages() {
 
 function wireIdentity(){
   const p = state.programme;
+  p.mode = p.mode || 'PROGRAMME_OWNER';
   document.getElementById("titleInput").addEventListener("input", (e)=>{ p.title = e.target.value; saveDebounced(); renderHeader(); });
   const awardSelect = document.getElementById("awardSelect");
   const awardOtherWrap = document.getElementById("awardOtherWrap");
@@ -1361,6 +1875,7 @@ function wireIdentity(){
 
 function wireDelivery(){
   const p = state.programme;
+  p.mode = p.mode || 'PROGRAMME_OWNER';
 
   // modality checkboxes
   document.querySelectorAll('input[id^="mod_"][data-mod]').forEach(cb => {
@@ -1420,6 +1935,7 @@ function wireDelivery(){
 }
 function wireCapacity(){
   const p = state.programme;
+  p.mode = p.mode || 'PROGRAMME_OWNER';
   document.getElementById("cohortSize").addEventListener("input", (e)=>{ p.cohortSize = Number(e.target.value||0); saveDebounced(); renderFlags(); });
   document.getElementById("numGroups").addEventListener("input", (e)=>{ p.numberOfGroups = Number(e.target.value||0); saveDebounced(); });
   document.getElementById("duration").addEventListener("input", (e)=>{ p.duration = e.target.value; saveDebounced(); });
@@ -1428,6 +1944,7 @@ function wireCapacity(){
 
 function wireStructure(){
   const p = state.programme;
+  p.mode = p.mode || 'PROGRAMME_OWNER';
   document.getElementById("addModuleBtn").onclick = () => {
     p.modules.push({ id: uid("mod"), code: "", title: "New module", credits: 0, mimlos: [] });
     saveDebounced();
@@ -1463,6 +1980,7 @@ function wireStructure(){
 
 function wireOutcomes(){
   const p = state.programme;
+  p.mode = p.mode || 'PROGRAMME_OWNER';
 
   // Ensure each PLO has a mapping array (for older imports)
   p.plos = (p.plos||[]).map(o => ({ ...o, standardMappings: Array.isArray(o.standardMappings) ? o.standardMappings : [] }));
@@ -1615,15 +2133,201 @@ function wireOutcomes(){
   });
 }
 
+
+function wireAssessments() {
+  const p = state.programme;
+
+
+// ---- report controls ----
+const reportTypeSelect = document.getElementById("reportTypeSelect");
+const reportVersionSelect = document.getElementById("reportVersionSelect");
+const runInline = document.getElementById("runReportInlineBtn");
+const runNewTab = document.getElementById("runReportNewTabBtn");
+const out = document.getElementById("reportOutput");
+
+if (reportTypeSelect) {
+  reportTypeSelect.onchange = () => {
+    state.reportTypeId = reportTypeSelect.value;
+  };
+}
+if (reportVersionSelect) {
+  reportVersionSelect.onchange = () => {
+    state.reportVersionId = reportVersionSelect.value;
+  };
+}
+
+function getReportState() {
+  const rid = state.reportTypeId || "byStageType";
+  const vid = state.reportVersionId || (p.versions?.[0]?.id) || "";
+  return { rid, vid };
+}
+
+if (runInline && out) {
+  runInline.onclick = () => {
+    const { rid, vid } = getReportState();
+    const html = buildAssessmentReportHtml(p, rid, vid);
+    out.style.display = "";
+    out.innerHTML = html;
+  };
+}
+
+if (runNewTab) {
+  runNewTab.onclick = () => {
+    const { rid, vid } = getReportState();
+    const html = buildAssessmentReportHtml(p, rid, vid);
+    const label = (ASSESSMENT_REPORT_TYPES.find(x => x.id === rid)?.label) || "Report";
+    openReportInNewTab(html, label);
+  };
+}
+
+  const picker = document.getElementById("modulePicker");
+  if (picker) {
+    picker.onchange = () => {
+      state.selectedModuleId = picker.value;
+      render();
+    };
+  }
+
+  document.querySelectorAll("[data-add-asm]").forEach(btn => {
+    btn.onclick = () => {
+      const mid = btn.getAttribute("data-add-asm");
+      const m = p.modules.find(x => x.id === mid);
+      if (!m) return;
+      ensureMimloObjects(m);
+      m.assessments = m.assessments || [];
+      m.assessments.push({
+        id: "asm_" + crypto.randomUUID(),
+        title: "",
+        type: "Report/Essay",
+        weighting: 0,
+        mode: "Online",
+        integrity: { proctored: false, viva: false, inClass: false, originalityCheck: true, aiDeclaration: true },
+        mimloIds: [],
+        notes: ""
+      });
+      saveDebounced();
+      render();
+    };
+  });
+
+  document.querySelectorAll("[data-remove-asm]").forEach(btn => {
+    btn.onclick = () => {
+      const mid = btn.getAttribute("data-remove-asm");
+      const aid = btn.getAttribute("data-asm-id");
+      const m = p.modules.find(x => x.id === mid);
+      if (!m) return;
+      m.assessments = m.assessments || [];
+      m.assessments = m.assessments.filter(a => a.id !== aid);
+      saveDebounced();
+      render();
+    };
+  });
+
+  function findAsm(mid, aid) {
+    const m = p.modules.find(x => x.id === mid);
+    if (!m) return null;
+    m.assessments = m.assessments || [];
+    const a = m.assessments.find(x => x.id === aid);
+    return { m, a };
+  }
+
+  document.querySelectorAll("[data-asm-title]").forEach(inp => {
+    inp.oninput = () => {
+      const mid = inp.getAttribute("data-asm-title");
+      const aid = inp.getAttribute("data-asm-id");
+      const found = findAsm(mid, aid);
+      if (!found || !found.a) return;
+      found.a.title = inp.value;
+      saveDebounced();
+    };
+  });
+
+  document.querySelectorAll("[data-asm-type]").forEach(sel => {
+    sel.onchange = () => {
+      const mid = sel.getAttribute("data-asm-type");
+      const aid = sel.getAttribute("data-asm-id");
+      const found = findAsm(mid, aid);
+      if (!found || !found.a) return;
+      found.a.type = sel.value;
+      saveDebounced();
+    };
+  });
+
+  document.querySelectorAll("[data-asm-weight]").forEach(inp => {
+    inp.oninput = () => {
+      const mid = inp.getAttribute("data-asm-weight");
+      const aid = inp.getAttribute("data-asm-id");
+      const found = findAsm(mid, aid);
+      if (!found || !found.a) return;
+      found.a.weighting = Number(inp.value || 0);
+      saveDebounced();
+    };
+  });
+
+  document.querySelectorAll("[data-asm-mode]").forEach(sel => {
+    sel.onchange = () => {
+      const mid = sel.getAttribute("data-asm-mode");
+      const aid = sel.getAttribute("data-asm-id");
+      const found = findAsm(mid, aid);
+      if (!found || !found.a) return;
+      found.a.mode = sel.value;
+      saveDebounced();
+    };
+  });
+
+  document.querySelectorAll("[data-asm-notes]").forEach(area => {
+    area.oninput = () => {
+      const mid = area.getAttribute("data-asm-notes");
+      const aid = area.getAttribute("data-asm-id");
+      const found = findAsm(mid, aid);
+      if (!found || !found.a) return;
+      found.a.notes = area.value;
+      saveDebounced();
+    };
+  });
+
+  document.querySelectorAll("[data-asm-int]").forEach(chk => {
+    chk.onchange = () => {
+      const mid = chk.getAttribute("data-asm-int");
+      const aid = chk.getAttribute("data-asm-id");
+      const key = chk.getAttribute("data-int-key");
+      const found = findAsm(mid, aid);
+      if (!found || !found.a) return;
+      found.a.integrity = found.a.integrity || {};
+      found.a.integrity[key] = chk.checked;
+      saveDebounced();
+    };
+  });
+
+  document.querySelectorAll("[data-asm-map]").forEach(chk => {
+    chk.onchange = () => {
+      const mid = chk.getAttribute("data-asm-map");
+      const aid = chk.getAttribute("data-asm-id");
+      const mimloId = chk.getAttribute("data-mimlo-id");
+      const found = findAsm(mid, aid);
+      if (!found || !found.a) return;
+      found.a.mimloIds = found.a.mimloIds || [];
+      if (chk.checked) {
+        if (!found.a.mimloIds.includes(mimloId)) found.a.mimloIds.push(mimloId);
+      } else {
+        found.a.mimloIds = found.a.mimloIds.filter(x => x !== mimloId);
+      }
+      saveDebounced();
+    };
+  });
+}
+
+
 function wireMimlos(){
   const p = state.programme;
+  p.mode = p.mode || 'PROGRAMME_OWNER';
   document.querySelectorAll("[data-add-mimlo]").forEach(btn => {
     btn.onclick = () => {
       const id = btn.getAttribute("data-add-mimlo");
       const m = p.modules.find(x => x.id === id);
       if (!m) return;
       m.mimlos = m.mimlos || [];
-      m.mimlos.push("");
+      m.mimlos.push({ id: 'mimlo_' + crypto.randomUUID(), text: '' });
       saveDebounced();
       renderFlags();
       render();
@@ -1650,7 +2354,9 @@ function wireMimlos(){
       const m = p.modules.find(x => x.id === id);
       if (!m) return;
       m.mimlos = m.mimlos || [];
-      m.mimlos[idx] = e.target.value;
+      ensureMimloObjects(m);
+    if (!m.mimlos[idx]) m.mimlos[idx] = { id: 'mimlo_' + crypto.randomUUID(), text: '' };
+    m.mimlos[idx].text = e.target.value;
       saveDebounced();
       renderFlags();
     });
@@ -1659,6 +2365,7 @@ function wireMimlos(){
 
 function wireMapping(){
   const p = state.programme;
+  p.mode = p.mode || 'PROGRAMME_OWNER';
   document.querySelectorAll("[data-map-plo]").forEach(chk => {
     chk.addEventListener("change", (e) => {
       const ploId = chk.getAttribute("data-map-plo");
@@ -1683,7 +2390,7 @@ function initNavButtons(){
     render();
   };
   document.getElementById("nextBtn").onclick = () => {
-    const stepKey = steps[state.stepIndex].key;
+    const stepKey = activeSteps()[state.stepIndex].key;
 
     if (stepKey === "identity") {
       if (!state.programme.totalCredits) {
@@ -1709,7 +2416,7 @@ function initNavButtons(){
       }
     }
 
-    state.stepIndex = Math.min(steps.length - 1, state.stepIndex + 1);
+    state.stepIndex = Math.min(activeSteps().length - 1, state.stepIndex + 1);
     render();
   };
 
