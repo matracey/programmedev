@@ -758,8 +758,6 @@ function render() {
     }).join("");
 
     content.innerHTML = devModeToggleHtml + `
-    // Dev-only UI toggle wiring
-    wireDevModeToggle();
       <div class="card shadow-sm">
         <div class="card-body">
           <h5 class="card-title mb-3">Identity (QQI-critical)</h5>
@@ -931,8 +929,6 @@ function render() {
     }).join("");
 
     content.innerHTML = devModeToggleHtml + `
-    // Dev-only UI toggle wiring
-    wireDevModeToggle();
       <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
         <div>
           <h4 class="mb-1">Programme Versions</h4>
@@ -954,9 +950,7 @@ function render() {
     const versions = Array.isArray(p.versions) ? p.versions : [];
     if (!versions.length) {
       content.innerHTML = devModeToggleHtml + `<div class="alert alert-warning">Add at least one Programme Version first.</div>`;
-    // Dev-only UI toggle wiring
-    wireDevModeToggle();
-    wireDevModeToggle();
+      wireDevModeToggle();
       return;
     }
     if (!state.selectedVersionId) state.selectedVersionId = versions[0].id;
@@ -1032,8 +1026,6 @@ function render() {
     }).join("");
 
     content.innerHTML = devModeToggleHtml + `
-    // Dev-only UI toggle wiring
-    wireDevModeToggle();
       <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
         <div>
           <h4 class="mb-1">Stage Structure</h4>
@@ -1085,8 +1077,6 @@ if (step === "structure") {
     `).join("");
 
     content.innerHTML = devModeToggleHtml + `
-    // Dev-only UI toggle wiring
-    wireDevModeToggle();
       <div class="card shadow-sm">
         <div class="card-body">
           <div class="d-flex justify-content-between align-items-center mb-3">
@@ -1170,8 +1160,6 @@ if (step === "structure") {
     }).join("");
 
     content.innerHTML = devModeToggleHtml + `
-    // Dev-only UI toggle wiring
-    wireDevModeToggle();
       <div class="card shadow-sm">
         <div class="card-body">
           <div class="d-flex justify-content-between align-items-center mb-3">
@@ -1974,9 +1962,7 @@ if (step === "schedule") {
   if (step === "mapping") {
     if (!p.plos.length || !p.modules.length) {
       content.innerHTML = devModeToggleHtml + `<div class="card shadow-sm"><div class="card-body"><h5 class="card-title">Mapping</h5><div class="small text-secondary">Add PLOs and modules first.</div></div></div>`;
-    // Dev-only UI toggle wiring
-    wireDevModeToggle();
-    wireDevModeToggle();
+      wireDevModeToggle();
       return;
     }
 
@@ -2028,8 +2014,6 @@ if (step === "schedule") {
       : '';
 
     content.innerHTML = devModeToggleHtml + `
-    // Dev-only UI toggle wiring
-    wireDevModeToggle();
       <div class="card shadow-sm">
         <div class="card-body">
           <h5 class="card-title mb-3">Map PLOs to modules (QQI-critical)</h5>
@@ -2162,8 +2146,6 @@ if (step === "schedule") {
   const isComplete100 = completionPercent(p) === 100;
 
   content.innerHTML = devModeToggleHtml + `
-    // Dev-only UI toggle wiring
-    wireDevModeToggle();
     <div class="card shadow-sm">
       <div class="card-body">
         <h5 class="card-title mb-3">QQI Snapshot (copy/paste-ready)</h5>
