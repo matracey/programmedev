@@ -134,7 +134,8 @@ const AWARD_TYPE_OPTIONS = [
 ];
 // ---- Award standards loader (assets/standards.json) ----
 let _standardsPromise = null;
-async function getAwardStandard(){
+
+async function _loadStandardsFile(){
   if (_standardsPromise) return _standardsPromise;
   _standardsPromise = (async () => {
     const res = await fetch("./assets/standards.json", { cache: "no-store" });
@@ -142,6 +143,18 @@ async function getAwardStandard(){
     return await res.json();
   })();
   return _standardsPromise;
+}
+
+async function getAwardStandards(){
+  const data = await _loadStandardsFile();
+  // Backward compatible: if the file is a single standard object (v1), wrap it.
+  return Array.isArray(data?.standards) ? data.standards : [data];
+}
+
+async function getAwardStandardById(standardId){
+  const list = await getAwardStandards();
+  if (!standardId) return list[0] || null;
+  return list.find(s => s && s.standard_id === standardId) || list[0] || null;
 }
 // -------------------------------------------------------
 
@@ -780,7 +793,7 @@ function render() {
             </div>
             <div class="col-md-4">
               <label class="form-label fw-semibold">NFQ level</label>
-              <input type="number" min="6" max="9" step="1" class="form-control" id="levelInput" value="${p.nfqLevel ?? ""}">
+              <input type="number" min="5" max="10" step="1" class="form-control" id="levelInput" value="${p.nfqLevel ?? ""}">
             </div>
             <div class="col-md-4">
               <label class="form-label fw-semibold">Total credits (ECTS)</label>
@@ -798,8 +811,11 @@ function render() {
               <select class="form-select" id="standardSelect">
                 <option value="" disabled ${!p.awardStandardId?"selected":""}>Select a standard</option>
                 <option value="qqi-computing-l6-9" ${p.awardStandardId==="qqi-computing-l6-9"?"selected":""}>Computing (Levels 6–9)</option>
+                <option value="qqi-professional-awards-l5-9" ${p.awardStandardId==="qqi-professional-awards-l5-9"?"selected":""}>Professional (Levels 5–9)</option>
+                <option value="qqi-generic-major-masters-l9" ${p.awardStandardId==="qqi-generic-major-masters-l9"?"selected":""}>Generic Major — Masters Degree (Level 9)</option>
               </select>
               <div class="form-text">This will drive PLO mapping and autocompletion.</div>
+              <div id="standardMismatchAlert" class="mt-2"></div>
             </div>
             <div class="col-12">
               <label class="form-label fw-semibold">Intake months</label>
@@ -1179,6 +1195,7 @@ if (step === "structure") {
             <button class="btn btn-dark btn-sm" id="addPloBtn">+ Add PLO</button>
           </div>
           ${bloomsGuidanceHtml(p.nfqLevel, "Programme Learning Outcomes")}
+          <div id="plosStandardMismatchAlert" class="mb-3"></div>
           <div class="small-muted mb-3">Aim for ~6–12 clear, assessable outcomes. Keep them measurable and assessable.</div>
           ${rows || `<div class="small text-secondary">No PLOs added yet.</div>`}
           <hr class="my-4"/>
@@ -2060,7 +2077,7 @@ if (step === "schedule") {
     wireDevModeToggle();
 
     // Load standards and render the full table
-    getAwardStandard().then(standardsData => {
+    getAwardStandardById(p.awardStandardId).then(standardsData => {
       renderTraceabilityTable(p, standardsData, devModeToggleHtml);
     }).catch(err => {
       console.error('Failed to load standards:', err);
@@ -2482,7 +2499,52 @@ function wireIdentity(){
       renderFlags();
     });
   }
-  document.getElementById("levelInput").addEventListener("input", (e)=>{ p.nfqLevel = e.target.value ? Number(e.target.value) : null; saveDebounced(); renderFlags(); });
+  const levelInput = document.getElementById("levelInput");
+  const mismatchHost = document.getElementById("standardMismatchAlert");
+
+  async function refreshStandardLevelMismatch(){
+    if (!mismatchHost) return;
+    mismatchHost.innerHTML = "";
+    if (!p.awardStandardId) return;
+
+    let std = null;
+    try {
+      std = await getAwardStandardById(p.awardStandardId);
+    } catch (e) {
+      return; // can't validate without standards
+    }
+    const supportedLevels = Array.isArray(std?.levels) ? std.levels.map(Number).filter(n => Number.isFinite(n)) : [];
+    const nfqNum = Number(p.nfqLevel);
+
+    if (!supportedLevels.length || !Number.isFinite(nfqNum) || supportedLevels.includes(nfqNum)) {
+      mismatchHost.innerHTML = "";
+      return;
+    }
+
+    const target = supportedLevels[0];
+    mismatchHost.innerHTML = `
+      <div class="alert alert-warning mb-0 d-flex justify-content-between align-items-start" style="gap:12px;">
+        <div>
+          <div class="fw-semibold">Level mismatch</div>
+          <div>“${escapeHtml(std.title || std.standard_name || std.standardName || std.standard_id || "Selected award standard") }” supports level(s) <span class="fw-semibold">${escapeHtml(supportedLevels.join(", "))}</span>. You currently have level <span class="fw-semibold">${escapeHtml(String(p.nfqLevel ?? ""))}</span>.</div>
+          <div class="text-secondary">Change the NFQ level or choose a different award standard.</div>
+        </div>
+        ${target ? `<button type="button" class="btn btn-sm btn-warning" id="btnFixIdentityLevel">Set to ${target}</button>` : ``}
+      </div>
+    `;
+    const btn = document.getElementById("btnFixIdentityLevel");
+    if (btn) {
+      btn.onclick = () => {
+        p.nfqLevel = target;
+        if (levelInput) levelInput.value = String(target);
+        saveDebounced();
+        renderFlags();
+        refreshStandardLevelMismatch();
+      };
+    }
+  }
+
+  if (levelInput) levelInput.addEventListener("input", (e)=>{ p.nfqLevel = e.target.value ? Number(e.target.value) : null; saveDebounced(); renderFlags(); refreshStandardLevelMismatch(); });
   const tc = document.getElementById("totalCreditsInput");
   if (tc) tc.addEventListener("input", (e)=>{ p.totalCredits = e.target.value ? Number(e.target.value) : ""; saveDebounced(); });
   const schoolSelect = document.getElementById("schoolSelect");
@@ -2492,21 +2554,21 @@ function wireIdentity(){
     standardSelect.addEventListener("change", async (e) => {
       p.awardStandardId = e.target.value || "";
       try {
-        if (p.awardStandardId === "qqi-computing-l6-9") {
-          const s = await getAwardStandard();
-          p.awardStandardName = s.standard_name || "QQI Computing Awards Standards (Levels 6–9)";
-        } else {
-          p.awardStandardName = "";
-        }
+        const s = await getAwardStandardById(p.awardStandardId);
+        p.awardStandardName = s?.standard_name || s?.standardName || (p.awardStandardId ? "QQI Award Standard" : "");
       } catch (err) {
         // If standards.json can't be loaded (e.g., file://), keep the selection but leave name generic.
         p.awardStandardName = p.awardStandardId ? "QQI Award Standard" : "";
       }
       saveDebounced();
       renderFlags();
+      refreshStandardLevelMismatch();
     });
   }
   document.getElementById("intakeInput").addEventListener("input", (e)=>{ p.intakeMonths = e.target.value.split(",").map(s=>s.trim()).filter(Boolean); saveDebounced(); });
+
+  // Initial check (in case the user loads an existing programme)
+  refreshStandardLevelMismatch();
 }
 
 function wireDelivery(){
@@ -2671,9 +2733,42 @@ function wireOutcomes(){
   // Standards mapping UI (only enabled once an award standard is selected)
   if (!p.awardStandardId) return;
 
-  getAwardStandard().then(std => {
+  getAwardStandardById(p.awardStandardId).then(std => {
     const level = String(p.nfqLevel || "");
     const criteriaList = Object.keys(std.index || {}).sort((a,b)=>a.localeCompare(b));
+
+    // Show a clear banner in the PLOs step if the selected NFQ level does not match
+    // the supported levels for the selected award standard.
+    const plosMismatchHost = document.getElementById("plosStandardMismatchAlert");
+    if (plosMismatchHost) {
+      const supportedLevels = Array.isArray(std?.levels) ? std.levels.map(Number).filter(n => Number.isFinite(n)) : [];
+      const nfqNum = Number(p.nfqLevel);
+      const isMismatch = supportedLevels.length && Number.isFinite(nfqNum) && !supportedLevels.includes(nfqNum);
+      if (isMismatch) {
+        const target = supportedLevels[0];
+        plosMismatchHost.innerHTML = `
+          <div class="alert alert-warning d-flex justify-content-between align-items-start" style="gap:12px;">
+            <div>
+              <div class="fw-semibold">Level mismatch</div>
+              <div>“${escapeHtml(std.title || std.standard_name || std.standardName || std.standard_id || "Selected award standard") }” supports level(s) <span class="fw-semibold">${escapeHtml(supportedLevels.join(", "))}</span>. You currently have level <span class="fw-semibold">${escapeHtml(String(p.nfqLevel ?? ""))}</span>.</div>
+              <div class="text-secondary">Fix this in Identity, or click the button to update your NFQ level now.</div>
+            </div>
+            ${target ? `<button type="button" class="btn btn-sm btn-warning" id="btnFixPlosLevel">Set to ${target}</button>` : ``}
+          </div>
+        `;
+        const btn = document.getElementById("btnFixPlosLevel");
+        if (btn && target) {
+          btn.onclick = () => {
+            p.nfqLevel = target;
+            saveDebounced();
+            renderFlags();
+            render();
+          };
+        }
+      } else {
+        plosMismatchHost.innerHTML = "";
+      }
+    }
 
     // Snapshot table
     const snap = document.getElementById("ploMappingSnapshot");
@@ -2734,8 +2829,42 @@ function wireOutcomes(){
       function updateDesc(){
         const c = sel.value;
         const t = threadSel.value;
+        // If the chosen award standard doesn't support the selected NFQ level,
+        // show a clear mismatch warning (instead of a confusing "no descriptor" message).
+        const nfqNum = Number(level);
+        const supportedLevels = Array.isArray(std.levels) ? std.levels.map(Number).filter(n => Number.isFinite(n)) : [];
+        const isMismatch = supportedLevels.length && (!Number.isFinite(nfqNum) || !supportedLevels.includes(nfqNum));
+
+        if (isMismatch) {
+          const target = supportedLevels[0];
+          if (descEl) {
+            descEl.innerHTML = `
+              <div class="alert alert-warning mb-0 d-flex justify-content-between align-items-start" style="gap:12px;">
+                <div>
+                  <div class="fw-semibold">Level mismatch</div>
+                  <div>“${escapeHtml(std.title || std.standard_id || "Selected award standard") }” supports level(s) <span class="fw-semibold">${escapeHtml(supportedLevels.join(", "))}</span>. You currently have level <span class="fw-semibold">${escapeHtml(level || "")}</span> selected.</div>
+                  <div class="text-secondary">Change the NFQ level or choose a different award standard.</div>
+                </div>
+                ${target ? `<button type="button" class="btn btn-sm btn-warning" data-fix-nfq="${target}">Set to ${target}</button>` : ``}
+              </div>
+            `;
+            const fixBtn = descEl.querySelector("[data-fix-nfq]");
+            if (fixBtn) {
+              fixBtn.onclick = () => {
+                p.nfqLevel = Number(fixBtn.getAttribute("data-fix-nfq"));
+                saveDebounced();
+                renderFlags();
+                render();
+              };
+            }
+          }
+          return;
+        }
+
         const d = (((std.index||{})[c]||{})[t]||{})[level] || "";
-        descEl.textContent = d ? d : (c && t ? "No descriptor found for this level." : "");
+        if (descEl) {
+          descEl.textContent = d ? d : (c && t ? "No descriptor found for this level." : "");
+        }
       }
 
       sel.addEventListener("change", () => {
