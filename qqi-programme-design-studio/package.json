@@ -13,5 +13,12 @@
   },
   "overrides": {
     "vite": "npm:rolldown-vite@7.2.5"
+  },
+  "dependencies": {
+    "bootstrap": "^5.3.8",
+    "docxtemplater": "^3.67.6",
+    "file-saver": "^2.0.5",
+    "pizzip": "^3.2.0",
+    "plotly.js-dist-min": "^3.3.1"
   }
 }

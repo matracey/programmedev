@@ -1,0 +1,426 @@
+{
+  "standard_id": "qqi-computing-l6-9",
+  "standard_name": "QQI Computing Awards Standards (Levels 6–9)",
+  "source_file": "QQI_Computing_Awards_Standards_Mapping.xlsx",
+  "schema_version": "1.0",
+  "levels": {
+    "6": [
+      {
+        "criteria": "Knowledge",
+        "thread": "Knowledge-Breadth",
+        "descriptor": "Specialised knowledge of a broad area; knowledge and understanding of basic concepts in: Computer Systems; Software Engineering; Information Systems; Mathematical Foundations and Techniques; Computing Techniques; Computer Networks; Social and Professional Issues."
+      },
+      {
+        "criteria": "Knowledge",
+        "thread": "Knowledge-Kind",
+        "descriptor": "Some theoretical concepts and abstract thinking, with significant underpinning theory. Learner can explain basic concepts and theories of the core computing area; describe roles and responsibilities of computing professionals; describe best practices in computing."
+      },
+      {
+        "criteria": "Know-how & Skill",
+        "thread": "Know-how & Skill-Range",
+        "descriptor": "Demonstrate comprehensive range of specialised skills and tools. Includes: operate equipment and software systems; discuss organisational practices; implement and test systems; identify risks/safety issues; effective information retrieval; apply best practices; communicate effectively orally and in writing."
+      },
+      {
+        "criteria": "Know-how & Skill",
+        "thread": "Know-how & Skill-Selectivity",
+        "descriptor": "Formulate responses to well-defined abstract problems. Includes: test systems; produce documentation of problem resolution; implement solutions to well-defined problems; make logically justified decisions; troubleshoot hardware/software problems."
+      },
+      {
+        "criteria": "Competence",
+        "thread": "Competence-Context",
+        "descriptor": "Act in varied and specific contexts involving creative and non-routine activities; transfer/apply theoretical concepts and/or technical/creative skills. Includes: work safely/ethically; apply best practices; awareness of ethical/legal practices; recognise common solutions and diagnostic techniques; awareness of new technologies."
+      },
+      {
+        "criteria": "Competence",
+        "thread": "Competence-Role",
+        "descriptor": "Exercise substantial personal autonomy; often take responsibility for others’ work and/or resource allocation; function within multiple complex and heterogeneous groups. Includes: apply knowledge in practical setting under supervision; interact effectively with others (incl. non-computing staff)."
+      },
+      {
+        "criteria": "Competence",
+        "thread": "Competence-Learning to Learn",
+        "descriptor": "Learn to evaluate own learning and identify needs within a structured learning environment; assist others in identifying learning needs. Includes: capacity to learn new knowledge/skills; appreciate CPD/lifelong learning; participate in group learning activities."
+      },
+      {
+        "criteria": "Competence",
+        "thread": "Competence-Insight",
+        "descriptor": "Express an internalised, personal world view, reflecting engagement with others. Includes: recognise group dynamics and respond appropriately; accept constructive criticism and use feedback constructively."
+      }
+    ],
+    "7": [
+      {
+        "criteria": "Knowledge",
+        "thread": "Knowledge-Breadth",
+        "descriptor": "Specialised knowledge across a variety of areas; knowledge and understanding of intermediate and some advanced concepts in: Computer Systems; Software Engineering; Information Systems; Mathematical Foundations and Techniques; Computing Techniques; Computer Networks; Social and Professional Issues."
+      },
+      {
+        "criteria": "Knowledge",
+        "thread": "Knowledge-Kind",
+        "descriptor": "Recognition of limitations of current knowledge and familiarity with sources of new knowledge; integration of concepts across a variety of areas. Learner can explain concepts and theories of core and some optional topics; integrate concepts across subject areas; recognise limitations of their expertise."
+      },
+      {
+        "criteria": "Know-how & Skill",
+        "thread": "Know-how & Skill-Range",
+        "descriptor": "Demonstrate specialised technical, creative or conceptual skills and tools. Includes: modelling techniques (entity-relationship, class, use-case); proficiency in at least one programming language; numeracy; design/implement/deploy systems; apply HCI principles; information management/retrieval; present reasoned arguments; create technical documentation."
+      },
+      {
+        "criteria": "Know-how & Skill",
+        "thread": "Know-how & Skill-Selectivity",
+        "descriptor": "Exercise appropriate judgement in planning, design, technical and/or supervisory functions. Includes: test systems against criteria; create documentation; design/implement systems; identify/solve system problems; justify selections; develop innovative solutions; analyse criteria/specifications and plan strategies; recognise moral and ethical issues in exploitation of computer technology."
+      },
+      {
+        "criteria": "Competence",
+        "thread": "Competence-Context",
+        "descriptor": "Utilise diagnostic and creative skills in a range of functions in a wide variety of contexts. Includes: recognise risks/safety aspects; recognise best practices in real-world contexts; recognise ethical/legal practices; recognise suitability of solutions and diagnostic techniques; describe impact of new technologies."
+      },
+      {
+        "criteria": "Competence",
+        "thread": "Competence-Role",
+        "descriptor": "Accept accountability for determining and achieving outcomes; take significant or supervisory responsibility for others’ work in defined areas. Includes: work effectively in interdisciplinary teams; interact across organisational levels; plan/organise work; monitor project work against a plan."
+      },
+      {
+        "criteria": "Competence",
+        "thread": "Competence-Learning to Learn",
+        "descriptor": "Take initiative to identify and address learning needs and interact effectively in a learning group. Includes: generate new ideas; apply knowledge learned in new situations; design and manage personal projects."
+      },
+      {
+        "criteria": "Competence",
+        "thread": "Competence-Insight",
+        "descriptor": "Express an internalised, personal world view, manifesting solidarity with others. Includes: describe wider social and business contexts within which computing professionals operate; describe benefits of diversity in teams."
+      }
+    ],
+    "8": [
+      {
+        "criteria": "Knowledge",
+        "thread": "Knowledge-Breadth",
+        "descriptor": "Understanding of the theory, concepts and methods pertaining to a field (or fields) of learning; knowledge and understanding of advanced concepts in: Computer Systems; Software Engineering; Information Systems; Mathematical Foundations and Techniques; Computing Techniques; Computer Networks; Social and Professional Issues."
+      },
+      {
+        "criteria": "Knowledge",
+        "thread": "Knowledge-Kind",
+        "descriptor": "Detailed knowledge and understanding in one or more specialised areas, some at current boundaries. Learner can explain specialist concepts including state-of-the-art technology; describe limitations of some current theories and knowledge; explain how academic and industrial research leads to new knowledge and technologies."
+      },
+      {
+        "criteria": "Know-how & Skill",
+        "thread": "Know-how & Skill-Range",
+        "descriptor": "Mastery of complex/specialised skills and tools; use/modify advanced skills/tools for closely guided research/professional/advanced technical activity. Includes: model/design complex systems with trade-offs; apply theory/practices/tools for lifecycle; apply quality concepts; analyse systems against criteria; conduct research under guidance; locate/evaluate information through online research."
+      },
+      {
+        "criteria": "Know-how & Skill",
+        "thread": "Know-how & Skill-Selectivity",
+        "descriptor": "Exercise judgement in complex planning, design, technical and/or management functions incl. resourcing. Includes: evaluate systems with quality attributes/trade-offs; specify/design/implement systems; manage projects across lifecycle; analyse criteria/specifications; select strategies to solve system problems; develop innovative solutions to real-life situations."
+      },
+      {
+        "criteria": "Competence",
+        "thread": "Competence-Context",
+        "descriptor": "Use advanced skills to conduct research/advanced technical or professional activity with accountability; transfer/apply diagnostic and creative skills. Includes: select/implement measures for risks/safety; apply best practice; adopt professional/ethical/legal practices; act effectively and choose responses; assess impact of new technologies."
+      },
+      {
+        "criteria": "Competence",
+        "thread": "Competence-Role",
+        "descriptor": "Act effectively under guidance in a peer relationship with qualified practitioners; lead multiple, complex and heterogeneous groups. Includes: work as autonomous individual; lead complex groups; work in development teams; interact across organisational levels; work internationally; design/manage small group projects; constructively criticise others’ work."
+      },
+      {
+        "criteria": "Competence",
+        "thread": "Competence-Learning to Learn",
+        "descriptor": "Learn to act in variable and unfamiliar learning contexts; manage learning tasks independently, professionally and ethically. Includes: select/apply research skills; evaluate strengths/weaknesses; identify limitations; constructively criticise own work; manage own learning/development (time/organisation); apply quality concepts to own products/processes."
+      },
+      {
+        "criteria": "Competence",
+        "thread": "Competence-Insight",
+        "descriptor": "Express a comprehensive, internalised, personal world view, manifesting solidarity with others. Includes: identify/address ethical issues; describe examples/benefits of diversity and multiculturalism; adapt interpersonal interactions based on knowledge of other cultures/customs."
+      }
+    ],
+    "9": [
+      {
+        "criteria": "Knowledge",
+        "thread": "Knowledge-Breadth",
+        "descriptor": "Systematic understanding of knowledge at, or informed by, the forefront of a field of learning; expert knowledge of one or more current, state-of-the-art specialist computing areas and knowledge of relevant research methodologies."
+      },
+      {
+        "criteria": "Knowledge",
+        "thread": "Knowledge-Kind",
+        "descriptor": "Critical awareness of current problems and/or new insights, generally informed by the forefront of a field. Learner can critically understand developments in specialist areas; discuss current challenges and research activities in at least one area; apply accepted methodologies for tackling research problems."
+      },
+      {
+        "criteria": "Know-how & Skill",
+        "thread": "Know-how & Skill-Range",
+        "descriptor": "Range of standard and specialised research or equivalent tools and techniques of enquiry. Includes: select/apply standard and customised research tools; critically evaluate design/implementation issues; communicate emerging theories/technologies; integrate advanced theoretical knowledge to solve complex problems; synthesise literature; demonstrate research capability; independently acquire/assess emerging technologies."
+      },
+      {
+        "criteria": "Know-how & Skill",
+        "thread": "Know-how & Skill-Selectivity",
+        "descriptor": "Select from complex and advanced skills across a field; develop new skills to a high level (novel/emerging). Includes: independently acquire/assess emerging knowledge; integrate technologies/principles to plan and develop projects; apply/develop research skills for challenging problems; formulate judgements and synthesise conclusions from systematic research; select/apply customised research tools/techniques."
+      },
+      {
+        "criteria": "Competence",
+        "thread": "Competence-Context",
+        "descriptor": "Act in a wide and often unpredictable variety of professional levels and ill-defined contexts. Includes: analyse/document risk/safety measures; evaluate/develop best practices; develop guidelines for professional/ethical/legal practices; design/implement solutions requiring preliminary research for novel situations; develop diagnostic models; identify projects/research opportunities; research and develop solutions; appreciate professional standards in computing."
+      },
+      {
+        "criteria": "Competence",
+        "thread": "Competence-Role",
+        "descriptor": "Take significant responsibility for the work of individuals and groups; lead and initiate activity. Includes: initiate/lead/manage projects of significant complexity involving multidisciplinary teams; work as member of IT strategic planning team; participate in peer collaboration and evaluation exercises."
+      },
+      {
+        "criteria": "Competence",
+        "thread": "Competence-Learning to Learn",
+        "descriptor": "Learn to self-evaluate and take responsibility for continuing academic/professional development. Includes: reflect on strengths/weaknesses and potential for future development; understand importance of continuing personal development and mechanisms/resources available to support learning."
+      },
+      {
+        "criteria": "Competence",
+        "thread": "Competence-Insight",
+        "descriptor": "Scrutinise and reflect on social norms and relationships and act to change them. Includes: critically comment on technical/social implications of own and others’ work; appreciate design issues considering environment of use; evaluate how computing technology affects society and reflect on future effect; maintain integrity and independence in professional judgement."
+      }
+    ]
+  },
+  "index": {
+    "Knowledge": {
+      "Knowledge-Breadth": {
+        "6": "Specialised knowledge of a broad area; knowledge and understanding of basic concepts in: Computer Systems; Software Engineering; Information Systems; Mathematical Foundations and Techniques; Computing Techniques; Computer Networks; Social and Professional Issues.",
+        "7": "Specialised knowledge across a variety of areas; knowledge and understanding of intermediate and some advanced concepts in: Computer Systems; Software Engineering; Information Systems; Mathematical Foundations and Techniques; Computing Techniques; Computer Networks; Social and Professional Issues.",
+        "8": "Understanding of the theory, concepts and methods pertaining to a field (or fields) of learning; knowledge and understanding of advanced concepts in: Computer Systems; Software Engineering; Information Systems; Mathematical Foundations and Techniques; Computing Techniques; Computer Networks; Social and Professional Issues.",
+        "9": "Systematic understanding of knowledge at, or informed by, the forefront of a field of learning; expert knowledge of one or more current, state-of-the-art specialist computing areas and knowledge of relevant research methodologies."
+      },
+      "Knowledge-Kind": {
+        "6": "Some theoretical concepts and abstract thinking, with significant underpinning theory. Learner can explain basic concepts and theories of the core computing area; describe roles and responsibilities of computing professionals; describe best practices in computing.",
+        "7": "Recognition of limitations of current knowledge and familiarity with sources of new knowledge; integration of concepts across a variety of areas. Learner can explain concepts and theories of core and some optional topics; integrate concepts across subject areas; recognise limitations of their expertise.",
+        "8": "Detailed knowledge and understanding in one or more specialised areas, some at current boundaries. Learner can explain specialist concepts including state-of-the-art technology; describe limitations of some current theories and knowledge; explain how academic and industrial research leads to new knowledge and technologies.",
+        "9": "Critical awareness of current problems and/or new insights, generally informed by the forefront of a field. Learner can critically understand developments in specialist areas; discuss current challenges and research activities in at least one area; apply accepted methodologies for tackling research problems."
+      }
+    },
+    "Know-how & Skill": {
+      "Know-how & Skill-Range": {
+        "6": "Demonstrate comprehensive range of specialised skills and tools. Includes: operate equipment and software systems; discuss organisational practices; implement and test systems; identify risks/safety issues; effective information retrieval; apply best practices; communicate effectively orally and in writing.",
+        "7": "Demonstrate specialised technical, creative or conceptual skills and tools. Includes: modelling techniques (entity-relationship, class, use-case); proficiency in at least one programming language; numeracy; design/implement/deploy systems; apply HCI principles; information management/retrieval; present reasoned arguments; create technical documentation.",
+        "8": "Mastery of complex/specialised skills and tools; use/modify advanced skills/tools for closely guided research/professional/advanced technical activity. Includes: model/design complex systems with trade-offs; apply theory/practices/tools for lifecycle; apply quality concepts; analyse systems against criteria; conduct research under guidance; locate/evaluate information through online research.",
+        "9": "Range of standard and specialised research or equivalent tools and techniques of enquiry. Includes: select/apply standard and customised research tools; critically evaluate design/implementation issues; communicate emerging theories/technologies; integrate advanced theoretical knowledge to solve complex problems; synthesise literature; demonstrate research capability; independently acquire/assess emerging technologies."
+      },
+      "Know-how & Skill-Selectivity": {
+        "6": "Formulate responses to well-defined abstract problems. Includes: test systems; produce documentation of problem resolution; implement solutions to well-defined problems; make logically justified decisions; troubleshoot hardware/software problems.",
+        "7": "Exercise appropriate judgement in planning, design, technical and/or supervisory functions. Includes: test systems against criteria; create documentation; design/implement systems; identify/solve system problems; justify selections; develop innovative solutions; analyse criteria/specifications and plan strategies; recognise moral and ethical issues in exploitation of computer technology.",
+        "8": "Exercise judgement in complex planning, design, technical and/or management functions incl. resourcing. Includes: evaluate systems with quality attributes/trade-offs; specify/design/implement systems; manage projects across lifecycle; analyse criteria/specifications; select strategies to solve system problems; develop innovative solutions to real-life situations.",
+        "9": "Select from complex and advanced skills across a field; develop new skills to a high level (novel/emerging). Includes: independently acquire/assess emerging knowledge; integrate technologies/principles to plan and develop projects; apply/develop research skills for challenging problems; formulate judgements and synthesise conclusions from systematic research; select/apply customised research tools/techniques."
+      }
+    },
+    "Competence": {
+      "Competence-Context": {
+        "6": "Act in varied and specific contexts involving creative and non-routine activities; transfer/apply theoretical concepts and/or technical/creative skills. Includes: work safely/ethically; apply best practices; awareness of ethical/legal practices; recognise common solutions and diagnostic techniques; awareness of new technologies.",
+        "7": "Utilise diagnostic and creative skills in a range of functions in a wide variety of contexts. Includes: recognise risks/safety aspects; recognise best practices in real-world contexts; recognise ethical/legal practices; recognise suitability of solutions and diagnostic techniques; describe impact of new technologies.",
+        "8": "Use advanced skills to conduct research/advanced technical or professional activity with accountability; transfer/apply diagnostic and creative skills. Includes: select/implement measures for risks/safety; apply best practice; adopt professional/ethical/legal practices; act effectively and choose responses; assess impact of new technologies.",
+        "9": "Act in a wide and often unpredictable variety of professional levels and ill-defined contexts. Includes: analyse/document risk/safety measures; evaluate/develop best practices; develop guidelines for professional/ethical/legal practices; design/implement solutions requiring preliminary research for novel situations; develop diagnostic models; identify projects/research opportunities; research and develop solutions; appreciate professional standards in computing."
+      },
+      "Competence-Role": {
+        "6": "Exercise substantial personal autonomy; often take responsibility for others’ work and/or resource allocation; function within multiple complex and heterogeneous groups. Includes: apply knowledge in practical setting under supervision; interact effectively with others (incl. non-computing staff).",
+        "7": "Accept accountability for determining and achieving outcomes; take significant or supervisory responsibility for others’ work in defined areas. Includes: work effectively in interdisciplinary teams; interact across organisational levels; plan/organise work; monitor project work against a plan.",
+        "8": "Act effectively under guidance in a peer relationship with qualified practitioners; lead multiple, complex and heterogeneous groups. Includes: work as autonomous individual; lead complex groups; work in development teams; interact across organisational levels; work internationally; design/manage small group projects; constructively criticise others’ work.",
+        "9": "Take significant responsibility for the work of individuals and groups; lead and initiate activity. Includes: initiate/lead/manage projects of significant complexity involving multidisciplinary teams; work as member of IT strategic planning team; participate in peer collaboration and evaluation exercises."
+      },
+      "Competence-Learning to Learn": {
+        "6": "Learn to evaluate own learning and identify needs within a structured learning environment; assist others in identifying learning needs. Includes: capacity to learn new knowledge/skills; appreciate CPD/lifelong learning; participate in group learning activities.",
+        "7": "Take initiative to identify and address learning needs and interact effectively in a learning group. Includes: generate new ideas; apply knowledge learned in new situations; design and manage personal projects.",
+        "8": "Learn to act in variable and unfamiliar learning contexts; manage learning tasks independently, professionally and ethically. Includes: select/apply research skills; evaluate strengths/weaknesses; identify limitations; constructively criticise own work; manage own learning/development (time/organisation); apply quality concepts to own products/processes.",
+        "9": "Learn to self-evaluate and take responsibility for continuing academic/professional development. Includes: reflect on strengths/weaknesses and potential for future development; understand importance of continuing personal development and mechanisms/resources available to support learning."
+      },
+      "Competence-Insight": {
+        "6": "Express an internalised, personal world view, reflecting engagement with others. Includes: recognise group dynamics and respond appropriately; accept constructive criticism and use feedback constructively.",
+        "7": "Express an internalised, personal world view, manifesting solidarity with others. Includes: describe wider social and business contexts within which computing professionals operate; describe benefits of diversity in teams.",
+        "8": "Express a comprehensive, internalised, personal world view, manifesting solidarity with others. Includes: identify/address ethical issues; describe examples/benefits of diversity and multiculturalism; adapt interpersonal interactions based on knowledge of other cultures/customs.",
+        "9": "Scrutinise and reflect on social norms and relationships and act to change them. Includes: critically comment on technical/social implications of own and others’ work; appreciate design issues considering environment of use; evaluate how computing technology affects society and reflect on future effect; maintain integrity and independence in professional judgement."
+      }
+    }
+  },
+  "rows": [
+    {
+      "criteria": "Knowledge",
+      "thread": "Knowledge-Breadth",
+      "level": 6,
+      "descriptor": "Specialised knowledge of a broad area; knowledge and understanding of basic concepts in: Computer Systems; Software Engineering; Information Systems; Mathematical Foundations and Techniques; Computing Techniques; Computer Networks; Social and Professional Issues."
+    },
+    {
+      "criteria": "Knowledge",
+      "thread": "Knowledge-Breadth",
+      "level": 7,
+      "descriptor": "Specialised knowledge across a variety of areas; knowledge and understanding of intermediate and some advanced concepts in: Computer Systems; Software Engineering; Information Systems; Mathematical Foundations and Techniques; Computing Techniques; Computer Networks; Social and Professional Issues."
+    },
+    {
+      "criteria": "Knowledge",
+      "thread": "Knowledge-Breadth",
+      "level": 8,
+      "descriptor": "Understanding of the theory, concepts and methods pertaining to a field (or fields) of learning; knowledge and understanding of advanced concepts in: Computer Systems; Software Engineering; Information Systems; Mathematical Foundations and Techniques; Computing Techniques; Computer Networks; Social and Professional Issues."
+    },
+    {
+      "criteria": "Knowledge",
+      "thread": "Knowledge-Breadth",
+      "level": 9,
+      "descriptor": "Systematic understanding of knowledge at, or informed by, the forefront of a field of learning; expert knowledge of one or more current, state-of-the-art specialist computing areas and knowledge of relevant research methodologies."
+    },
+    {
+      "criteria": "Knowledge",
+      "thread": "Knowledge-Kind",
+      "level": 6,
+      "descriptor": "Some theoretical concepts and abstract thinking, with significant underpinning theory. Learner can explain basic concepts and theories of the core computing area; describe roles and responsibilities of computing professionals; describe best practices in computing."
+    },
+    {
+      "criteria": "Knowledge",
+      "thread": "Knowledge-Kind",
+      "level": 7,
+      "descriptor": "Recognition of limitations of current knowledge and familiarity with sources of new knowledge; integration of concepts across a variety of areas. Learner can explain concepts and theories of core and some optional topics; integrate concepts across subject areas; recognise limitations of their expertise."
+    },
+    {
+      "criteria": "Knowledge",
+      "thread": "Knowledge-Kind",
+      "level": 8,
+      "descriptor": "Detailed knowledge and understanding in one or more specialised areas, some at current boundaries. Learner can explain specialist concepts including state-of-the-art technology; describe limitations of some current theories and knowledge; explain how academic and industrial research leads to new knowledge and technologies."
+    },
+    {
+      "criteria": "Knowledge",
+      "thread": "Knowledge-Kind",
+      "level": 9,
+      "descriptor": "Critical awareness of current problems and/or new insights, generally informed by the forefront of a field. Learner can critically understand developments in specialist areas; discuss current challenges and research activities in at least one area; apply accepted methodologies for tackling research problems."
+    },
+    {
+      "criteria": "Know-how & Skill",
+      "thread": "Know-how & Skill-Range",
+      "level": 6,
+      "descriptor": "Demonstrate comprehensive range of specialised skills and tools. Includes: operate equipment and software systems; discuss organisational practices; implement and test systems; identify risks/safety issues; effective information retrieval; apply best practices; communicate effectively orally and in writing."
+    },
+    {
+      "criteria": "Know-how & Skill",
+      "thread": "Know-how & Skill-Range",
+      "level": 7,
+      "descriptor": "Demonstrate specialised technical, creative or conceptual skills and tools. Includes: modelling techniques (entity-relationship, class, use-case); proficiency in at least one programming language; numeracy; design/implement/deploy systems; apply HCI principles; information management/retrieval; present reasoned arguments; create technical documentation."
+    },
+    {
+      "criteria": "Know-how & Skill",
+      "thread": "Know-how & Skill-Range",
+      "level": 8,
+      "descriptor": "Mastery of complex/specialised skills and tools; use/modify advanced skills/tools for closely guided research/professional/advanced technical activity. Includes: model/design complex systems with trade-offs; apply theory/practices/tools for lifecycle; apply quality concepts; analyse systems against criteria; conduct research under guidance; locate/evaluate information through online research."
+    },
+    {
+      "criteria": "Know-how & Skill",
+      "thread": "Know-how & Skill-Range",
+      "level": 9,
+      "descriptor": "Range of standard and specialised research or equivalent tools and techniques of enquiry. Includes: select/apply standard and customised research tools; critically evaluate design/implementation issues; communicate emerging theories/technologies; integrate advanced theoretical knowledge to solve complex problems; synthesise literature; demonstrate research capability; independently acquire/assess emerging technologies."
+    },
+    {
+      "criteria": "Know-how & Skill",
+      "thread": "Know-how & Skill-Selectivity",
+      "level": 6,
+      "descriptor": "Formulate responses to well-defined abstract problems. Includes: test systems; produce documentation of problem resolution; implement solutions to well-defined problems; make logically justified decisions; troubleshoot hardware/software problems."
+    },
+    {
+      "criteria": "Know-how & Skill",
+      "thread": "Know-how & Skill-Selectivity",
+      "level": 7,
+      "descriptor": "Exercise appropriate judgement in planning, design, technical and/or supervisory functions. Includes: test systems against criteria; create documentation; design/implement systems; identify/solve system problems; justify selections; develop innovative solutions; analyse criteria/specifications and plan strategies; recognise moral and ethical issues in exploitation of computer technology."
+    },
+    {
+      "criteria": "Know-how & Skill",
+      "thread": "Know-how & Skill-Selectivity",
+      "level": 8,
+      "descriptor": "Exercise judgement in complex planning, design, technical and/or management functions incl. resourcing. Includes: evaluate systems with quality attributes/trade-offs; specify/design/implement systems; manage projects across lifecycle; analyse criteria/specifications; select strategies to solve system problems; develop innovative solutions to real-life situations."
+    },
+    {
+      "criteria": "Know-how & Skill",
+      "thread": "Know-how & Skill-Selectivity",
+      "level": 9,
+      "descriptor": "Select from complex and advanced skills across a field; develop new skills to a high level (novel/emerging). Includes: independently acquire/assess emerging knowledge; integrate technologies/principles to plan and develop projects; apply/develop research skills for challenging problems; formulate judgements and synthesise conclusions from systematic research; select/apply customised research tools/techniques."
+    },
+    {
+      "criteria": "Competence",
+      "thread": "Competence-Context",
+      "level": 6,
+      "descriptor": "Act in varied and specific contexts involving creative and non-routine activities; transfer/apply theoretical concepts and/or technical/creative skills. Includes: work safely/ethically; apply best practices; awareness of ethical/legal practices; recognise common solutions and diagnostic techniques; awareness of new technologies."
+    },
+    {
+      "criteria": "Competence",
+      "thread": "Competence-Context",
+      "level": 7,
+      "descriptor": "Utilise diagnostic and creative skills in a range of functions in a wide variety of contexts. Includes: recognise risks/safety aspects; recognise best practices in real-world contexts; recognise ethical/legal practices; recognise suitability of solutions and diagnostic techniques; describe impact of new technologies."
+    },
+    {
+      "criteria": "Competence",
+      "thread": "Competence-Context",
+      "level": 8,
+      "descriptor": "Use advanced skills to conduct research/advanced technical or professional activity with accountability; transfer/apply diagnostic and creative skills. Includes: select/implement measures for risks/safety; apply best practice; adopt professional/ethical/legal practices; act effectively and choose responses; assess impact of new technologies."
+    },
+    {
+      "criteria": "Competence",
+      "thread": "Competence-Context",
+      "level": 9,
+      "descriptor": "Act in a wide and often unpredictable variety of professional levels and ill-defined contexts. Includes: analyse/document risk/safety measures; evaluate/develop best practices; develop guidelines for professional/ethical/legal practices; design/implement solutions requiring preliminary research for novel situations; develop diagnostic models; identify projects/research opportunities; research and develop solutions; appreciate professional standards in computing."
+    },
+    {
+      "criteria": "Competence",
+      "thread": "Competence-Role",
+      "level": 6,
+      "descriptor": "Exercise substantial personal autonomy; often take responsibility for others’ work and/or resource allocation; function within multiple complex and heterogeneous groups. Includes: apply knowledge in practical setting under supervision; interact effectively with others (incl. non-computing staff)."
+    },
+    {
+      "criteria": "Competence",
+      "thread": "Competence-Role",
+      "level": 7,
+      "descriptor": "Accept accountability for determining and achieving outcomes; take significant or supervisory responsibility for others’ work in defined areas. Includes: work effectively in interdisciplinary teams; interact across organisational levels; plan/organise work; monitor project work against a plan."
+    },
+    {
+      "criteria": "Competence",
+      "thread": "Competence-Role",
+      "level": 8,
+      "descriptor": "Act effectively under guidance in a peer relationship with qualified practitioners; lead multiple, complex and heterogeneous groups. Includes: work as autonomous individual; lead complex groups; work in development teams; interact across organisational levels; work internationally; design/manage small group projects; constructively criticise others’ work."
+    },
+    {
+      "criteria": "Competence",
+      "thread": "Competence-Role",
+      "level": 9,
+      "descriptor": "Take significant responsibility for the work of individuals and groups; lead and initiate activity. Includes: initiate/lead/manage projects of significant complexity involving multidisciplinary teams; work as member of IT strategic planning team; participate in peer collaboration and evaluation exercises."
+    },
+    {
+      "criteria": "Competence",
+      "thread": "Competence-Learning to Learn",
+      "level": 6,
+      "descriptor": "Learn to evaluate own learning and identify needs within a structured learning environment; assist others in identifying learning needs. Includes: capacity to learn new knowledge/skills; appreciate CPD/lifelong learning; participate in group learning activities."
+    },
+    {
+      "criteria": "Competence",
+      "thread": "Competence-Learning to Learn",
+      "level": 7,
+      "descriptor": "Take initiative to identify and address learning needs and interact effectively in a learning group. Includes: generate new ideas; apply knowledge learned in new situations; design and manage personal projects."
+    },
+    {
+      "criteria": "Competence",
+      "thread": "Competence-Learning to Learn",
+      "level": 8,
+      "descriptor": "Learn to act in variable and unfamiliar learning contexts; manage learning tasks independently, professionally and ethically. Includes: select/apply research skills; evaluate strengths/weaknesses; identify limitations; constructively criticise own work; manage own learning/development (time/organisation); apply quality concepts to own products/processes."
+    },
+    {
+      "criteria": "Competence",
+      "thread": "Competence-Learning to Learn",
+      "level": 9,
+      "descriptor": "Learn to self-evaluate and take responsibility for continuing academic/professional development. Includes: reflect on strengths/weaknesses and potential for future development; understand importance of continuing personal development and mechanisms/resources available to support learning."
+    },
+    {
+      "criteria": "Competence",
+      "thread": "Competence-Insight",
+      "level": 6,
+      "descriptor": "Express an internalised, personal world view, reflecting engagement with others. Includes: recognise group dynamics and respond appropriately; accept constructive criticism and use feedback constructively."
+    },
+    {
+      "criteria": "Competence",
+      "thread": "Competence-Insight",
+      "level": 7,
+      "descriptor": "Express an internalised, personal world view, manifesting solidarity with others. Includes: describe wider social and business contexts within which computing professionals operate; describe benefits of diversity in teams."
+    },
+    {
+      "criteria": "Competence",
+      "thread": "Competence-Insight",
+      "level": 8,
+      "descriptor": "Express a comprehensive, internalised, personal world view, manifesting solidarity with others. Includes: identify/address ethical issues; describe examples/benefits of diversity and multiculturalism; adapt interpersonal interactions based on knowledge of other cultures/customs."
+    },
+    {
+      "criteria": "Competence",
+      "thread": "Competence-Insight",
+      "level": 9,
+      "descriptor": "Scrutinise and reflect on social norms and relationships and act to change them. Includes: critically comment on technical/social implications of own and others’ work; appreciate design issues considering environment of use; evaluate how computing technology affects society and reflect on future effect; maintain integrity and independence in professional judgement."
+    }
+  ]
+}

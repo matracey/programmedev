@@ -1,0 +1,477 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nci.ie/schemas/programme.schema.json",
+  "title": "NCI Programme Design Schema",
+  "description": "Schema for NCI Programme Design Studio programme data (schemaVersion 2)",
+  "type": "object",
+  "required": ["schemaVersion", "id", "title", "modules", "plos", "versions"],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 2,
+      "description": "Schema version number"
+    },
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for the programme"
+    },
+    "title": {
+      "type": "string",
+      "description": "Programme title"
+    },
+    "awardType": {
+      "type": "string",
+      "description": "Type of award (e.g., Higher Diploma, Honours Bachelor Degree)",
+      "examples": ["Higher Certificate", "Ordinary Bachelor Degree", "Honours Bachelor Degree", "Higher Diploma", "Postgraduate Diploma", "Masters", "Micro-credential"]
+    },
+    "awardTypeIsOther": {
+      "type": "boolean",
+      "default": false,
+      "description": "True if the award type is a custom value not in the standard list"
+    },
+    "nfqLevel": {
+      "type": "integer",
+      "minimum": 6,
+      "maximum": 10,
+      "description": "National Framework of Qualifications level (6-10)"
+    },
+    "school": {
+      "type": "string",
+      "description": "School or discipline (e.g., Computing, Business)",
+      "examples": ["Computing", "Business", "Psychology", "Education"]
+    },
+    "awardStandardId": {
+      "type": "string",
+      "description": "Identifier for the QQI award standard"
+    },
+    "awardStandardName": {
+      "type": "string",
+      "description": "Display name for the QQI award standard"
+    },
+    "totalCredits": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Total ECTS credits for the programme"
+    },
+    "mode": {
+      "type": "string",
+      "enum": ["PROGRAMME_OWNER", "MODULE_EDITOR"],
+      "description": "Current editing mode"
+    },
+    "moduleEditor": {
+      "type": "object",
+      "description": "Module editor configuration (only present in MODULE_EDITOR mode)",
+      "properties": {
+        "assignedModuleIds": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "List of module IDs assigned to this editor"
+        },
+        "locks": {
+          "type": "object",
+          "properties": {
+            "programme": { "type": "boolean" },
+            "modulesMeta": { "type": "boolean" },
+            "versions": { "type": "boolean" },
+            "plos": { "type": "boolean" }
+          }
+        }
+      }
+    },
+    "modules": {
+      "type": "array",
+      "description": "List of modules in the programme",
+      "items": { "$ref": "#/$defs/module" }
+    },
+    "plos": {
+      "type": "array",
+      "description": "Programme Learning Outcomes",
+      "items": { "$ref": "#/$defs/plo" }
+    },
+    "ploToModules": {
+      "type": "object",
+      "description": "Mapping of PLO IDs to arrays of module IDs",
+      "additionalProperties": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    },
+    "versions": {
+      "type": "array",
+      "description": "Programme versions (e.g., Full-time, Part-time, Online)",
+      "items": { "$ref": "#/$defs/version" }
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of last update"
+    }
+  },
+  "$defs": {
+    "module": {
+      "type": "object",
+      "required": ["id", "title", "credits"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique module identifier"
+        },
+        "code": {
+          "type": "string",
+          "description": "Module code (e.g., CMP6001)"
+        },
+        "title": {
+          "type": "string",
+          "description": "Module title"
+        },
+        "credits": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "ECTS credits for this module"
+        },
+        "effortHours": {
+          "type": "object",
+          "description": "Effort hours breakdown by delivery modality",
+          "additionalProperties": { "$ref": "#/$defs/effortHoursModality" }
+        },
+        "mimlos": {
+          "type": "array",
+          "description": "Minimum Intended Module Learning Outcomes",
+          "items": { "$ref": "#/$defs/mimlo" }
+        },
+        "assessments": {
+          "type": "array",
+          "description": "Assessments for this module",
+          "items": { "$ref": "#/$defs/assessment" }
+        }
+      }
+    },
+    "effortHoursModality": {
+      "type": "object",
+      "description": "Effort hours breakdown for a specific delivery modality",
+      "properties": {
+        "classroomHours": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Hours of classroom and demonstration activities"
+        },
+        "classroomRatio": {
+          "type": "string",
+          "description": "Minimum teacher/learner ratio for classroom (e.g., 1:60)",
+          "examples": ["1:60", "1:30", "1:25"]
+        },
+        "mentoringHours": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Hours of mentoring and small-group tutoring"
+        },
+        "mentoringRatio": {
+          "type": "string",
+          "description": "Minimum teacher/learner ratio for mentoring (e.g., 1:25)",
+          "examples": ["1:25", "1:15", "1:10"]
+        },
+        "otherContactHours": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Hours of other contact activities"
+        },
+        "otherContactRatio": {
+          "type": "string",
+          "description": "Teacher/learner ratio for other contact"
+        },
+        "otherContactSpecify": {
+          "type": "string",
+          "description": "Description of other contact activity type"
+        },
+        "directedElearningHours": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Hours of directed e-learning"
+        },
+        "independentLearningHours": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Hours of independent learning"
+        },
+        "otherHours": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Other effort hours"
+        },
+        "otherHoursSpecify": {
+          "type": "string",
+          "description": "Description of other hours type"
+        },
+        "workBasedHours": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Hours of work-based learning"
+        }
+      }
+    },
+    "mimlo": {
+      "type": "object",
+      "required": ["id", "text"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique MIMLO identifier"
+        },
+        "text": {
+          "type": "string",
+          "description": "MIMLO statement text"
+        }
+      }
+    },
+    "assessment": {
+      "type": "object",
+      "required": ["id", "title", "type", "weighting"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique assessment identifier"
+        },
+        "title": {
+          "type": "string",
+          "description": "Assessment title"
+        },
+        "type": {
+          "type": "string",
+          "description": "Assessment type",
+          "examples": ["Report/Essay", "Project", "Presentation", "Portfolio", "Practical/Lab", "Exam (On campus)", "Exam (Online)", "Reflective Journal", "Other"]
+        },
+        "weighting": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Assessment weighting percentage"
+        },
+        "mode": {
+          "type": "string",
+          "enum": ["Online", "OnCampus", "Hybrid"],
+          "description": "Assessment delivery mode"
+        },
+        "integrity": {
+          "$ref": "#/$defs/integrityControls"
+        },
+        "mimloIds": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "IDs of MIMLOs assessed by this assessment"
+        },
+        "notes": {
+          "type": "string",
+          "description": "Additional notes about the assessment"
+        }
+      }
+    },
+    "integrityControls": {
+      "type": "object",
+      "description": "Academic integrity control settings",
+      "properties": {
+        "proctored": {
+          "type": "boolean",
+          "description": "Whether the assessment is proctored"
+        },
+        "viva": {
+          "type": "boolean",
+          "description": "Whether a viva/oral component is included"
+        },
+        "inClass": {
+          "type": "boolean",
+          "description": "Whether there is an in-class component"
+        },
+        "originalityCheck": {
+          "type": "boolean",
+          "description": "Whether originality checking is used"
+        },
+        "aiDeclaration": {
+          "type": "boolean",
+          "description": "Whether an AI use declaration is required"
+        }
+      }
+    },
+    "plo": {
+      "type": "object",
+      "required": ["id", "text"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique PLO identifier"
+        },
+        "text": {
+          "type": "string",
+          "description": "PLO statement text"
+        },
+        "standardMappings": {
+          "type": "array",
+          "description": "Mappings to QQI award standards",
+          "items": { "$ref": "#/$defs/standardMapping" }
+        }
+      }
+    },
+    "standardMapping": {
+      "type": "object",
+      "required": ["criteria", "thread"],
+      "properties": {
+        "criteria": {
+          "type": "string",
+          "description": "QQI criteria category",
+          "examples": ["Knowledge", "Know-how & Skill", "Competence"]
+        },
+        "thread": {
+          "type": "string",
+          "description": "QQI thread within the criteria"
+        }
+      }
+    },
+    "version": {
+      "type": "object",
+      "required": ["id", "label"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique version identifier"
+        },
+        "label": {
+          "type": "string",
+          "description": "Version label (e.g., Full-time, Part-time)"
+        },
+        "code": {
+          "type": "string",
+          "description": "Short code for the version (e.g., FT, PT)"
+        },
+        "duration": {
+          "type": "string",
+          "description": "Programme duration for this version"
+        },
+        "intakes": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Intake periods (e.g., September, January)"
+        },
+        "targetCohortSize": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Target number of students per cohort"
+        },
+        "numberOfGroups": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of student groups"
+        },
+        "deliveryModality": {
+          "type": "string",
+          "enum": ["F2F", "BLENDED", "ONLINE"],
+          "description": "Single delivery modality for this version (Face-to-face, Blended, or Fully online)"
+        },
+        "deliveryPatterns": {
+          "type": "object",
+          "description": "Delivery patterns per modality",
+          "additionalProperties": { "$ref": "#/$defs/deliveryPattern" }
+        },
+        "deliveryNotes": {
+          "type": "string",
+          "description": "Notes about delivery approach"
+        },
+        "onlineProctoredExams": {
+          "type": "string",
+          "enum": ["YES", "NO", "TBC"],
+          "description": "Whether online proctored exams are used"
+        },
+        "onlineProctoredExamsNotes": {
+          "type": "string",
+          "description": "Notes about online proctoring"
+        },
+        "stages": {
+          "type": "array",
+          "description": "Stages within this version",
+          "items": { "$ref": "#/$defs/stage" }
+        }
+      }
+    },
+    "deliveryPattern": {
+      "type": "object",
+      "description": "Delivery pattern percentages (must total 100)",
+      "properties": {
+        "syncOnlinePct": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Percentage of synchronous online delivery"
+        },
+        "asyncDirectedPct": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Percentage of asynchronous directed learning"
+        },
+        "onCampusPct": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Percentage of on-campus delivery"
+        }
+      }
+    },
+    "stage": {
+      "type": "object",
+      "required": ["id", "name", "sequence"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique stage identifier"
+        },
+        "name": {
+          "type": "string",
+          "description": "Stage name (e.g., Stage 1, Year 1)"
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Order of the stage in the programme"
+        },
+        "creditsTarget": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Target credits for this stage"
+        },
+        "exitAward": {
+          "$ref": "#/$defs/exitAward"
+        },
+        "modules": {
+          "type": "array",
+          "description": "Modules assigned to this stage",
+          "items": { "$ref": "#/$defs/stageModule" }
+        }
+      }
+    },
+    "exitAward": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Whether an exit award is available at this stage"
+        },
+        "awardTitle": {
+          "type": "string",
+          "description": "Title of the exit award"
+        }
+      }
+    },
+    "stageModule": {
+      "type": "object",
+      "required": ["moduleId"],
+      "properties": {
+        "moduleId": {
+          "type": "string",
+          "description": "Reference to module ID"
+        },
+        "semester": {
+          "type": "string",
+          "description": "Semester or timing tag (e.g., Autumn, Spring, S1)"
+        }
+      }
+    }
+  }
+}

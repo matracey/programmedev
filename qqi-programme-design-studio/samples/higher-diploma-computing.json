@@ -1,0 +1,758 @@
+{
+  "schemaVersion": 2,
+  "id": "hdip-computing-2026",
+  "title": "Higher Diploma in Science in Computing",
+  "awardType": "Higher Diploma",
+  "awardTypeIsOther": false,
+  "nfqLevel": 8,
+  "school": "Computing",
+  "awardStandardId": "computing-level8",
+  "awardStandardName": "Computing (Level 8)",
+  "totalCredits": 60,
+  "mode": "PROGRAMME_OWNER",
+  "updatedAt": "2026-01-15T10:00:00.000Z",
+  "modules": [
+    {
+      "id": "mod_sd",
+      "code": "CMP8001",
+      "title": "Software Development",
+      "credits": 10,
+      "effortHours": {
+        "ver_ft_F2F": {
+          "classroomHours": 48,
+          "classroomRatio": "1:60",
+          "mentoringHours": 12,
+          "mentoringRatio": "1:25",
+          "otherContactHours": 0,
+          "directedElearningHours": 40,
+          "independentLearningHours": 140,
+          "workBasedHours": 0,
+          "otherHours": 10,
+          "otherHoursSpecify": "Lab setup"
+        },
+        "ver_pt_blended_BLENDED": {
+          "classroomHours": 24,
+          "classroomRatio": "1:40",
+          "mentoringHours": 12,
+          "mentoringRatio": "1:20",
+          "otherContactHours": 0,
+          "directedElearningHours": 80,
+          "independentLearningHours": 124,
+          "workBasedHours": 0,
+          "otherHours": 10,
+          "otherHoursSpecify": "Lab setup"
+        },
+        "ver_pt_online_ONLINE": {
+          "classroomHours": 0,
+          "classroomRatio": "",
+          "mentoringHours": 24,
+          "mentoringRatio": "1:20",
+          "otherContactHours": 12,
+          "otherContactRatio": "1:30",
+          "otherContactSpecify": "Live coding sessions",
+          "directedElearningHours": 100,
+          "independentLearningHours": 114,
+          "workBasedHours": 0,
+          "otherHours": 0
+        }
+      },
+      "mimlos": [
+        { "id": "mimlo_sd_1", "text": "Design and implement object-oriented software solutions using industry-standard programming languages" },
+        { "id": "mimlo_sd_2", "text": "Apply software development methodologies to manage the software development lifecycle" },
+        { "id": "mimlo_sd_3", "text": "Evaluate and select appropriate data structures and algorithms for specific problem domains" },
+        { "id": "mimlo_sd_4", "text": "Demonstrate proficiency in version control and collaborative development practices" }
+      ],
+      "assessments": [
+        {
+          "id": "asm_sd_1",
+          "title": "Programming Project",
+          "type": "Project",
+          "weighting": 50,
+          "mode": "Hybrid",
+          "integrity": { "originalityCheck": true, "aiDeclaration": true, "viva": true },
+          "mimloIds": ["mimlo_sd_1", "mimlo_sd_2", "mimlo_sd_4"],
+          "notes": "Individual software development project with viva presentation"
+        },
+        {
+          "id": "asm_sd_2",
+          "title": "Technical Report",
+          "type": "Report/Essay",
+          "weighting": 20,
+          "mode": "Online",
+          "integrity": { "originalityCheck": true, "aiDeclaration": true },
+          "mimloIds": ["mimlo_sd_2", "mimlo_sd_3"],
+          "notes": "Analysis of software development approaches"
+        },
+        {
+          "id": "asm_sd_3",
+          "title": "Practical Lab Exercises",
+          "type": "Practical/Lab",
+          "weighting": 30,
+          "mode": "Hybrid",
+          "integrity": { "inClass": true },
+          "mimloIds": ["mimlo_sd_1", "mimlo_sd_3", "mimlo_sd_4"],
+          "notes": "Weekly lab submissions"
+        }
+      ],
+      "readingList": [
+        {
+          "type": "Core",
+          "title": "Clean Code: A Handbook of Agile Software Craftsmanship",
+          "author": "Robert C. Martin",
+          "publisher": "Pearson",
+          "year": "2023",
+          "isbn": "978-0132350884"
+        }
+      ]
+    },
+    {
+      "id": "mod_oop",
+      "code": "CMP8002",
+      "title": "Object Oriented Software Engineering",
+      "credits": 10,
+      "effortHours": {
+        "ver_ft_F2F": {
+          "classroomHours": 48,
+          "classroomRatio": "1:60",
+          "mentoringHours": 12,
+          "mentoringRatio": "1:25",
+          "directedElearningHours": 40,
+          "independentLearningHours": 150,
+          "workBasedHours": 0,
+          "otherHours": 0
+        },
+        "ver_pt_blended_BLENDED": {
+          "classroomHours": 24,
+          "classroomRatio": "1:40",
+          "mentoringHours": 12,
+          "mentoringRatio": "1:20",
+          "directedElearningHours": 80,
+          "independentLearningHours": 134,
+          "workBasedHours": 0,
+          "otherHours": 0
+        },
+        "ver_pt_online_ONLINE": {
+          "classroomHours": 0,
+          "mentoringHours": 24,
+          "mentoringRatio": "1:20",
+          "otherContactHours": 12,
+          "otherContactRatio": "1:30",
+          "otherContactSpecify": "Design workshops",
+          "directedElearningHours": 100,
+          "independentLearningHours": 114,
+          "workBasedHours": 0
+        }
+      },
+      "mimlos": [
+        { "id": "mimlo_oop_1", "text": "Apply object-oriented design principles and patterns to software architecture" },
+        { "id": "mimlo_oop_2", "text": "Analyse requirements and create UML models for complex software systems" },
+        { "id": "mimlo_oop_3", "text": "Implement and test software using test-driven development practices" },
+        { "id": "mimlo_oop_4", "text": "Evaluate software quality using appropriate metrics and refactoring techniques" }
+      ],
+      "assessments": [
+        {
+          "id": "asm_oop_1",
+          "title": "Design Project",
+          "type": "Project",
+          "weighting": 60,
+          "mode": "Hybrid",
+          "integrity": { "originalityCheck": true, "aiDeclaration": true, "viva": true },
+          "mimloIds": ["mimlo_oop_1", "mimlo_oop_2", "mimlo_oop_3"],
+          "notes": "Group project with individual viva"
+        },
+        {
+          "id": "asm_oop_2",
+          "title": "Continuous Assessment",
+          "type": "Portfolio",
+          "weighting": 40,
+          "mode": "Online",
+          "integrity": { "originalityCheck": true },
+          "mimloIds": ["mimlo_oop_2", "mimlo_oop_4"],
+          "notes": "Weekly design exercises and reflections"
+        }
+      ]
+    },
+    {
+      "id": "mod_db",
+      "code": "CMP8003",
+      "title": "Introduction to Databases",
+      "credits": 5,
+      "effortHours": {
+        "ver_ft_F2F": {
+          "classroomHours": 24,
+          "classroomRatio": "1:60",
+          "mentoringHours": 6,
+          "mentoringRatio": "1:25",
+          "directedElearningHours": 20,
+          "independentLearningHours": 75,
+          "workBasedHours": 0,
+          "otherHours": 0
+        },
+        "ver_pt_blended_BLENDED": {
+          "classroomHours": 12,
+          "classroomRatio": "1:40",
+          "mentoringHours": 6,
+          "mentoringRatio": "1:20",
+          "directedElearningHours": 40,
+          "independentLearningHours": 67,
+          "workBasedHours": 0,
+          "otherHours": 0
+        },
+        "ver_pt_online_ONLINE": {
+          "classroomHours": 0,
+          "mentoringHours": 12,
+          "mentoringRatio": "1:20",
+          "otherContactHours": 6,
+          "otherContactSpecify": "SQL workshops",
+          "directedElearningHours": 50,
+          "independentLearningHours": 57,
+          "workBasedHours": 0
+        }
+      },
+      "mimlos": [
+        { "id": "mimlo_db_1", "text": "Design normalised relational database schemas using entity-relationship modelling" },
+        { "id": "mimlo_db_2", "text": "Implement and query databases using SQL" },
+        { "id": "mimlo_db_3", "text": "Evaluate database performance and apply indexing strategies" }
+      ],
+      "assessments": [
+        {
+          "id": "asm_db_1",
+          "title": "Database Design Project",
+          "type": "Project",
+          "weighting": 40,
+          "mode": "Hybrid",
+          "integrity": { "originalityCheck": true, "aiDeclaration": true },
+          "mimloIds": ["mimlo_db_1", "mimlo_db_2"],
+          "notes": "Design and implement a database for a given scenario"
+        },
+        {
+          "id": "asm_db_2",
+          "title": "Final Examination",
+          "type": "Exam (On campus)",
+          "weighting": 60,
+          "mode": "OnCampus",
+          "integrity": { "proctored": true },
+          "mimloIds": ["mimlo_db_1", "mimlo_db_2", "mimlo_db_3"],
+          "notes": "2-hour written exam"
+        }
+      ]
+    },
+    {
+      "id": "mod_web",
+      "code": "CMP8004",
+      "title": "Web Design and Client-Side Scripting",
+      "credits": 5,
+      "effortHours": {
+        "ver_ft_F2F": {
+          "classroomHours": 24,
+          "classroomRatio": "1:60",
+          "mentoringHours": 6,
+          "mentoringRatio": "1:25",
+          "directedElearningHours": 20,
+          "independentLearningHours": 75,
+          "workBasedHours": 0,
+          "otherHours": 0
+        },
+        "ver_pt_blended_BLENDED": {
+          "classroomHours": 12,
+          "classroomRatio": "1:40",
+          "mentoringHours": 6,
+          "mentoringRatio": "1:20",
+          "directedElearningHours": 40,
+          "independentLearningHours": 67,
+          "workBasedHours": 0,
+          "otherHours": 0
+        },
+        "ver_pt_online_ONLINE": {
+          "classroomHours": 0,
+          "mentoringHours": 12,
+          "mentoringRatio": "1:20",
+          "otherContactHours": 6,
+          "otherContactSpecify": "Code reviews",
+          "directedElearningHours": 50,
+          "independentLearningHours": 57,
+          "workBasedHours": 0
+        }
+      },
+      "mimlos": [
+        { "id": "mimlo_web_1", "text": "Create responsive web interfaces using HTML5, CSS3, and modern frameworks" },
+        { "id": "mimlo_web_2", "text": "Implement client-side functionality using JavaScript and DOM manipulation" },
+        { "id": "mimlo_web_3", "text": "Apply accessibility standards and usability principles to web design" }
+      ],
+      "assessments": [
+        {
+          "id": "asm_web_1",
+          "title": "Web Application Project",
+          "type": "Project",
+          "weighting": 60,
+          "mode": "Online",
+          "integrity": { "originalityCheck": true, "aiDeclaration": true },
+          "mimloIds": ["mimlo_web_1", "mimlo_web_2", "mimlo_web_3"],
+          "notes": "Build a responsive web application"
+        },
+        {
+          "id": "asm_web_2",
+          "title": "Practical Demonstrations",
+          "type": "Practical/Lab",
+          "weighting": 40,
+          "mode": "Hybrid",
+          "integrity": { "inClass": true },
+          "mimloIds": ["mimlo_web_1", "mimlo_web_2"],
+          "notes": "In-class coding exercises"
+        }
+      ]
+    },
+    {
+      "id": "mod_os",
+      "code": "CMP8005",
+      "title": "Computer Architecture, Operating Systems and Networks",
+      "credits": 5,
+      "effortHours": {
+        "ver_ft_F2F": {
+          "classroomHours": 24,
+          "classroomRatio": "1:60",
+          "mentoringHours": 6,
+          "mentoringRatio": "1:25",
+          "directedElearningHours": 20,
+          "independentLearningHours": 75,
+          "workBasedHours": 0,
+          "otherHours": 0
+        },
+        "ver_pt_blended_BLENDED": {
+          "classroomHours": 12,
+          "classroomRatio": "1:40",
+          "mentoringHours": 6,
+          "mentoringRatio": "1:20",
+          "directedElearningHours": 40,
+          "independentLearningHours": 67,
+          "workBasedHours": 0,
+          "otherHours": 0
+        },
+        "ver_pt_online_ONLINE": {
+          "classroomHours": 0,
+          "mentoringHours": 12,
+          "mentoringRatio": "1:20",
+          "otherContactHours": 6,
+          "otherContactSpecify": "Virtual labs",
+          "directedElearningHours": 50,
+          "independentLearningHours": 57,
+          "workBasedHours": 0
+        }
+      },
+      "mimlos": [
+        { "id": "mimlo_os_1", "text": "Explain the architecture and operation of modern computer systems" },
+        { "id": "mimlo_os_2", "text": "Configure and manage operating system services and processes" },
+        { "id": "mimlo_os_3", "text": "Design and implement network configurations using TCP/IP protocols" }
+      ],
+      "assessments": [
+        {
+          "id": "asm_os_1",
+          "title": "Technical Report",
+          "type": "Report/Essay",
+          "weighting": 40,
+          "mode": "Online",
+          "integrity": { "originalityCheck": true, "aiDeclaration": true },
+          "mimloIds": ["mimlo_os_1", "mimlo_os_3"],
+          "notes": "Analysis of system architecture"
+        },
+        {
+          "id": "asm_os_2",
+          "title": "Final Examination",
+          "type": "Exam (On campus)",
+          "weighting": 60,
+          "mode": "OnCampus",
+          "integrity": { "proctored": true },
+          "mimloIds": ["mimlo_os_1", "mimlo_os_2", "mimlo_os_3"],
+          "notes": "2-hour written exam"
+        }
+      ]
+    },
+    {
+      "id": "mod_agile",
+      "code": "CMP8006",
+      "title": "Agile Software Development",
+      "credits": 10,
+      "effortHours": {
+        "ver_ft_F2F": {
+          "classroomHours": 48,
+          "classroomRatio": "1:60",
+          "mentoringHours": 12,
+          "mentoringRatio": "1:25",
+          "directedElearningHours": 40,
+          "independentLearningHours": 150,
+          "workBasedHours": 0,
+          "otherHours": 0
+        },
+        "ver_pt_blended_BLENDED": {
+          "classroomHours": 24,
+          "classroomRatio": "1:40",
+          "mentoringHours": 12,
+          "mentoringRatio": "1:20",
+          "directedElearningHours": 80,
+          "independentLearningHours": 134,
+          "workBasedHours": 0,
+          "otherHours": 0
+        },
+        "ver_pt_online_ONLINE": {
+          "classroomHours": 0,
+          "mentoringHours": 24,
+          "mentoringRatio": "1:20",
+          "otherContactHours": 12,
+          "otherContactSpecify": "Sprint reviews",
+          "directedElearningHours": 100,
+          "independentLearningHours": 114,
+          "workBasedHours": 0
+        }
+      },
+      "mimlos": [
+        { "id": "mimlo_agile_1", "text": "Apply Scrum and Kanban methodologies to manage software development projects" },
+        { "id": "mimlo_agile_2", "text": "Implement continuous integration and deployment pipelines" },
+        { "id": "mimlo_agile_3", "text": "Collaborate effectively in cross-functional agile teams" },
+        { "id": "mimlo_agile_4", "text": "Evaluate and improve team processes using agile retrospectives" }
+      ],
+      "assessments": [
+        {
+          "id": "asm_agile_1",
+          "title": "Team Project",
+          "type": "Project",
+          "weighting": 70,
+          "mode": "Hybrid",
+          "integrity": { "originalityCheck": true, "aiDeclaration": true, "viva": true },
+          "mimloIds": ["mimlo_agile_1", "mimlo_agile_2", "mimlo_agile_3", "mimlo_agile_4"],
+          "notes": "Group project with sprint deliverables"
+        },
+        {
+          "id": "asm_agile_2",
+          "title": "Reflective Journal",
+          "type": "Reflective Journal",
+          "weighting": 30,
+          "mode": "Online",
+          "integrity": { "originalityCheck": true },
+          "mimloIds": ["mimlo_agile_3", "mimlo_agile_4"],
+          "notes": "Weekly reflections on team collaboration"
+        }
+      ]
+    },
+    {
+      "id": "mod_capstone",
+      "code": "CMP8007",
+      "title": "Capstone Project",
+      "credits": 15,
+      "effortHours": {
+        "ver_ft_F2F": {
+          "classroomHours": 12,
+          "classroomRatio": "1:60",
+          "mentoringHours": 36,
+          "mentoringRatio": "1:15",
+          "directedElearningHours": 30,
+          "independentLearningHours": 297,
+          "workBasedHours": 0,
+          "otherHours": 0
+        },
+        "ver_pt_blended_BLENDED": {
+          "classroomHours": 6,
+          "classroomRatio": "1:40",
+          "mentoringHours": 36,
+          "mentoringRatio": "1:10",
+          "directedElearningHours": 40,
+          "independentLearningHours": 293,
+          "workBasedHours": 0,
+          "otherHours": 0
+        },
+        "ver_pt_online_ONLINE": {
+          "classroomHours": 0,
+          "mentoringHours": 48,
+          "mentoringRatio": "1:10",
+          "otherContactHours": 12,
+          "otherContactSpecify": "Progress meetings",
+          "directedElearningHours": 50,
+          "independentLearningHours": 265,
+          "workBasedHours": 0
+        }
+      },
+      "mimlos": [
+        { "id": "mimlo_cap_1", "text": "Research, design and implement a substantial software solution addressing a real-world problem" },
+        { "id": "mimlo_cap_2", "text": "Document and present technical work to professional standards" },
+        { "id": "mimlo_cap_3", "text": "Critically evaluate the solution against requirements and industry best practices" },
+        { "id": "mimlo_cap_4", "text": "Demonstrate independent learning and project management skills" }
+      ],
+      "assessments": [
+        {
+          "id": "asm_cap_1",
+          "title": "Capstone Deliverable",
+          "type": "Project",
+          "weighting": 70,
+          "mode": "Hybrid",
+          "integrity": { "originalityCheck": true, "aiDeclaration": true, "viva": true },
+          "mimloIds": ["mimlo_cap_1", "mimlo_cap_2", "mimlo_cap_3", "mimlo_cap_4"],
+          "notes": "Final project with demonstration and viva"
+        },
+        {
+          "id": "asm_cap_2",
+          "title": "Project Documentation",
+          "type": "Report/Essay",
+          "weighting": 30,
+          "mode": "Online",
+          "integrity": { "originalityCheck": true, "aiDeclaration": true },
+          "mimloIds": ["mimlo_cap_2", "mimlo_cap_3"],
+          "notes": "Technical report and user documentation"
+        }
+      ]
+    }
+  ],
+  "plos": [
+    {
+      "id": "plo_1",
+      "text": "Design, develop and test software applications using object-oriented programming principles and industry-standard development practices",
+      "standardMappings": [
+        { "criteria": "Knowledge", "thread": "Breadth" },
+        { "criteria": "Know-how & Skill", "thread": "Range" }
+      ]
+    },
+    {
+      "id": "plo_2",
+      "text": "Apply software engineering methodologies to plan, manage and deliver software projects within professional contexts",
+      "standardMappings": [
+        { "criteria": "Know-how & Skill", "thread": "Selectivity" },
+        { "criteria": "Competence", "thread": "Context" }
+      ]
+    },
+    {
+      "id": "plo_3",
+      "text": "Design and implement database solutions using relational database management systems and SQL",
+      "standardMappings": [
+        { "criteria": "Knowledge", "thread": "Kind" },
+        { "criteria": "Know-how & Skill", "thread": "Range" }
+      ]
+    },
+    {
+      "id": "plo_4",
+      "text": "Create responsive and accessible web applications using modern web technologies and frameworks",
+      "standardMappings": [
+        { "criteria": "Know-how & Skill", "thread": "Range" },
+        { "criteria": "Know-how & Skill", "thread": "Selectivity" }
+      ]
+    },
+    {
+      "id": "plo_5",
+      "text": "Demonstrate understanding of computer architecture, operating systems and network fundamentals",
+      "standardMappings": [
+        { "criteria": "Knowledge", "thread": "Breadth" },
+        { "criteria": "Knowledge", "thread": "Kind" }
+      ]
+    },
+    {
+      "id": "plo_6",
+      "text": "Work effectively in agile software development teams, applying iterative development practices",
+      "standardMappings": [
+        { "criteria": "Competence", "thread": "Role" },
+        { "criteria": "Competence", "thread": "Learning to Learn" }
+      ]
+    },
+    {
+      "id": "plo_7",
+      "text": "Research, design and implement a substantial software project demonstrating integration of learned skills",
+      "standardMappings": [
+        { "criteria": "Competence", "thread": "Insight" },
+        { "criteria": "Competence", "thread": "Context" }
+      ]
+    },
+    {
+      "id": "plo_8",
+      "text": "Communicate technical concepts effectively through documentation and presentations",
+      "standardMappings": [
+        { "criteria": "Know-how & Skill", "thread": "Selectivity" },
+        { "criteria": "Competence", "thread": "Role" }
+      ]
+    }
+  ],
+  "ploToModules": {
+    "plo_1": ["mod_sd", "mod_oop"],
+    "plo_2": ["mod_oop", "mod_agile"],
+    "plo_3": ["mod_db"],
+    "plo_4": ["mod_web"],
+    "plo_5": ["mod_os"],
+    "plo_6": ["mod_agile"],
+    "plo_7": ["mod_capstone"],
+    "plo_8": ["mod_sd", "mod_capstone"]
+  },
+  "versions": [
+    {
+      "id": "ver_ft",
+      "label": "Full-time",
+      "code": "FT",
+      "duration": "1 year",
+      "intakes": ["September"],
+      "targetCohortSize": 60,
+      "numberOfGroups": 2,
+      "deliveryModality": "F2F",
+      "deliveryPatterns": {
+        "F2F": {
+          "syncOnlinePct": 10,
+          "asyncDirectedPct": 20,
+          "onCampusPct": 70
+        }
+      },
+      "deliveryNotes": "Primary delivery through on-campus lectures and labs with supplementary online materials.",
+      "onlineProctoredExams": "NO",
+      "onlineProctoredExamsNotes": "All exams are conducted on campus.",
+      "stages": [
+        {
+          "id": "stage_ft_1",
+          "name": "Stage 1",
+          "sequence": 1,
+          "creditsTarget": 30,
+          "exitAward": { "enabled": false, "awardTitle": "" },
+          "modules": [
+            { "moduleId": "mod_sd", "semester": "Semester 1" },
+            { "moduleId": "mod_db", "semester": "Semester 1" },
+            { "moduleId": "mod_web", "semester": "Semester 1" },
+            { "moduleId": "mod_os", "semester": "Semester 1" }
+          ]
+        },
+        {
+          "id": "stage_ft_2",
+          "name": "Stage 2",
+          "sequence": 2,
+          "creditsTarget": 30,
+          "exitAward": { "enabled": false, "awardTitle": "" },
+          "modules": [
+            { "moduleId": "mod_oop", "semester": "Semester 2" },
+            { "moduleId": "mod_agile", "semester": "Semester 2" },
+            { "moduleId": "mod_capstone", "semester": "Semester 2" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ver_pt_blended",
+      "label": "Part-time Blended",
+      "code": "PTB",
+      "duration": "2 years",
+      "intakes": ["September", "January"],
+      "targetCohortSize": 40,
+      "numberOfGroups": 2,
+      "deliveryModality": "BLENDED",
+      "deliveryPatterns": {
+        "BLENDED": {
+          "syncOnlinePct": 30,
+          "asyncDirectedPct": 40,
+          "onCampusPct": 30
+        }
+      },
+      "deliveryNotes": "Blended delivery with evening/weekend on-campus sessions and significant online component. On-campus sessions typically Saturday mornings.",
+      "onlineProctoredExams": "NO",
+      "onlineProctoredExamsNotes": "Exams conducted on campus at scheduled times.",
+      "stages": [
+        {
+          "id": "stage_ptb_1",
+          "name": "Year 1 - Semester 1",
+          "sequence": 1,
+          "creditsTarget": 15,
+          "exitAward": { "enabled": false, "awardTitle": "" },
+          "modules": [
+            { "moduleId": "mod_sd", "semester": "S1" },
+            { "moduleId": "mod_db", "semester": "S1" }
+          ]
+        },
+        {
+          "id": "stage_ptb_2",
+          "name": "Year 1 - Semester 2",
+          "sequence": 2,
+          "creditsTarget": 15,
+          "exitAward": { "enabled": false, "awardTitle": "" },
+          "modules": [
+            { "moduleId": "mod_web", "semester": "S2" },
+            { "moduleId": "mod_os", "semester": "S2" },
+            { "moduleId": "mod_oop", "semester": "S2" }
+          ]
+        },
+        {
+          "id": "stage_ptb_3",
+          "name": "Year 2 - Semester 1",
+          "sequence": 3,
+          "creditsTarget": 15,
+          "exitAward": { "enabled": false, "awardTitle": "" },
+          "modules": [
+            { "moduleId": "mod_agile", "semester": "S1" }
+          ]
+        },
+        {
+          "id": "stage_ptb_4",
+          "name": "Year 2 - Semester 2",
+          "sequence": 4,
+          "creditsTarget": 15,
+          "exitAward": { "enabled": false, "awardTitle": "" },
+          "modules": [
+            { "moduleId": "mod_capstone", "semester": "S2" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ver_pt_online",
+      "label": "Part-time Fully Online",
+      "code": "PTO",
+      "duration": "2 years",
+      "intakes": ["September", "January", "May"],
+      "targetCohortSize": 80,
+      "numberOfGroups": 4,
+      "deliveryModality": "ONLINE",
+      "deliveryPatterns": {
+        "ONLINE": {
+          "syncOnlinePct": 25,
+          "asyncDirectedPct": 75,
+          "onCampusPct": 0
+        }
+      },
+      "deliveryNotes": "Fully online delivery with live synchronous sessions scheduled in evenings (Irish time). All materials available asynchronously. No on-campus attendance required.",
+      "onlineProctoredExams": "YES",
+      "onlineProctoredExamsNotes": "All exams are conducted online using Proctorio proctoring software. Students must have webcam and stable internet connection. Alternative arrangements available for students with accessibility needs.",
+      "stages": [
+        {
+          "id": "stage_pto_1",
+          "name": "Year 1 - Semester 1",
+          "sequence": 1,
+          "creditsTarget": 15,
+          "exitAward": { "enabled": false, "awardTitle": "" },
+          "modules": [
+            { "moduleId": "mod_sd", "semester": "S1" },
+            { "moduleId": "mod_db", "semester": "S1" }
+          ]
+        },
+        {
+          "id": "stage_pto_2",
+          "name": "Year 1 - Semester 2",
+          "sequence": 2,
+          "creditsTarget": 15,
+          "exitAward": { "enabled": false, "awardTitle": "" },
+          "modules": [
+            { "moduleId": "mod_web", "semester": "S2" },
+            { "moduleId": "mod_os", "semester": "S2" },
+            { "moduleId": "mod_oop", "semester": "S2" }
+          ]
+        },
+        {
+          "id": "stage_pto_3",
+          "name": "Year 2 - Semester 1",
+          "sequence": 3,
+          "creditsTarget": 15,
+          "exitAward": { "enabled": false, "awardTitle": "" },
+          "modules": [
+            { "moduleId": "mod_agile", "semester": "S1" }
+          ]
+        },
+        {
+          "id": "stage_pto_4",
+          "name": "Year 2 - Semester 2",
+          "sequence": 4,
+          "creditsTarget": 15,
+          "exitAward": { "enabled": false, "awardTitle": "" },
+          "modules": [
+            { "moduleId": "mod_capstone", "semester": "S2" }
+          ]
+        }
+      ]
+    }
+  ]
+}
