@@ -40,13 +40,17 @@
       "description": "School or discipline (e.g., Computing, Business)",
       "examples": ["Computing", "Business", "Psychology", "Education"]
     },
-    "awardStandardId": {
-      "type": "string",
-      "description": "Identifier for the QQI award standard"
+    "awardStandardIds": {
+      "type": "array",
+      "items": { "type": "string" },
+      "maxItems": 2,
+      "description": "Identifiers for QQI award standards (up to 2 standards can be selected)"
     },
-    "awardStandardName": {
-      "type": "string",
-      "description": "Display name for the QQI award standard"
+    "awardStandardNames": {
+      "type": "array",
+      "items": { "type": "string" },
+      "maxItems": 2,
+      "description": "Display names for the QQI award standards"
     },
     "totalCredits": {
       "type": "integer",
@@ -322,6 +326,10 @@
         "thread": {
           "type": "string",
           "description": "QQI thread within the criteria"
+        },
+        "standardId": {
+          "type": "string",
+          "description": "Reference to which award standard this mapping belongs to (relevant when multiple standards are selected)"
         }
       }
     },

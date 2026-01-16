@@ -208,8 +208,8 @@ const defaultProgramme = () => ({
   awardTypeIsOther: false,
   nfqLevel: null,
   school: "",
-  awardStandardId: "",
-  awardStandardName: "",
+  awardStandardIds: [], // up to 2 standards
+  awardStandardNames: [],
 
   // Programme-level structure
   totalCredits: 0,
@@ -218,7 +218,7 @@ const defaultProgramme = () => ({
   ploToModules: {}, // ploId -> [moduleId]
 
   // Versions (FT/PT/Online variants)
-  versions: [], // [{id, label, code, duration, intakes[], targetCohortSize, numberOfGroups, deliveryModalities[], deliveryPatterns{}, onlineProctoredExams, onlineProctoredExamsNotes, stages[] }]
+  versions: [], // [{id, label, code, duration, intakes[], targetCohortSize, numberOfGroups, deliveryModality, deliveryPatterns{}, onlineProctoredExams, onlineProctoredExamsNotes, stages[] }]
 
   updatedAt: null,
 });
@@ -273,6 +273,24 @@ function load() {
     const parsed = JSON.parse(raw);
     // shallow merge to preserve new defaults if schema evolves
     state.programme = { ...defaultProgramme(), ...parsed };
+
+// Migration: convert old single standard to array format
+if (typeof state.programme.awardStandardId === 'string') {
+  const oldId = state.programme.awardStandardId || '';
+  const oldName = state.programme.awardStandardName || '';
+  state.programme.awardStandardIds = oldId ? [oldId] : [];
+  state.programme.awardStandardNames = oldName ? [oldName] : [];
+  delete state.programme.awardStandardId;
+  delete state.programme.awardStandardName;
+}
+// Ensure arrays exist
+if (!Array.isArray(state.programme.awardStandardIds)) {
+  state.programme.awardStandardIds = [];
+}
+if (!Array.isArray(state.programme.awardStandardNames)) {
+  state.programme.awardStandardNames = [];
+}
+
 // Migration to schemaVersion 2: programme versions + stages.
 if (!Array.isArray(state.programme.versions)) state.programme.versions = [];
 
@@ -281,18 +299,20 @@ if (!Array.isArray(state.programme.versions)) state.programme.versions = [];
 if (state.programme.versions.length === 0) {
   const v = defaultVersion();
   // Prefer legacy fields if present
-  const legacyModalities = Array.isArray(state.programme.deliveryModalities)
-    ? state.programme.deliveryModalities
-    : (state.programme.deliveryMode ? [state.programme.deliveryMode] : []);
+  // Migrate old deliveryMode/deliveryModalities to new deliveryModality
+  const legacyModality = Array.isArray(state.programme.deliveryModalities)
+    ? state.programme.deliveryModalities[0] // Take first from old array
+    : (state.programme.deliveryMode || "F2F");
 
-  v.deliveryModalities = legacyModalities;
+  v.deliveryModality = legacyModality;
   v.deliveryPatterns = (state.programme.deliveryPatterns && typeof state.programme.deliveryPatterns === "object")
     ? state.programme.deliveryPatterns
     : {};
 
-  v.deliveryModalities.forEach((mod) => {
-    if (!v.deliveryPatterns[mod]) v.deliveryPatterns[mod] = defaultPatternFor(mod);
-  });
+  // Ensure pattern exists for selected modality
+  if (v.deliveryModality && !v.deliveryPatterns[v.deliveryModality]) {
+    v.deliveryPatterns[v.deliveryModality] = defaultPatternFor(v.deliveryModality);
+  }
 
   v.deliveryNotes = state.programme.deliveryNotes || "";
   v.onlineProctoredExams = state.programme.onlineProctoredExams || "TBC";
@@ -352,59 +372,60 @@ function validateProgramme(p) {
   const flags = [];
   const sumCredits = (p.modules || []).reduce((acc, m) => acc + (Number(m.credits) || 0), 0);
 
-  if (!p.title.trim()) flags.push({ type: "error", msg: "Programme title is missing." });
-  if (!p.nfqLevel) flags.push({ type: "error", msg: "NFQ level is missing." });
+  if (!p.title.trim()) flags.push({ type: "error", msg: "Programme title is missing.", step: "identity" });
+  if (!p.nfqLevel) flags.push({ type: "error", msg: "NFQ level is missing.", step: "identity" });
   if (p.nfqLevel && (Number(p.nfqLevel) < 6 || Number(p.nfqLevel) > 9)) {
-    flags.push({ type: "error", msg: "NFQ level must be between 6 and 9 for this tool." });
+    flags.push({ type: "error", msg: "NFQ level must be between 6 and 9 for this tool.", step: "identity" });
   }
-  if (!p.awardType.trim()) flags.push({ type: "warn", msg: "Award type is missing." });
+  if (!p.awardType.trim()) flags.push({ type: "warn", msg: "Award type is missing.", step: "identity" });
 
-  if ((p.totalCredits || 0) <= 0) flags.push({ type: "error", msg: "Total programme credits are missing/zero." });
+  if ((p.totalCredits || 0) <= 0) flags.push({ type: "error", msg: "Total programme credits are missing/zero.", step: "structure" });
   if ((p.totalCredits || 0) > 0 && sumCredits !== p.totalCredits) {
-    flags.push({ type: "error", msg: `Credits mismatch: totalCredits=${p.totalCredits} but modules sum to ${sumCredits}.` });
+    flags.push({ type: "error", msg: `Credits mismatch: totalCredits=${p.totalCredits} but modules sum to ${sumCredits}.`, step: "structure" });
   }
 
   // Versions
   if (!Array.isArray(p.versions) || p.versions.length === 0) {
-    flags.push({ type: "error", msg: "At least one Programme Version is required (e.g., FT/PT/Online)." });
+    flags.push({ type: "error", msg: "At least one Programme Version is required (e.g., FT/PT/Online).", step: "versions" });
   } else {
     const labels = new Set();
     p.versions.forEach((v, idx) => {
       const prefix = `Version ${idx + 1}`;
-      if (!v.label || !v.label.trim()) flags.push({ type: "warn", msg: `${prefix}: label is missing.` });
+      if (!v.label || !v.label.trim()) flags.push({ type: "warn", msg: `${prefix}: label is missing.`, step: "versions" });
       else {
         const norm = v.label.trim().toLowerCase();
-        if (labels.has(norm)) flags.push({ type: "warn", msg: `${prefix}: duplicate label (“${v.label}”).` });
+        if (labels.has(norm)) flags.push({ type: "warn", msg: `${prefix}: duplicate label ("${v.label}").`, step: "versions" });
         labels.add(norm);
       }
 
-      // Delivery patterns per selected modality must sum to 100
-      (v.deliveryModalities || []).forEach((mod) => {
+      // Delivery pattern for selected modality must sum to 100
+      if (v.deliveryModality) {
+        const mod = v.deliveryModality;
         const pat = (v.deliveryPatterns || {})[mod];
         if (!pat) {
-          flags.push({ type: "error", msg: `${prefix}: missing delivery pattern for ${mod}.` });
+          flags.push({ type: "error", msg: `${prefix}: missing delivery pattern for ${mod}.`, step: "versions" });
           return;
         }
         const total = Number(pat.syncOnlinePct || 0) + Number(pat.asyncDirectedPct || 0) + Number(pat.onCampusPct || 0);
         if (total !== 100) {
-          flags.push({ type: "error", msg: `${prefix}: ${mod} delivery pattern must total 100% (currently ${total}%).` });
+          flags.push({ type: "error", msg: `${prefix}: ${mod} delivery pattern must total 100% (currently ${total}%).`, step: "versions" });
         }
-      });
-
-      if ((v.onlineProctoredExams || "TBC") === "YES" && !(v.onlineProctoredExamsNotes || "").trim()) {
-        flags.push({ type: "warn", msg: `${prefix}: online proctored exams marked YES but notes are empty.` });
       }
 
-      if ((v.targetCohortSize || 0) <= 0) flags.push({ type: "warn", msg: `${prefix}: cohort size is missing/zero.` });
+      if ((v.onlineProctoredExams || "TBC") === "YES" && !(v.onlineProctoredExamsNotes || "").trim()) {
+        flags.push({ type: "warn", msg: `${prefix}: online proctored exams marked YES but notes are empty.`, step: "versions" });
+      }
+
+      if ((v.targetCohortSize || 0) <= 0) flags.push({ type: "warn", msg: `${prefix}: cohort size is missing/zero.`, step: "versions" });
 
       // Stage structure
       if (!Array.isArray(v.stages) || v.stages.length === 0) {
-        flags.push({ type: "warn", msg: `${prefix}: no stages defined yet.` });
+        flags.push({ type: "warn", msg: `${prefix}: no stages defined yet.`, step: "stages" });
       } else {
         // Check stage credit totals vs programme credits (soft error if programme credits defined)
         const stageTargetSum = (v.stages || []).reduce((acc, s) => acc + Number(s.creditsTarget || 0), 0);
         if ((p.totalCredits || 0) > 0 && stageTargetSum > 0 && stageTargetSum !== Number(p.totalCredits || 0)) {
-          flags.push({ type: "warn", msg: `${prefix}: sum of stage credit targets (${stageTargetSum}) does not match programme total credits (${p.totalCredits}).` });
+          flags.push({ type: "warn", msg: `${prefix}: sum of stage credit targets (${stageTargetSum}) does not match programme total credits (${p.totalCredits}).`, step: "stages" });
         }
 
         // Stage module credits match target
@@ -415,11 +436,11 @@ function validateProgramme(p) {
             .reduce((acc, m) => acc + Number(m.credits || 0), 0);
 
           if ((s.creditsTarget || 0) > 0 && creditSum !== Number(s.creditsTarget || 0)) {
-            flags.push({ type: "warn", msg: `${prefix}: ${s.name || "stage"} module credits sum to ${creditSum} but target is ${s.creditsTarget}.` });
+            flags.push({ type: "warn", msg: `${prefix}: ${s.name || "stage"} module credits sum to ${creditSum} but target is ${s.creditsTarget}.`, step: "stages" });
           }
 
           if (s.exitAward && s.exitAward.enabled && !(s.exitAward.awardTitle || "").trim()) {
-            flags.push({ type: "warn", msg: `${prefix}: ${s.name || "stage"} has an exit award enabled but no award title entered.` });
+            flags.push({ type: "warn", msg: `${prefix}: ${s.name || "stage"} has an exit award enabled but no award title entered.`, step: "stages" });
           }
         });
       }
@@ -427,32 +448,30 @@ function validateProgramme(p) {
   }
 
   // Outcomes & mapping
-  if ((p.plos || []).length < 6) flags.push({ type: "warn", msg: "PLOs: fewer than 6 (usually aim for ~6–12)." });
-  if ((p.plos || []).length > 12) flags.push({ type: "warn", msg: "PLOs: more than 12 (consider tightening)." });
+  if ((p.plos || []).length < 6) flags.push({ type: "warn", msg: "PLOs: fewer than 6 (usually aim for ~6–12).", step: "outcomes" });
+  if ((p.plos || []).length > 12) flags.push({ type: "warn", msg: "PLOs: more than 12 (consider tightening).", step: "outcomes" });
 
   const modulesMissingMimlos = (p.modules || []).filter(m => !m.mimlos || m.mimlos.length === 0);
-  if (modulesMissingMimlos.length > 0) flags.push({ type: "warn", msg: `Some modules have no MIMLOs yet (${modulesMissingMimlos.length}).` });
+  if (modulesMissingMimlos.length > 0) flags.push({ type: "warn", msg: `Some modules have no MIMLOs yet (${modulesMissingMimlos.length}).`, step: "mimlos" });
 
   const unmappedPLOs = (p.plos || []).filter(o => !(p.ploToModules || {})[o.id] || (p.ploToModules[o.id] || []).length === 0);
-  if (unmappedPLOs.length > 0) flags.push({ type: "error", msg: `Some PLOs are not mapped to any module (${unmappedPLOs.length}).` });
+  if (unmappedPLOs.length > 0) flags.push({ type: "error", msg: `Some PLOs are not mapped to any module (${unmappedPLOs.length}).`, step: "mapping" });
 
   return flags;
 }
 
 
 function deliveryPatternsHtml(p){
-  const mods = Array.isArray(p.deliveryModalities) ? p.deliveryModalities : [];
+  // Note: p here is a version object from the context where this is called
+  const mod = p.deliveryModality;
   const patterns = (p.deliveryPatterns && typeof p.deliveryPatterns === "object") ? p.deliveryPatterns : {};
-  if (mods.length === 0) return '<span class="text-muted">—</span>';
+  if (!mod) return '<span class="text-muted">—</span>';
   const label = (k) => (k==="F2F"?"Face-to-face":k==="BLENDED"?"Blended":k==="ONLINE"?"Fully online":k);
-  const rows = mods.map((m)=>{
-    const pat = patterns[m] || defaultPatternFor(m);
-    const a = Number(pat.syncOnlinePct ?? 0);
-    const b = Number(pat.asyncDirectedPct ?? 0);
-    const c = Number(pat.onCampusPct ?? 0);
-    return `<div><span class="fw-semibold">${escapeHtml(label(m))}:</span> ${a}% sync online, ${b}% async directed, ${c}% on campus</div>`;
-  }).join("");
-  return rows;
+  const pat = patterns[mod] || defaultPatternFor(mod);
+  const a = Number(pat.syncOnlinePct ?? 0);
+  const b = Number(pat.asyncDirectedPct ?? 0);
+  const c = Number(pat.onCampusPct ?? 0);
+  return `<div><span class="fw-semibold">${escapeHtml(label(mod))}:</span> ${a}% sync online, ${b}% async directed, ${c}% on campus</div>`;
 }
 function completionPercent(p) {
   let total = 10, done = 0;
@@ -465,7 +484,7 @@ function completionPercent(p) {
 
   if (Array.isArray(p.versions) && p.versions.length > 0) done++;
   const v0 = (p.versions || [])[0];
-  if (v0 && (v0.deliveryModalities || []).length > 0) done++;
+  if (v0 && v0.deliveryModality && Object.keys(v0.deliveryPatterns || {}).length > 0) done++;
   if (v0 && (v0.targetCohortSize || 0) > 0) done++;
   if (v0 && Array.isArray(v0.stages) && v0.stages.length > 0) done++;
 
@@ -488,8 +507,76 @@ function renderHeader() {
   const badge = document.getElementById("completionBadge");
   badge.textContent = `${comp}% complete`;
   badge.className = "badge " + (comp >= 75 ? "text-bg-success" : comp >= 40 ? "text-bg-warning" : "text-bg-secondary");
+  
+  // Generate to-do list for popover
+  const flags = validateProgramme(p);
+  const todoHtml = generateTodoList(flags);
+  
+  // Set popover content
+  badge.setAttribute("data-bs-toggle", "popover");
+  badge.setAttribute("data-bs-trigger", "hover");
+  badge.setAttribute("data-bs-html", "true");
+  badge.setAttribute("data-bs-placement", "bottom");
+  badge.setAttribute("data-bs-title", comp === 100 ? "✓ All Complete!" : "Items to complete");
+  badge.setAttribute("data-bs-content", todoHtml);
+  badge.style.cursor = comp === 100 ? "default" : "pointer";
+  
+  // Dispose existing popover and create new one
+  const existingPopover = bootstrap.Popover.getInstance(badge);
+  if (existingPopover) existingPopover.dispose();
+  new bootstrap.Popover(badge, {
+    trigger: "hover",
+    html: true,
+    placement: "bottom"
+  });
+  
   const ss = document.getElementById("saveStatus");
   ss.textContent = state.saving ? "Saving…" : (state.lastSaved ? `Saved ${new Date(state.lastSaved).toLocaleString()}` : "Not saved yet");
+}
+
+function generateTodoList(flags) {
+  if (!flags || flags.length === 0) {
+    return `<div class="small text-success"><strong>✓ All requirements met!</strong></div>`;
+  }
+  
+  // Group flags by step
+  const byStep = {};
+  flags.forEach(f => {
+    if (!byStep[f.step]) byStep[f.step] = [];
+    byStep[f.step].push(f);
+  });
+  
+  // Find step labels
+  const aSteps = activeSteps();
+  const stepMap = {};
+  aSteps.forEach(s => {
+    stepMap[s.key] = s.title;
+  });
+  
+  // Build HTML
+  let html = `<div class="small" style="max-width: 300px; max-height: 300px; overflow-y: auto;">`;
+  
+  Object.entries(byStep).forEach(([step, items]) => {
+    const stepTitle = stepMap[step] || step;
+    const errorCount = items.filter(f => f.type === "error").length;
+    const warnCount = items.filter(f => f.type === "warn").length;
+    
+    html += `<div class="mb-2">`;
+    html += `<div class="fw-semibold text-primary">${escapeHtml(stepTitle)}</div>`;
+    
+    items.forEach(f => {
+      const icon = f.type === "error" ? "⚠️" : "ℹ️";
+      const cls = f.type === "error" ? "text-danger" : "text-warning";
+      html += `<div class="${cls} ms-2 small" style="margin-bottom: 4px;">
+        ${icon} ${escapeHtml(f.msg)}
+      </div>`;
+    });
+    
+    html += `</div>`;
+  });
+  
+  html += `</div>`;
+  return html;
 }
 
 function renderSteps() {
@@ -524,12 +611,53 @@ function renderFlags() {
   const box = document.getElementById("flagsBox");
   box.innerHTML = "";
   if (!flags.length) {
-    box.innerHTML = `${tagHtml("ok")} <div class="small">No flags</div>`;
+    box.innerHTML = `<div class="flag-item flag-ok">${tagHtml("ok")} <div class="small">No flags — programme looks good!</div></div>`;
     return;
   }
+  // Group flags by type for display
+  const errors = flags.filter(f => f.type === "error");
+  const warnings = flags.filter(f => f.type === "warn");
+  
+  // Summary header
+  const summaryDiv = document.createElement("div");
+  summaryDiv.className = "flags-summary mb-2 small";
+  const parts = [];
+  if (errors.length) parts.push(`<span class="text-danger fw-bold">${errors.length} error${errors.length > 1 ? 's' : ''}</span>`);
+  if (warnings.length) parts.push(`<span class="text-warning fw-bold">${warnings.length} warning${warnings.length > 1 ? 's' : ''}</span>`);
+  summaryDiv.innerHTML = parts.join(' · ');
+  box.appendChild(summaryDiv);
+  
+  const aSteps = activeSteps();
   flags.forEach(f => {
     const div = document.createElement("div");
-    div.innerHTML = `${tagHtml(f.type)} <div class="mt-1 small">${escapeHtml(f.msg)}</div>`;
+    div.className = `flag-item flag-${f.type}`;
+    
+    // Find step index for navigation
+    const stepIdx = aSteps.findIndex(s => s.key === f.step);
+    const stepTitle = stepIdx >= 0 ? aSteps[stepIdx].title : "";
+    
+    div.innerHTML = `
+      <div class="d-flex align-items-start gap-2">
+        ${tagHtml(f.type)}
+        <div class="flex-grow-1">
+          <div class="small">${escapeHtml(f.msg)}</div>
+          ${stepTitle ? `<div class="flag-step-link small text-muted">→ ${escapeHtml(stepTitle)}</div>` : ''}
+        </div>
+      </div>
+    `;
+    
+    // Make clickable if step is accessible
+    if (stepIdx >= 0) {
+      div.style.cursor = "pointer";
+      div.onclick = () => {
+        state.stepIndex = stepIdx;
+        render();
+        // Scroll to content area
+        const content = document.getElementById("content");
+        if (content) content.scrollIntoView({ behavior: "smooth", block: "start" });
+      };
+    }
+    
     box.appendChild(div);
   });
 }
@@ -771,8 +899,6 @@ function render() {
     }).join("");
 
     content.innerHTML = devModeToggleHtml + `
-    // Dev-only UI toggle wiring
-    wireDevModeToggle();
       <div class="card shadow-sm">
         <div class="card-body">
           <h5 class="card-title mb-3">Identity (QQI-critical)</h5>
@@ -807,14 +933,10 @@ function render() {
               </select>
             </div>
             <div class="col-md-12">
-              <label class="form-label fw-semibold">QQI award standard</label>
-              <select class="form-select" id="standardSelect">
-                <option value="" disabled ${!p.awardStandardId?"selected":""}>Select a standard</option>
-                <option value="qqi-computing-l6-9" ${p.awardStandardId==="qqi-computing-l6-9"?"selected":""}>Computing (Levels 6–9)</option>
-                <option value="qqi-professional-awards-l5-9" ${p.awardStandardId==="qqi-professional-awards-l5-9"?"selected":""}>Professional (Levels 5–9)</option>
-                <option value="qqi-generic-major-masters-l9" ${p.awardStandardId==="qqi-generic-major-masters-l9"?"selected":""}>Generic Major — Masters Degree (Level 9)</option>
-              </select>
-              <div class="form-text">This will drive PLO mapping and autocompletion.</div>
+              <label class="form-label fw-semibold">QQI award standards (up to 2)</label>
+              <div class="small text-secondary mb-2">Select 1-2 award standards. If using 2, you'll map each PLO to criteria from one of them.</div>
+              <div id="standardSelectorsContainer"></div>
+              <div class="form-text">These will drive PLO mapping and autocompletion.</div>
               <div id="standardMismatchAlert" class="mt-2"></div>
             </div>
             <div class="col-12">
@@ -947,8 +1069,6 @@ function render() {
     }).join("");
 
     content.innerHTML = devModeToggleHtml + `
-    // Dev-only UI toggle wiring
-    wireDevModeToggle();
       <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
         <div>
           <h4 class="mb-1">Programme Versions</h4>
@@ -970,9 +1090,7 @@ function render() {
     const versions = Array.isArray(p.versions) ? p.versions : [];
     if (!versions.length) {
       content.innerHTML = devModeToggleHtml + `<div class="alert alert-warning">Add at least one Programme Version first.</div>`;
-    // Dev-only UI toggle wiring
-    wireDevModeToggle();
-    wireDevModeToggle();
+      wireDevModeToggle();
       return;
     }
     if (!state.selectedVersionId) state.selectedVersionId = versions[0].id;
@@ -1048,8 +1166,6 @@ function render() {
     }).join("");
 
     content.innerHTML = devModeToggleHtml + `
-    // Dev-only UI toggle wiring
-    wireDevModeToggle();
       <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
         <div>
           <h4 class="mb-1">Stage Structure</h4>
@@ -1101,8 +1217,6 @@ if (step === "structure") {
     `).join("");
 
     content.innerHTML = devModeToggleHtml + `
-    // Dev-only UI toggle wiring
-    wireDevModeToggle();
       <div class="card shadow-sm">
         <div class="card-body">
           <div class="d-flex justify-content-between align-items-center mb-3">
@@ -1131,12 +1245,30 @@ if (step === "structure") {
 
   if (step === "outcomes") {
     const rows = (p.plos||[]).map((o, idx) => {
-      const mappings = (o.standardMappings||[]).map((m,i)=>`
-        <span class="badge text-bg-light border me-2 mb-2">
-          ${escapeHtml(m.criteria)} / ${escapeHtml(m.thread)}
-          <button type="button" class="btn btn-sm btn-link text-danger p-0 ms-2" data-remove-plo-map="${o.id}" data-remove-plo-map-index="${i}" title="Remove">×</button>
-        </span>
-      `).join("");
+      // Group mappings by standard
+      const mappingsByStandard = {};
+      (o.standardMappings||[]).forEach((m,i) => {
+        const stdId = m.standardId || p.awardStandardIds?.[0] || 'unknown';
+        if (!mappingsByStandard[stdId]) mappingsByStandard[stdId] = [];
+        mappingsByStandard[stdId].push({mapping: m, index: i});
+      });
+      
+      const mappings = Object.entries(mappingsByStandard).map(([stdId, items]) => {
+        const stdIndex = p.awardStandardIds?.indexOf(stdId);
+        const stdName = stdIndex >= 0 ? p.awardStandardNames[stdIndex] : stdId;
+        const showStdHeader = p.awardStandardIds?.length > 1;
+        
+        const badges = items.map(({mapping: m, index: i}) => `
+          <span class="badge text-bg-secondary me-2 mb-2">
+            ${escapeHtml(m.criteria)} / ${escapeHtml(m.thread)}
+            <button type="button" class="btn btn-sm btn-link text-white opacity-75 p-0 ms-2" data-remove-plo-map="${o.id}" data-remove-plo-map-index="${i}" title="Remove">×</button>
+          </span>
+        `).join('');
+        
+        return showStdHeader 
+          ? `<div class="mb-2"><div class="small fw-semibold text-secondary mb-1">${escapeHtml(stdName)}</div>${badges}</div>`
+          : badges;
+      }).join("");
 
       // Lint the PLO text for problematic verbs
       const lintResult = (typeof LO_Lint !== 'undefined') ? LO_Lint.lintLearningOutcome(o.text || "") : { issues: [] };
@@ -1160,9 +1292,17 @@ if (step === "structure") {
 
           <div class="mt-3">
             <div class="fw-semibold small mb-2">Map this PLO to QQI award standards</div>
-            ${!p.awardStandardId ? `
+            ${!p.awardStandardIds || !p.awardStandardIds.length ? `
               <div class="small text-danger">Select a QQI award standard in Identity to enable mapping.</div>
             ` : `
+              ${p.awardStandardIds.length > 1 ? `
+                <div class="mb-2">
+                  <label class="form-label small mb-1">Select which standard to map to:</label>
+                  <select class="form-select form-select-sm" data-plo-standard-selector="${o.id}" style="max-width: 400px;">
+                    ${p.awardStandardIds.map((stdId, idx) => `<option value="${escapeHtml(stdId)}">${escapeHtml(p.awardStandardNames[idx] || stdId)}</option>`).join('')}
+                  </select>
+                </div>
+              ` : ''}
               <div class="d-flex flex-wrap gap-2 align-items-end">
                 <div style="min-width:220px">
                   <label class="form-label small mb-1">Criteria</label>
@@ -1186,8 +1326,6 @@ if (step === "structure") {
     }).join("");
 
     content.innerHTML = devModeToggleHtml + `
-    // Dev-only UI toggle wiring
-    wireDevModeToggle();
       <div class="card shadow-sm">
         <div class="card-body">
           <div class="d-flex justify-content-between align-items-center mb-3">
@@ -1991,9 +2129,7 @@ if (step === "schedule") {
   if (step === "mapping") {
     if (!p.plos.length || !p.modules.length) {
       content.innerHTML = devModeToggleHtml + `<div class="card shadow-sm"><div class="card-body"><h5 class="card-title">Mapping</h5><div class="small text-secondary">Add PLOs and modules first.</div></div></div>`;
-    // Dev-only UI toggle wiring
-    wireDevModeToggle();
-    wireDevModeToggle();
+      wireDevModeToggle();
       return;
     }
 
@@ -2045,8 +2181,6 @@ if (step === "schedule") {
       : '';
 
     content.innerHTML = devModeToggleHtml + `
-    // Dev-only UI toggle wiring
-    wireDevModeToggle();
       <div class="card shadow-sm">
         <div class="card-body">
           <h5 class="card-title mb-3">Map PLOs to modules (QQI-critical)</h5>
@@ -2076,14 +2210,17 @@ if (step === "schedule") {
     `;
     wireDevModeToggle();
 
-    // Load standards and render the full table
-    getAwardStandardById(p.awardStandardId).then(standardsData => {
-      renderTraceabilityTable(p, standardsData, devModeToggleHtml);
-    }).catch(err => {
-      console.error('Failed to load standards:', err);
-      // Render without standards coverage check
-      renderTraceabilityTable(p, null, devModeToggleHtml);
-    });
+    // Load all selected award standards and render the full table
+    const standardsIds = p.awardStandardIds || [];
+    Promise.all(standardsIds.map(stdId => getAwardStandardById(stdId)))
+      .then(standardsDataArray => {
+        renderTraceabilityTable(p, standardsDataArray, devModeToggleHtml);
+      })
+      .catch(err => {
+        console.error('Failed to load standards:', err);
+        // Render without standards coverage check
+        renderTraceabilityTable(p, null, devModeToggleHtml);
+      });
     return;
   }
 
@@ -2120,12 +2257,12 @@ if (step === "schedule") {
   `;
 
   const versionCards = versions.map((v, idx) => {
-    const mods = Array.isArray(v.deliveryModalities) ? v.deliveryModalities : [];
+    const mod = v.deliveryModality;
     const patterns = v.deliveryPatterns || {};
-    const modLines = mods.map(mod => {
+    const modLines = mod ? (() => {
       const pat = patterns[mod] || defaultPatternFor(mod);
       return `<div class="small"><span class="fw-semibold">${escapeHtml(mod)}</span>: ${Number(pat.syncOnlinePct||0)}% sync online, ${Number(pat.asyncDirectedPct||0)}% async directed, ${Number(pat.onCampusPct||0)}% on-campus</div>`;
-    }).join("");
+    })() : "";
 
     const stages = (v.stages || []).slice().sort((a,b)=>Number(a.sequence||0)-Number(b.sequence||0));
     const stageLines = stages.map(s => {
@@ -2179,8 +2316,6 @@ if (step === "schedule") {
   const isComplete100 = completionPercent(p) === 100;
 
   content.innerHTML = devModeToggleHtml + `
-    // Dev-only UI toggle wiring
-    wireDevModeToggle();
     <div class="card shadow-sm">
       <div class="card-body">
         <h5 class="card-title mb-3">QQI Snapshot (copy/paste-ready)</h5>
@@ -2505,23 +2640,31 @@ function wireIdentity(){
   async function refreshStandardLevelMismatch(){
     if (!mismatchHost) return;
     mismatchHost.innerHTML = "";
-    if (!p.awardStandardId) return;
+    if (!p.awardStandardIds || !p.awardStandardIds.length) return;
 
-    let std = null;
-    try {
-      std = await getAwardStandardById(p.awardStandardId);
-    } catch (e) {
-      return; // can't validate without standards
+    // Check all selected standards for level mismatches
+    const mismatches = [];
+    for (const stdId of p.awardStandardIds) {
+      let std = null;
+      try {
+        std = await getAwardStandardById(stdId);
+      } catch (e) {
+        continue;
+      }
+      const supportedLevels = Array.isArray(std?.levels) ? std.levels.map(Number).filter(n => Number.isFinite(n)) : [];
+      const nfqNum = Number(p.nfqLevel);
+
+      if (supportedLevels.length && Number.isFinite(nfqNum) && !supportedLevels.includes(nfqNum)) {
+        mismatches.push({ std, supportedLevels, target: supportedLevels[0] });
+      }
     }
-    const supportedLevels = Array.isArray(std?.levels) ? std.levels.map(Number).filter(n => Number.isFinite(n)) : [];
-    const nfqNum = Number(p.nfqLevel);
 
-    if (!supportedLevels.length || !Number.isFinite(nfqNum) || supportedLevels.includes(nfqNum)) {
+    if (mismatches.length === 0) {
       mismatchHost.innerHTML = "";
       return;
     }
 
-    const target = supportedLevels[0];
+    const firstMismatch = mismatches[0];
     mismatchHost.innerHTML = `
       <div class="alert alert-warning mb-0 d-flex justify-content-between align-items-start" style="gap:12px;">
         <div>
@@ -2529,14 +2672,14 @@ function wireIdentity(){
           <div>“${escapeHtml(std.title || std.standard_name || std.standardName || std.standard_id || "Selected award standard") }” supports level(s) <span class="fw-semibold">${escapeHtml(supportedLevels.join(", "))}</span>. You currently have level <span class="fw-semibold">${escapeHtml(String(p.nfqLevel ?? ""))}</span>.</div>
           <div class="text-secondary">Change the NFQ level or choose a different award standard.</div>
         </div>
-        ${target ? `<button type="button" class="btn btn-sm btn-warning" id="btnFixIdentityLevel">Set to ${target}</button>` : ``}
+        ${firstMismatch.target ? `<button type="button" class="btn btn-sm btn-warning" id="btnFixIdentityLevel">Set to ${firstMismatch.target}</button>` : ``}
       </div>
     `;
     const btn = document.getElementById("btnFixIdentityLevel");
     if (btn) {
       btn.onclick = () => {
-        p.nfqLevel = target;
-        if (levelInput) levelInput.value = String(target);
+        p.nfqLevel = firstMismatch.target;
+        if (levelInput) levelInput.value = String(firstMismatch.target);
         saveDebounced();
         renderFlags();
         refreshStandardLevelMismatch();
@@ -2549,21 +2692,84 @@ function wireIdentity(){
   if (tc) tc.addEventListener("input", (e)=>{ p.totalCredits = e.target.value ? Number(e.target.value) : ""; saveDebounced(); });
   const schoolSelect = document.getElementById("schoolSelect");
   if (schoolSelect) schoolSelect.addEventListener("change", (e)=>{ p.school = e.target.value; saveDebounced(); });
-  const standardSelect = document.getElementById("standardSelect");
-  if (standardSelect) {
-    standardSelect.addEventListener("change", async (e) => {
-      p.awardStandardId = e.target.value || "";
-      try {
-        const s = await getAwardStandardById(p.awardStandardId);
-        p.awardStandardName = s?.standard_name || s?.standardName || (p.awardStandardId ? "QQI Award Standard" : "");
-      } catch (err) {
-        // If standards.json can't be loaded (e.g., file://), keep the selection but leave name generic.
-        p.awardStandardName = p.awardStandardId ? "QQI Award Standard" : "";
+  
+  // Ensure arrays exist
+  if (!Array.isArray(p.awardStandardIds)) p.awardStandardIds = [];
+  if (!Array.isArray(p.awardStandardNames)) p.awardStandardNames = [];
+  
+  // Render standard selectors (up to 2)
+  const container = document.getElementById("standardSelectorsContainer");
+  if (container) {
+    function renderStandardSelectors() {
+      const numSelectors = Math.min(p.awardStandardIds.length + 1, 2);
+      let html = '';
+      
+      for (let i = 0; i < numSelectors; i++) {
+        const selectedId = p.awardStandardIds[i] || '';
+        const canRemove = i > 0 || p.awardStandardIds.length > 1;
+        
+        html += `
+          <div class="d-flex gap-2 mb-2">
+            <select class="form-select standard-selector" data-index="${i}">
+              <option value="" ${!selectedId ? "selected" : ""}>Select a standard${i > 0 ? ' (optional)' : ''}</option>
+              <option value="qqi-computing-l6-9" ${selectedId === "qqi-computing-l6-9" ? "selected" : ""}>Computing (Levels 6–9)</option>
+              <option value="qqi-professional-awards-l5-9" ${selectedId === "qqi-professional-awards-l5-9" ? "selected" : ""}>Professional (Levels 5–9)</option>
+              <option value="qqi-generic-major-masters-l9" ${selectedId === "qqi-generic-major-masters-l9" ? "selected" : ""}>Generic Major — Masters Degree (Level 9)</option>
+            </select>
+            ${canRemove && selectedId ? `<button type="button" class="btn btn-outline-danger remove-standard" data-index="${i}">×</button>` : ''}
+          </div>
+        `;
       }
-      saveDebounced();
-      renderFlags();
-      refreshStandardLevelMismatch();
-    });
+      
+      container.innerHTML = html;
+      
+      // Wire up selectors
+      container.querySelectorAll('.standard-selector').forEach(select => {
+        select.addEventListener('change', async (e) => {
+          const index = parseInt(e.target.getAttribute('data-index'));
+          const newValue = e.target.value;
+          
+          if (newValue) {
+            // Update or add standard
+            p.awardStandardIds[index] = newValue;
+            try {
+              const s = await getAwardStandardById(newValue);
+              p.awardStandardNames[index] = s?.standard_name || s?.standardName || "QQI Award Standard";
+            } catch (err) {
+              p.awardStandardNames[index] = "QQI Award Standard";
+            }
+          } else {
+            // Remove empty slot
+            p.awardStandardIds.splice(index, 1);
+            p.awardStandardNames.splice(index, 1);
+          }
+          
+          // Clean up arrays - remove empty entries
+          p.awardStandardIds = p.awardStandardIds.filter(id => id);
+          p.awardStandardNames = p.awardStandardNames.filter(name => name);
+          
+          saveDebounced();
+          renderFlags();
+          refreshStandardLevelMismatch();
+          renderStandardSelectors();
+        });
+      });
+      
+      // Wire up remove buttons
+      container.querySelectorAll('.remove-standard').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const index = parseInt(e.target.getAttribute('data-index'));
+          p.awardStandardIds.splice(index, 1);
+          p.awardStandardNames.splice(index, 1);
+          saveDebounced();
+          renderFlags();
+          refreshStandardLevelMismatch();
+          renderStandardSelectors();
+        });
+      });
+    }
+    
+    renderStandardSelectors();
   }
   document.getElementById("intakeInput").addEventListener("input", (e)=>{ p.intakeMonths = e.target.value.split(",").map(s=>s.trim()).filter(Boolean); saveDebounced(); });
 
@@ -2731,9 +2937,80 @@ function wireOutcomes(){
   });
 
   // Standards mapping UI (only enabled once an award standard is selected)
-  if (!p.awardStandardId) return;
+  if (!p.awardStandardIds || !p.awardStandardIds.length) return;
 
-  getAwardStandardById(p.awardStandardId).then(std => {
+  // Track which standard is currently selected for each PLO (default to first)
+  const ploSelectedStandards = {};
+  
+  // Wire up standard selector dropdowns (if there are multiple standards)
+  document.querySelectorAll("[data-plo-standard-selector]").forEach(sel => {
+    const ploId = sel.getAttribute("data-plo-standard-selector");
+    ploSelectedStandards[ploId] = sel.value || p.awardStandardIds[0];
+    
+    sel.addEventListener("change", () => {
+      ploSelectedStandards[ploId] = sel.value;
+      // Re-populate the criteria dropdown for this PLO based on new standard
+      populatePloMappingControls(ploId);
+    });
+  });
+
+  async function populatePloMappingControls(ploId) {
+    const selectedStandardId = ploSelectedStandards[ploId] || p.awardStandardIds[0];
+    const std = await getAwardStandardById(selectedStandardId);
+    const level = String(p.nfqLevel || "");
+    const criteriaList = Object.keys(std.index || {}).sort((a,b)=>a.localeCompare(b));
+
+    const criteriaSel = document.querySelector(`[data-plo-map-criteria="${ploId}"]`);
+    const threadSel = document.querySelector(`[data-plo-map-thread="${ploId}"]`);
+    const descEl = document.querySelector(`[data-plo-map-desc="${ploId}"]`);
+    
+    if (!criteriaSel || !threadSel) return;
+
+    function setOptions(el, opts, placeholder="Select..."){
+      el.innerHTML = "";
+      const ph = document.createElement("option");
+      ph.value = "";
+      ph.textContent = placeholder;
+      el.appendChild(ph);
+      opts.forEach(o=>{
+        const opt = document.createElement("option");
+        opt.value=o;
+        opt.textContent=o;
+        el.appendChild(opt);
+      });
+    }
+
+    setOptions(criteriaSel, criteriaList, "Select criteria...");
+    setOptions(threadSel, [], "Select thread...");
+
+    criteriaSel.onchange = () => {
+      const criteria = criteriaSel.value;
+      if (!criteria) {
+        setOptions(threadSel, [], "Select thread...");
+        if (descEl) descEl.textContent = "";
+        return;
+      }
+      const threads = Object.keys(std.index[criteria] || {}).sort((a,b)=>a.localeCompare(b));
+      setOptions(threadSel, threads, "Select thread...");
+      threadSel.onchange = () => {
+        const thread = threadSel.value;
+        if (!thread || !descEl) return;
+        const desc = (std.index[criteria][thread][level] || "").toString();
+        descEl.textContent = desc || "(No description for this level)";
+      };
+    };
+  }
+
+  // Initialize all PLO mapping controls
+  p.plos.forEach(plo => {
+    ploSelectedStandards[plo.id] = p.awardStandardIds[0]; // default to first
+  });
+
+  // Populate controls for each PLO
+  Promise.all(p.plos.map(plo => populatePloMappingControls(plo.id)));
+
+  // Load first standard for summary and mismatch checking
+  getAwardStandardById(p.awardStandardIds[0]).then(std => {
     const level = String(p.nfqLevel || "");
     const criteriaList = Object.keys(std.index || {}).sort((a,b)=>a.localeCompare(b));
 
@@ -2778,12 +3055,31 @@ function wireOutcomes(){
         snap.innerHTML = `<div class="text-secondary">Add PLOs to see a mapping snapshot.</div>`;
       } else {
         const rowsHtml = plos.map((o, i) => {
-          const maps = (o.standardMappings || []).map(m => {
-            const desc = (std.index?.[m.criteria]?.[m.thread]?.[level] || "").toString();
-            const shortDesc = desc.length > 180 ? (desc.slice(0, 180) + "…") : desc;
-            return `<li><span class="fw-semibold">${escapeHtml(m.criteria)} / ${escapeHtml(m.thread)}</span><div class="text-secondary">${escapeHtml(shortDesc)}</div></li>`;
+          // Group mappings by standard
+          const mappingsByStandard = {};
+          (o.standardMappings || []).forEach(m => {
+            const stdId = m.standardId || p.awardStandardIds?.[0] || 'unknown';
+            if (!mappingsByStandard[stdId]) mappingsByStandard[stdId] = [];
+            mappingsByStandard[stdId].push(m);
+          });
+          
+          const mapsHtml = Object.entries(mappingsByStandard).map(([stdId, mappings]) => {
+            const stdIndex = p.awardStandardIds?.indexOf(stdId);
+            const stdName = stdIndex >= 0 ? p.awardStandardNames[stdIndex] : stdId;
+            const showStdHeader = p.awardStandardIds?.length > 1;
+            
+            const items = mappings.map(m => {
+              const desc = (std.index?.[m.criteria]?.[m.thread]?.[level] || "").toString();
+              const shortDesc = desc.length > 180 ? (desc.slice(0, 180) + "…") : desc;
+              return `<li><span class="fw-semibold">${escapeHtml(m.criteria)} / ${escapeHtml(m.thread)}</span><div class="text-secondary">${escapeHtml(shortDesc)}</div></li>`;
+            }).join("");
+            
+            return showStdHeader
+              ? `<div class="mb-2"><div class="small fw-semibold">${escapeHtml(stdName)}</div><ul class="mb-0 ps-3">${items}</ul></div>`
+              : `<ul class="mb-0 ps-3">${items}</ul>`;
           }).join("");
-          const mapsBlock = maps ? `<ul class="mb-0 ps-3">${maps}</ul>` : `<span class="text-secondary">No mappings yet</span>`;
+          
+          const mapsBlock = mapsHtml || `<span class="text-secondary">No mappings yet</span>`;
           return `<tr><td class="text-nowrap">PLO ${i+1}</td><td>${escapeHtml(o.text||"")}</td><td>${mapsBlock}</td></tr>`;
         }).join("");
         snap.innerHTML = `
@@ -2889,10 +3185,13 @@ function wireOutcomes(){
         const o = p.plos.find(x => x.id === ploId);
         if (!o) return;
 
-        // Avoid duplicates
-        const exists = (o.standardMappings||[]).some(x => x.criteria===c && x.thread===t);
+        // Get the selected standard for this PLO
+        const selectedStandardId = ploSelectedStandards[ploId] || p.awardStandardIds[0];
+
+        // Avoid duplicates (check criteria, thread, and standard)
+        const exists = (o.standardMappings||[]).some(x => x.criteria===c && x.thread===t && x.standardId===selectedStandardId);
         if (!exists) {
-          o.standardMappings.push({ criteria: c, thread: t });
+          o.standardMappings.push({ criteria: c, thread: t, standardId: selectedStandardId });
           saveDebounced();
           renderFlags();
           render();
@@ -3434,17 +3733,29 @@ function wireSchedule() {
   }
 }
 
-function renderTraceabilityTable(p, standardsData, devModeToggleHtml) {
+function renderTraceabilityTable(p, standardsDataArray, devModeToggleHtml) {
   const content = document.getElementById("content");
   const traceRows = [];
   const moduleMap = new Map((p.modules || []).map(m => [m.id, m]));
   
-  // Get all award standards for the programme's NFQ level
-  const nfqLevel = String(p.nfqLevel || '');
-  const levelStandards = (standardsData?.levels?.[nfqLevel]) || [];
+  // Handle both single and multiple standards
+  const standardsList = Array.isArray(standardsDataArray) ? standardsDataArray : (standardsDataArray ? [standardsDataArray] : []);
   
-  // Track which standards are covered by PLOs
-  const coveredStandards = new Set();
+  // Get all award standards for the programme's NFQ level, grouped by award standard
+  const nfqLevel = String(p.nfqLevel || '');
+  const standardsByAward = new Map();
+  standardsList.forEach((std, idx) => {
+    const awardStdId = p.awardStandardIds?.[idx] || (std?.standard_id || 'unknown');
+    const awardStdName = p.awardStandardNames?.[idx] || (std?.standard_name || 'Unknown Standard');
+    const levelStandards = (std?.levels?.[nfqLevel]) || [];
+    standardsByAward.set(awardStdId, { name: awardStdName, standards: levelStandards });
+  });
+  
+  // Track which standards are covered by PLOs, organized by award standard
+  const coveredStandardsByAward = new Map();
+  standardsByAward.forEach((data, awardId) => {
+    coveredStandardsByAward.set(awardId, new Set());
+  });
   
   (p.plos || []).forEach((plo, ploIdx) => {
     const standardMappings = plo.standardMappings || [];
@@ -3453,20 +3764,24 @@ function renderTraceabilityTable(p, standardsData, devModeToggleHtml) {
     // If no standard mappings, still show the PLO
     const standards = standardMappings.length > 0 
       ? standardMappings 
-      : [{ criteria: '(Not mapped)', thread: '' }];
+      : [{ criteria: '(Not mapped)', thread: '', standardId: null }];
     
     standards.forEach(std => {
       const standardLabel = std.thread ? `${std.criteria} — ${std.thread}` : std.criteria;
       
+      // Determine which award standard this mapping belongs to
+      const awardId = std.standardId || p.awardStandardIds?.[0] || 'unknown';
+      
       // Mark this standard as covered by a PLO
-      if (std.thread) {
-        coveredStandards.add(std.thread);
+      if (std.thread && coveredStandardsByAward.has(awardId)) {
+        coveredStandardsByAward.get(awardId).add(std.thread);
       }
       
       if (mappedModuleIds.length === 0) {
         // PLO not mapped to any module
         traceRows.push({
           standard: standardLabel,
+          awardStandardId: awardId,
           ploNum: ploIdx + 1,
           ploText: plo.text || '',
           moduleCode: '—',
@@ -3491,6 +3806,7 @@ function renderTraceabilityTable(p, standardsData, devModeToggleHtml) {
             // Module has no MIMLOs
             traceRows.push({
               standard: standardLabel,
+              awardStandardId: awardId,
               ploNum: ploIdx + 1,
               ploText: plo.text || '',
               moduleCode: mod.code || '',
@@ -3515,6 +3831,7 @@ function renderTraceabilityTable(p, standardsData, devModeToggleHtml) {
                 // MIMLO not assessed
                 traceRows.push({
                   standard: standardLabel,
+                  awardStandardId: awardId,
                   ploNum: ploIdx + 1,
                   ploText: plo.text || '',
                   moduleCode: mod.code || '',
@@ -3531,6 +3848,7 @@ function renderTraceabilityTable(p, standardsData, devModeToggleHtml) {
                 coveringAssessments.forEach(asm => {
                   traceRows.push({
                     standard: standardLabel,
+                    awardStandardId: awardId,
                     ploNum: ploIdx + 1,
                     ploText: plo.text || '',
                     moduleCode: mod.code || '',
@@ -3552,23 +3870,26 @@ function renderTraceabilityTable(p, standardsData, devModeToggleHtml) {
     });
   });
 
-  // Find uncovered award standards and add them as critical gaps
-  const uncoveredStandards = levelStandards.filter(std => !coveredStandards.has(std.thread));
-  uncoveredStandards.forEach(std => {
-    const standardLabel = std.thread ? `${std.criteria} — ${std.thread}` : std.criteria;
-    traceRows.unshift({
-      standard: standardLabel,
-      ploNum: '—',
-      ploText: '(No PLO covers this standard)',
-      moduleCode: '—',
-      moduleTitle: '',
-      mimloNum: '—',
-      mimloText: '',
-      assessmentTitle: '',
-      assessmentType: '',
-      assessmentWeight: '',
-      status: 'uncovered',
-      statusLabel: 'Standard Gap'
+  // Find uncovered award standards for each award and add them as critical gaps
+  standardsByAward.forEach((awardInfo, awardStdId) => {
+    const uncoveredStandards = awardInfo.standards.filter(std => !coveredStandardsByAward.get(awardStdId)?.has(std.thread));
+    uncoveredStandards.forEach(std => {
+      const standardLabel = std.thread ? `${std.criteria} — ${std.thread}` : std.criteria;
+      traceRows.unshift({
+        standard: standardLabel,
+        awardStandardId: awardStdId,
+        ploNum: '—',
+        ploText: '(No PLO covers this standard)',
+        moduleCode: '—',
+        moduleTitle: '',
+        mimloNum: '—',
+        mimloText: '',
+        assessmentTitle: '',
+        assessmentType: '',
+        assessmentWeight: '',
+        status: 'uncovered',
+        statusLabel: 'Standard Gap'
+      });
     });
   });
 
@@ -3579,6 +3900,21 @@ function renderTraceabilityTable(p, standardsData, devModeToggleHtml) {
   const gapCount = traceRows.filter(r => r.status === 'gap').length;
   const uncoveredCount = traceRows.filter(r => r.status === 'uncovered').length;
 
+  // Build coverage summary by award standard
+  const coverageSummaryByAward = Array.from(standardsByAward.entries()).map(([awardStdId, awardInfo]) => {
+    const awardRows = traceRows.filter(r => r.awardStandardId === awardStdId);
+    const awardUncovered = awardRows.filter(r => r.status === 'uncovered').length;
+    const awardTotal = awardInfo.standards.length;
+    const awardCovered = awardTotal - awardUncovered;
+    return {
+      awardStdId,
+      awardStdName: awardInfo.name,
+      total: awardTotal,
+      covered: awardCovered,
+      uncovered: awardUncovered
+    };
+  });
+
   const statusBadge = (status, label) => {
     if (status === 'ok') return `<span class="badge text-bg-success">${escapeHtml(label)}</span>`;
     if (status === 'warning') return `<span class="badge text-bg-warning">${escapeHtml(label)}</span>`;
@@ -3586,29 +3922,58 @@ function renderTraceabilityTable(p, standardsData, devModeToggleHtml) {
     return `<span class="badge text-bg-danger">${escapeHtml(label)}</span>`;
   };
 
-  const tableRows = traceRows.map((r, i) => `
-    <tr data-status="${r.status}">
-      <td class="small ${r.status === 'uncovered' ? 'fw-bold' : ''}">${escapeHtml(r.standard)}</td>
-      <td class="small text-nowrap">${r.ploNum !== '—' ? 'PLO ' + r.ploNum : '—'}</td>
-      <td class="small" style="max-width:200px;" title="${escapeHtml(r.ploText)}">${escapeHtml(r.ploText.length > 60 ? r.ploText.slice(0,60) + '…' : r.ploText)}</td>
-      <td class="small text-nowrap">${escapeHtml(r.moduleCode)}</td>
-      <td class="small">${escapeHtml(r.moduleTitle)}</td>
-      <td class="small text-nowrap">${r.mimloNum !== '—' ? 'MIMLO ' + r.mimloNum : '—'}</td>
-      <td class="small" style="max-width:180px;" title="${escapeHtml(r.mimloText)}">${escapeHtml(r.mimloText.length > 50 ? r.mimloText.slice(0,50) + '…' : r.mimloText)}</td>
-      <td class="small">${escapeHtml(r.assessmentTitle)}</td>
-      <td class="small">${escapeHtml(r.assessmentType)}</td>
-      <td class="small text-end">${escapeHtml(r.assessmentWeight)}</td>
-      <td class="small text-center">${statusBadge(r.status, r.statusLabel)}</td>
-    </tr>
-  `).join('');
+  // Group trace rows by award standard for display
+  const tableRowsByAward = new Map();
+  Array.from(standardsByAward.entries()).forEach(([awardStdId, awardInfo]) => {
+    tableRowsByAward.set(awardStdId, []);
+  });
+  
+  traceRows.forEach(r => {
+    const awardStdId = r.awardStandardId || Array.from(standardsByAward.keys())[0];
+    if (tableRowsByAward.has(awardStdId)) {
+      tableRowsByAward.get(awardStdId).push(r);
+    }
+  });
 
-  const standardsCoverage = levelStandards.length > 0 
-    ? `<div class="mb-3 p-3 ${uncoveredCount > 0 ? 'bg-danger-subtle' : 'bg-success-subtle'} rounded">
-        <div class="fw-semibold mb-1">Award Standards Coverage (NFQ Level ${nfqLevel})</div>
-        <div class="small">${levelStandards.length - uncoveredCount} of ${levelStandards.length} standards covered by PLOs
-          ${uncoveredCount > 0 ? ` — <strong>${uncoveredCount} standard${uncoveredCount > 1 ? 's' : ''} not yet addressed</strong>` : ' ✓'}
-        </div>
-       </div>`
+  const tableRows = Array.from(tableRowsByAward.entries()).map(([awardStdId, rows]) => {
+    const awardInfo = standardsByAward.get(awardStdId);
+    const awardHeaderHtml = `
+      <tr class="table-secondary">
+        <td colspan="11" class="fw-semibold">${escapeHtml(awardInfo.name)}</td>
+      </tr>`;
+    
+    const rowsHtml = rows.map((r, i) => `
+      <tr data-status="${r.status}">
+        <td class="small ${r.status === 'uncovered' ? 'fw-bold' : ''}">${escapeHtml(r.standard)}</td>
+        <td class="small text-nowrap">${r.ploNum !== '—' ? 'PLO ' + r.ploNum : '—'}</td>
+        <td class="small" style="max-width:200px;" title="${escapeHtml(r.ploText)}">${escapeHtml(r.ploText.length > 60 ? r.ploText.slice(0,60) + '…' : r.ploText)}</td>
+        <td class="small text-nowrap">${escapeHtml(r.moduleCode)}</td>
+        <td class="small">${escapeHtml(r.moduleTitle)}</td>
+        <td class="small text-nowrap">${r.mimloNum !== '—' ? 'MIMLO ' + r.mimloNum : '—'}</td>
+        <td class="small" style="max-width:180px;" title="${escapeHtml(r.mimloText)}">${escapeHtml(r.mimloText.length > 50 ? r.mimloText.slice(0,50) + '…' : r.mimloText)}</td>
+        <td class="small">${escapeHtml(r.assessmentTitle)}</td>
+        <td class="small">${escapeHtml(r.assessmentType)}</td>
+        <td class="small text-end">${escapeHtml(r.assessmentWeight)}</td>
+        <td class="small text-center">${statusBadge(r.status, r.statusLabel)}</td>
+      </tr>
+    `).join('');
+    
+    return awardHeaderHtml + rowsHtml;
+  }).join('');
+
+  const standardsCoverage = coverageSummaryByAward.length > 0
+    ? `<div class="mb-3">
+        ${coverageSummaryByAward.map(summary => {
+          const hasCoverage = summary.total > 0;
+          const isCovered = summary.uncovered === 0;
+          return `<div class="mb-2 p-3 ${isCovered ? 'bg-success-subtle' : 'bg-danger-subtle'} rounded">
+            <div class="fw-semibold mb-1">${escapeHtml(summary.awardStdName)}</div>
+            <div class="small">${summary.covered} of ${summary.total} standards covered by PLOs
+              ${!isCovered ? ` — <strong>${summary.uncovered} standard${summary.uncovered > 1 ? 's' : ''} not yet addressed</strong>` : ' ✓'}
+            </div>
+          </div>`;
+        }).join('')}
+      </div>`
     : (nfqLevel ? `<div class="alert alert-warning mb-3">No award standards found for NFQ Level ${nfqLevel}. Check that standards.json includes this level.</div>` : '');
 
   // Build Sankey data from trace rows
@@ -3859,14 +4224,16 @@ function buildSankeyData(traceRows, programme) {
   traceRows.forEach(row => {
     // Handle uncovered standards - link them to a "gap" node to show they're missing coverage
     if (row.status === 'uncovered') {
-      const standardNode = addNode(`📋 ${row.standard}`, 'standard');
+      const awardPrefix = row.awardStandardId ? `[${row.awardStandardId}] ` : '';
+      const standardNode = addNode(`📋 ${awardPrefix}${row.standard}`, 'standard');
       const gapNode = addNode(`⚠️ NO PLO COVERAGE`, 'gap');
       addLink(standardNode, gapNode, 'uncovered');
       return;
     }
     
     // Add nodes for each level
-    const standardNode = addNode(`📋 ${row.standard}`, 'standard');
+    const awardPrefix = row.awardStandardId ? `[${row.awardStandardId}] ` : '';
+    const standardNode = addNode(`📋 ${awardPrefix}${row.standard}`, 'standard');
     
     if (row.ploNum !== '—') {
       const ploLabel = `🎯 PLO ${row.ploNum}`;
@@ -3997,8 +4364,8 @@ function initNavButtons(){
         alert("Enter the total programme credits (ECTS) in Identity before continuing.");
         return;
       }
-      if (!state.programme.awardStandardId) {
-        alert("Select a QQI award standard in Identity before continuing.");
+      if (!state.programme.awardStandardIds || !state.programme.awardStandardIds.length) {
+        alert("Select at least one QQI award standard in Identity before continuing.");
         return;
       }
     }
@@ -4029,7 +4396,25 @@ function initNavButtons(){
       const text = await file.text();
       const json = JSON.parse(text);
       // basic shape check
-      state.programme = { ...defaultProgramme(), ...json, schemaVersion: 1 };
+      state.programme = { ...defaultProgramme(), ...json, schemaVersion: 2 };
+      
+      // Migration: convert old single standard to array format
+      if (typeof state.programme.awardStandardId === 'string') {
+        const oldId = state.programme.awardStandardId || '';
+        const oldName = state.programme.awardStandardName || '';
+        state.programme.awardStandardIds = oldId ? [oldId] : [];
+        state.programme.awardStandardNames = oldName ? [oldName] : [];
+        delete state.programme.awardStandardId;
+        delete state.programme.awardStandardName;
+      }
+      // Ensure arrays exist
+      if (!Array.isArray(state.programme.awardStandardIds)) {
+        state.programme.awardStandardIds = [];
+      }
+      if (!Array.isArray(state.programme.awardStandardNames)) {
+        state.programme.awardStandardNames = [];
+      }
+      
       saveNow();
       state.stepIndex = 0;
       render();
