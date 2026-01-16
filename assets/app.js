@@ -352,29 +352,29 @@ function validateProgramme(p) {
   const flags = [];
   const sumCredits = (p.modules || []).reduce((acc, m) => acc + (Number(m.credits) || 0), 0);
 
-  if (!p.title.trim()) flags.push({ type: "error", msg: "Programme title is missing." });
-  if (!p.nfqLevel) flags.push({ type: "error", msg: "NFQ level is missing." });
+  if (!p.title.trim()) flags.push({ type: "error", msg: "Programme title is missing.", step: "identity" });
+  if (!p.nfqLevel) flags.push({ type: "error", msg: "NFQ level is missing.", step: "identity" });
   if (p.nfqLevel && (Number(p.nfqLevel) < 6 || Number(p.nfqLevel) > 9)) {
-    flags.push({ type: "error", msg: "NFQ level must be between 6 and 9 for this tool." });
+    flags.push({ type: "error", msg: "NFQ level must be between 6 and 9 for this tool.", step: "identity" });
   }
-  if (!p.awardType.trim()) flags.push({ type: "warn", msg: "Award type is missing." });
+  if (!p.awardType.trim()) flags.push({ type: "warn", msg: "Award type is missing.", step: "identity" });
 
-  if ((p.totalCredits || 0) <= 0) flags.push({ type: "error", msg: "Total programme credits are missing/zero." });
+  if ((p.totalCredits || 0) <= 0) flags.push({ type: "error", msg: "Total programme credits are missing/zero.", step: "structure" });
   if ((p.totalCredits || 0) > 0 && sumCredits !== p.totalCredits) {
-    flags.push({ type: "error", msg: `Credits mismatch: totalCredits=${p.totalCredits} but modules sum to ${sumCredits}.` });
+    flags.push({ type: "error", msg: `Credits mismatch: totalCredits=${p.totalCredits} but modules sum to ${sumCredits}.`, step: "structure" });
   }
 
   // Versions
   if (!Array.isArray(p.versions) || p.versions.length === 0) {
-    flags.push({ type: "error", msg: "At least one Programme Version is required (e.g., FT/PT/Online)." });
+    flags.push({ type: "error", msg: "At least one Programme Version is required (e.g., FT/PT/Online).", step: "versions" });
   } else {
     const labels = new Set();
     p.versions.forEach((v, idx) => {
       const prefix = `Version ${idx + 1}`;
-      if (!v.label || !v.label.trim()) flags.push({ type: "warn", msg: `${prefix}: label is missing.` });
+      if (!v.label || !v.label.trim()) flags.push({ type: "warn", msg: `${prefix}: label is missing.`, step: "versions" });
       else {
         const norm = v.label.trim().toLowerCase();
-        if (labels.has(norm)) flags.push({ type: "warn", msg: `${prefix}: duplicate label (“${v.label}”).` });
+        if (labels.has(norm)) flags.push({ type: "warn", msg: `${prefix}: duplicate label ("${v.label}").`, step: "versions" });
         labels.add(norm);
       }
 
@@ -382,29 +382,29 @@ function validateProgramme(p) {
       (v.deliveryModalities || []).forEach((mod) => {
         const pat = (v.deliveryPatterns || {})[mod];
         if (!pat) {
-          flags.push({ type: "error", msg: `${prefix}: missing delivery pattern for ${mod}.` });
+          flags.push({ type: "error", msg: `${prefix}: missing delivery pattern for ${mod}.`, step: "versions" });
           return;
         }
         const total = Number(pat.syncOnlinePct || 0) + Number(pat.asyncDirectedPct || 0) + Number(pat.onCampusPct || 0);
         if (total !== 100) {
-          flags.push({ type: "error", msg: `${prefix}: ${mod} delivery pattern must total 100% (currently ${total}%).` });
+          flags.push({ type: "error", msg: `${prefix}: ${mod} delivery pattern must total 100% (currently ${total}%).`, step: "versions" });
         }
       });
 
       if ((v.onlineProctoredExams || "TBC") === "YES" && !(v.onlineProctoredExamsNotes || "").trim()) {
-        flags.push({ type: "warn", msg: `${prefix}: online proctored exams marked YES but notes are empty.` });
+        flags.push({ type: "warn", msg: `${prefix}: online proctored exams marked YES but notes are empty.`, step: "versions" });
       }
 
-      if ((v.targetCohortSize || 0) <= 0) flags.push({ type: "warn", msg: `${prefix}: cohort size is missing/zero.` });
+      if ((v.targetCohortSize || 0) <= 0) flags.push({ type: "warn", msg: `${prefix}: cohort size is missing/zero.`, step: "versions" });
 
       // Stage structure
       if (!Array.isArray(v.stages) || v.stages.length === 0) {
-        flags.push({ type: "warn", msg: `${prefix}: no stages defined yet.` });
+        flags.push({ type: "warn", msg: `${prefix}: no stages defined yet.`, step: "stages" });
       } else {
         // Check stage credit totals vs programme credits (soft error if programme credits defined)
         const stageTargetSum = (v.stages || []).reduce((acc, s) => acc + Number(s.creditsTarget || 0), 0);
         if ((p.totalCredits || 0) > 0 && stageTargetSum > 0 && stageTargetSum !== Number(p.totalCredits || 0)) {
-          flags.push({ type: "warn", msg: `${prefix}: sum of stage credit targets (${stageTargetSum}) does not match programme total credits (${p.totalCredits}).` });
+          flags.push({ type: "warn", msg: `${prefix}: sum of stage credit targets (${stageTargetSum}) does not match programme total credits (${p.totalCredits}).`, step: "stages" });
         }
 
         // Stage module credits match target
@@ -415,11 +415,11 @@ function validateProgramme(p) {
             .reduce((acc, m) => acc + Number(m.credits || 0), 0);
 
           if ((s.creditsTarget || 0) > 0 && creditSum !== Number(s.creditsTarget || 0)) {
-            flags.push({ type: "warn", msg: `${prefix}: ${s.name || "stage"} module credits sum to ${creditSum} but target is ${s.creditsTarget}.` });
+            flags.push({ type: "warn", msg: `${prefix}: ${s.name || "stage"} module credits sum to ${creditSum} but target is ${s.creditsTarget}.`, step: "stages" });
           }
 
           if (s.exitAward && s.exitAward.enabled && !(s.exitAward.awardTitle || "").trim()) {
-            flags.push({ type: "warn", msg: `${prefix}: ${s.name || "stage"} has an exit award enabled but no award title entered.` });
+            flags.push({ type: "warn", msg: `${prefix}: ${s.name || "stage"} has an exit award enabled but no award title entered.`, step: "stages" });
           }
         });
       }
@@ -427,14 +427,14 @@ function validateProgramme(p) {
   }
 
   // Outcomes & mapping
-  if ((p.plos || []).length < 6) flags.push({ type: "warn", msg: "PLOs: fewer than 6 (usually aim for ~6–12)." });
-  if ((p.plos || []).length > 12) flags.push({ type: "warn", msg: "PLOs: more than 12 (consider tightening)." });
+  if ((p.plos || []).length < 6) flags.push({ type: "warn", msg: "PLOs: fewer than 6 (usually aim for ~6–12).", step: "outcomes" });
+  if ((p.plos || []).length > 12) flags.push({ type: "warn", msg: "PLOs: more than 12 (consider tightening).", step: "outcomes" });
 
   const modulesMissingMimlos = (p.modules || []).filter(m => !m.mimlos || m.mimlos.length === 0);
-  if (modulesMissingMimlos.length > 0) flags.push({ type: "warn", msg: `Some modules have no MIMLOs yet (${modulesMissingMimlos.length}).` });
+  if (modulesMissingMimlos.length > 0) flags.push({ type: "warn", msg: `Some modules have no MIMLOs yet (${modulesMissingMimlos.length}).`, step: "mimlos" });
 
   const unmappedPLOs = (p.plos || []).filter(o => !(p.ploToModules || {})[o.id] || (p.ploToModules[o.id] || []).length === 0);
-  if (unmappedPLOs.length > 0) flags.push({ type: "error", msg: `Some PLOs are not mapped to any module (${unmappedPLOs.length}).` });
+  if (unmappedPLOs.length > 0) flags.push({ type: "error", msg: `Some PLOs are not mapped to any module (${unmappedPLOs.length}).`, step: "mapping" });
 
   return flags;
 }
@@ -524,12 +524,53 @@ function renderFlags() {
   const box = document.getElementById("flagsBox");
   box.innerHTML = "";
   if (!flags.length) {
-    box.innerHTML = `${tagHtml("ok")} <div class="small">No flags</div>`;
+    box.innerHTML = `<div class="flag-item flag-ok">${tagHtml("ok")} <div class="small">No flags — programme looks good!</div></div>`;
     return;
   }
+  // Group flags by type for display
+  const errors = flags.filter(f => f.type === "error");
+  const warnings = flags.filter(f => f.type === "warn");
+  
+  // Summary header
+  const summaryDiv = document.createElement("div");
+  summaryDiv.className = "flags-summary mb-2 small";
+  const parts = [];
+  if (errors.length) parts.push(`<span class="text-danger fw-bold">${errors.length} error${errors.length > 1 ? 's' : ''}</span>`);
+  if (warnings.length) parts.push(`<span class="text-warning fw-bold">${warnings.length} warning${warnings.length > 1 ? 's' : ''}</span>`);
+  summaryDiv.innerHTML = parts.join(' · ');
+  box.appendChild(summaryDiv);
+  
+  const aSteps = activeSteps();
   flags.forEach(f => {
     const div = document.createElement("div");
-    div.innerHTML = `${tagHtml(f.type)} <div class="mt-1 small">${escapeHtml(f.msg)}</div>`;
+    div.className = `flag-item flag-${f.type}`;
+    
+    // Find step index for navigation
+    const stepIdx = aSteps.findIndex(s => s.key === f.step);
+    const stepTitle = stepIdx >= 0 ? aSteps[stepIdx].title : "";
+    
+    div.innerHTML = `
+      <div class="d-flex align-items-start gap-2">
+        ${tagHtml(f.type)}
+        <div class="flex-grow-1">
+          <div class="small">${escapeHtml(f.msg)}</div>
+          ${stepTitle ? `<div class="flag-step-link small text-muted">→ ${escapeHtml(stepTitle)}</div>` : ''}
+        </div>
+      </div>
+    `;
+    
+    // Make clickable if step is accessible
+    if (stepIdx >= 0) {
+      div.style.cursor = "pointer";
+      div.onclick = () => {
+        state.stepIndex = stepIdx;
+        render();
+        // Scroll to content area
+        const content = document.getElementById("content");
+        if (content) content.scrollIntoView({ behavior: "smooth", block: "start" });
+      };
+    }
+    
     box.appendChild(div);
   });
 }

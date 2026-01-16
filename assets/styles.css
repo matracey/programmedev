@@ -94,3 +94,48 @@ pre.jsonbox{
 .bg-white {
   background-color: var(--bs-body-bg) !important;
 }
+
+/* QQI Flags enhanced styling */
+.flag-item {
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  margin-bottom: 0.35rem;
+  transition: all 0.15s ease-in-out;
+  border-left: 3px solid transparent;
+}
+
+.flag-item:hover {
+  transform: translateX(2px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.flag-item.flag-error {
+  background: var(--tag-error-bg);
+  border-left-color: var(--tag-error-text);
+}
+
+.flag-item.flag-warn {
+  background: var(--tag-warn-bg);
+  border-left-color: var(--tag-warn-text);
+}
+
+.flag-item.flag-ok {
+  background: var(--tag-ok-bg);
+  border-left-color: var(--tag-ok-text);
+}
+
+.flag-step-link {
+  opacity: 0.7;
+  font-size: 0.75rem;
+  margin-top: 0.15rem;
+}
+
+.flag-item:hover .flag-step-link {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+.flags-summary {
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--bs-border-color);
+}
