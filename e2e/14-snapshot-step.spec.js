@@ -1,6 +1,6 @@
 // @ts-check
-const { test, expect, loadProgrammeData, getProgrammeData, navigateToStep } = require('./fixtures/test-fixtures');
-const { higherDiplomaComputing } = require('./fixtures/test-data');
+import { test, expect, loadProgrammeData, getProgrammeData, navigateToStep } from './fixtures/test-fixtures.js';
+import { higherDiplomaComputing } from './fixtures/test-data.js';
 
 test.describe('Step 13: QQI Snapshot', () => {
   test.beforeEach(async ({ page }) => {

@@ -1,5 +1,5 @@
 // @ts-check
-const { test, expect, loadProgrammeData, getProgrammeData, navigateToStep } = require('./fixtures/test-fixtures');
+import { test, expect, loadProgrammeData, getProgrammeData, navigateToStep } from './fixtures/test-fixtures.js';
 
 test.describe('Step 7: Effort Hours', () => {
   test.beforeEach(async ({ page }) => {

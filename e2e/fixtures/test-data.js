@@ -282,4 +282,4 @@ const moduleEditorViewData = {
   ]
 };
 
-module.exports = { higherDiplomaComputing, moduleEditorViewData };
+export { higherDiplomaComputing, moduleEditorViewData };

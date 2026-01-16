@@ -1,5 +1,5 @@
 // @ts-check
-const { test, expect, loadProgrammeData, navigateToStep } = require('./fixtures/test-fixtures');
+import { test, expect, loadProgrammeData, navigateToStep } from './fixtures/test-fixtures.js';
 
 test.describe('Application Initialization', () => {
   test('should load the application with correct title', async ({ page }) => {
