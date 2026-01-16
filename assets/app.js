@@ -1122,6 +1122,15 @@ if (step === "structure") {
         </span>
       `).join("");
 
+      // Lint the PLO text for problematic verbs
+      const lintResult = (typeof LO_Lint !== 'undefined') ? LO_Lint.lintLearningOutcome(o.text || "") : { issues: [] };
+      const lintWarnings = lintResult.issues.filter(i => i.severity === 'warn').map(issue => `
+        <div class="alert alert-warning py-1 px-2 mb-1 small">
+          <strong>⚠️ "${escapeHtml(issue.match)}"</strong> — ${escapeHtml(issue.message)}
+          ${issue.suggestions.length ? `<br><em>Try: ${issue.suggestions.map(s => escapeHtml(s)).join(", ")}</em>` : ""}
+        </div>
+      `).join("");
+
       return `
       <div class="card border-0 bg-white shadow-sm mb-3">
         <div class="card-body">
@@ -1131,6 +1140,7 @@ if (step === "structure") {
           </div>
 
           <textarea class="form-control" data-plo-id="${o.id}" rows="3" placeholder="e.g., Analyse… / Design and implement…">${escapeHtml(o.text||"")}</textarea>
+          <div class="plo-lint-warnings mt-2">${lintWarnings}</div>
 
           <div class="mt-3">
             <div class="fw-semibold small mb-2">Map this PLO to QQI award standards</div>
@@ -1200,12 +1210,27 @@ const modulePicker = canPickModule ? `
 ` : "";
 
     const blocks = modulesForEdit.map(m => {
-      const items = (m.mimlos||[]).map((t, i) => `
-        <div class="d-flex gap-2 mb-2">
-          <input class="form-control" data-mimlo-module="${m.id}" data-mimlo-index="${i}" value="${escapeHtml(mimloText(t))}">
-          <button class="btn btn-outline-danger" data-remove-mimlo="${m.id}" data-remove-mimlo-index="${i}">Remove</button>
-        </div>
-      `).join("");
+      const items = (m.mimlos||[]).map((t, i) => {
+        // Lint the MIMLO text for problematic verbs
+        const mimloTxt = mimloText(t);
+        const lintResult = (typeof LO_Lint !== 'undefined') ? LO_Lint.lintLearningOutcome(mimloTxt) : { issues: [] };
+        const lintWarnings = lintResult.issues.filter(iss => iss.severity === 'warn').map(issue => `
+          <div class="alert alert-warning py-1 px-2 mb-0 mt-1 small">
+            <strong>⚠️ "${escapeHtml(issue.match)}"</strong> — ${escapeHtml(issue.message)}
+            ${issue.suggestions.length ? `<br><em>Try: ${issue.suggestions.map(s => escapeHtml(s)).join(", ")}</em>` : ""}
+          </div>
+        `).join("");
+
+        return `
+          <div class="mb-2">
+            <div class="input-group d-flex gap-2">
+              <input class="form-control" data-mimlo-module="${m.id}" data-mimlo-index="${i}" value="${escapeHtml(mimloTxt)}">
+              <button class="btn btn-outline-danger" data-remove-mimlo="${m.id}" data-remove-mimlo-index="${i}">Remove</button>
+            </div>
+            <div class="mimlo-lint-warnings mt-1">${lintWarnings}</div>
+          </div>
+        `;
+      }).join("");
       const isHidden = (state.programme.mode === "MODULE_EDITOR" && editableIds.length > 1 && m.id !== selectedId);
       return `
         <div class="card border-0 bg-white shadow-sm mb-3" ${isHidden ? 'style="display:none"' : ""} data-module-card="${m.id}">
@@ -2620,6 +2645,26 @@ function wireOutcomes(){
       if (!o) return;
       o.text = e.target.value;
       saveDebounced();
+      
+      // Update lint warnings dynamically
+      if (typeof LO_Lint !== 'undefined') {
+        const lintResult = LO_Lint.lintLearningOutcome(e.target.value);
+        const warningsHtml = lintResult.issues.filter(i => i.severity === 'warn').map(issue => `
+          <div class="alert alert-warning py-1 px-2 mb-1 small">
+            <strong>⚠️ "${escapeHtml(issue.match)}"</strong> — ${escapeHtml(issue.message)}
+            ${issue.suggestions.length ? `<br><em>Try: ${issue.suggestions.map(s => escapeHtml(s)).join(", ")}</em>` : ""}
+          </div>
+        `).join("");
+        
+        // Find or create the lint container after the textarea
+        let lintContainer = area.parentElement.querySelector('.plo-lint-warnings');
+        if (!lintContainer) {
+          lintContainer = document.createElement('div');
+          lintContainer.className = 'plo-lint-warnings mt-2';
+          area.insertAdjacentElement('afterend', lintContainer);
+        }
+        lintContainer.innerHTML = warningsHtml;
+      }
     });
   });
 
@@ -2979,6 +3024,26 @@ if (picker) {
     m.mimlos[idx].text = e.target.value;
       saveDebounced();
       renderFlags();
+      
+      // Update lint warnings dynamically
+      if (typeof LO_Lint !== 'undefined') {
+        const lintResult = LO_Lint.lintLearningOutcome(e.target.value);
+        const warningsHtml = lintResult.issues.filter(i => i.severity === 'warn').map(issue => `
+          <div class="alert alert-warning py-1 px-2 mb-0 small">
+            <strong>⚠️ "${escapeHtml(issue.match)}"</strong> — ${escapeHtml(issue.message)}
+            ${issue.suggestions.length ? `<br><em>Try: ${issue.suggestions.map(s => escapeHtml(s)).join(", ")}</em>` : ""}
+          </div>
+        `).join("");
+        
+        // Find or create the lint container after the input
+        let lintContainer = inp.closest('.input-group').parentElement.querySelector('.mimlo-lint-warnings');
+        if (!lintContainer) {
+          lintContainer = document.createElement('div');
+          lintContainer.className = 'mimlo-lint-warnings mt-1';
+          inp.closest('.input-group').insertAdjacentElement('afterend', lintContainer);
+        }
+        lintContainer.innerHTML = warningsHtml;
+      }
     });
   });
 }
