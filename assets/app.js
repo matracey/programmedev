@@ -1023,7 +1023,7 @@ function render() {
               </div>
             </button>
           </h2>
-          <div id="${collapseId}" class="accordion-collapse collapse ${isActive?"show":""}" aria-labelledby="${headingId}" data-bs-parent="#versionsAccordion">
+          <div id="${collapseId}" class="accordion-collapse collapse ${isActive?"show":""}" aria-labelledby="${headingId}">
             <div class="accordion-body">
               <div class="row g-3">
                 <div class="col-md-6">
@@ -1089,7 +1089,8 @@ function render() {
         </div>
         <button class="btn btn-dark" id="addVersionBtn">+ Add version</button>
       </div>
-      <div class="mt-3 accordion" id="versionsAccordion">
+      ${accordionControlsHtml('versionsAccordion')}
+      <div class="mt-2 accordion" id="versionsAccordion">
         ${vItems || `<div class="alert alert-info mb-0">No versions yet. Add at least one version to continue.</div>`}
       </div>
     `;
@@ -1155,7 +1156,7 @@ function render() {
               </div>
             </button>
           </h2>
-          <div id="${collapseId}" class="accordion-collapse collapse ${isFirst?"show":""}" aria-labelledby="${headingId}" data-bs-parent="#stagesAccordion">
+          <div id="${collapseId}" class="accordion-collapse collapse ${isFirst?"show":""}" aria-labelledby="${headingId}">
             <div class="accordion-body">
               <div class="row g-3">
                 <div class="col-md-6">
@@ -1206,7 +1207,8 @@ function render() {
         </div>
       </div>
 
-      <div class="mt-3 accordion" id="stagesAccordion">
+      ${accordionControlsHtml('stagesAccordion')}
+      <div class="mt-2 accordion" id="stagesAccordion">
         ${stageCards || `<div class="alert alert-info mb-0">No stages yet for this version. Add a stage to begin.</div>`}
       </div>
     `;
@@ -1238,7 +1240,7 @@ if (step === "structure") {
               </div>
             </button>
           </h2>
-          <div id="${collapseId}" class="accordion-collapse collapse ${isFirst?"show":""}" aria-labelledby="${headingId}" data-bs-parent="#modulesAccordion">
+          <div id="${collapseId}" class="accordion-collapse collapse ${isFirst?"show":""}" aria-labelledby="${headingId}">
             <div class="accordion-body">
               <div class="row g-3">
                 <div class="col-md-3">
@@ -1278,6 +1280,7 @@ if (step === "structure") {
             </div>
           </div>
 
+          ${accordionControlsHtml('modulesAccordion')}
           <div class="accordion" id="modulesAccordion">
             ${moduleRows || `<div class="small text-secondary">No modules added yet.</div>`}
           </div>
@@ -1344,7 +1347,7 @@ if (step === "structure") {
             </div>
           </button>
         </h2>
-        <div id="${collapseId}" class="accordion-collapse collapse ${isFirst?"show":""}" aria-labelledby="${headingId}" data-bs-parent="#plosAccordion">
+        <div id="${collapseId}" class="accordion-collapse collapse ${isFirst?"show":""}" aria-labelledby="${headingId}">
           <div class="accordion-body">
             <textarea class="form-control" data-plo-id="${o.id}" rows="3" placeholder="e.g., Analyse… / Design and implement…">${escapeHtml(o.text||"")}</textarea>
             <div class="plo-lint-warnings mt-2">${lintWarnings}</div>
@@ -1395,6 +1398,7 @@ if (step === "structure") {
           ${bloomsGuidanceHtml(p.nfqLevel, "Programme Learning Outcomes")}
           <div id="plosStandardMismatchAlert" class="mb-3"></div>
           <div class="small-muted mb-3">Aim for ~6–12 clear, assessable outcomes. Keep them measurable and assessable.</div>
+          ${accordionControlsHtml('plosAccordion')}
           <div class="accordion" id="plosAccordion">
             ${rows || `<div class="small text-secondary">No PLOs added yet.</div>`}
           </div>
@@ -1462,7 +1466,7 @@ const modulePicker = canPickModule ? `
               </div>
             </button>
           </h2>
-          <div id="${collapseId}" class="accordion-collapse collapse ${isFirst?"show":""}" aria-labelledby="${headingId}" data-bs-parent="#mimlosAccordion">
+          <div id="${collapseId}" class="accordion-collapse collapse ${isFirst?"show":""}" aria-labelledby="${headingId}">
             <div class="accordion-body">
               <div class="small-muted mb-3">Add 3–6 MIMLOs per module to start.</div>
               ${items || `<div class="small text-secondary mb-2">No MIMLOs yet.</div>`}
@@ -1479,6 +1483,7 @@ const modulePicker = canPickModule ? `
           <h5 class="card-title mb-3">MIMLOs (Minimum Intended Module Learning Outcomes)</h5>
           ${bloomsGuidanceHtml(p.nfqLevel, "MIMLOs")}
           ${modulePicker}
+          ${accordionControlsHtml('mimlosAccordion')}
           <div class="accordion" id="mimlosAccordion">
             ${modulesForEdit.length ? blocks : `<div class="small text-secondary">Add modules first (Credits & Modules step).</div>`}
           </div>
@@ -1634,7 +1639,7 @@ if (step === "effort-hours") {
             </div>
           </button>
         </h2>
-        <div id="${collapseId}" class="accordion-collapse collapse ${isFirst?"show":""}" aria-labelledby="${headingId}" data-bs-parent="#effortAccordion">
+        <div id="${collapseId}" class="accordion-collapse collapse ${isFirst?"show":""}" aria-labelledby="${headingId}">
           <div class="accordion-body">
             ${noVersionsMsg || `
             <div class="table-responsive">
@@ -1688,6 +1693,7 @@ if (step === "effort-hours") {
           This helps demonstrate the workload balance and staffing requirements (teacher/learner ratios).
         </p>
         ${modulePicker}
+        ${accordionControlsHtml('effortAccordion')}
         <div class="accordion" id="effortAccordion">
           ${modulesForEdit.length ? blocks : `<div class="small text-secondary">Add modules first (Credits & Modules step).</div>`}
         </div>
@@ -1826,7 +1832,7 @@ if (step === "assessments") {
             </div>
           </button>
         </h2>
-        <div id="${collapseId}" class="accordion-collapse collapse ${isFirst?"show":""}" aria-labelledby="${headingId}" data-bs-parent="#assessmentsAccordion">
+        <div id="${collapseId}" class="accordion-collapse collapse ${isFirst?"show":""}" aria-labelledby="${headingId}">
           <div class="accordion-body">
             ${asmCards || `<div class="text-muted small">No assessments yet.</div>`}
           </div>
@@ -1868,6 +1874,7 @@ if (step === "assessments") {
   </div>
 </div>
 
+    ${accordionControlsHtml('assessmentsAccordion')}
     <div class="accordion" id="assessmentsAccordion">
       ${cards || `<div class="alert alert-warning mb-0">No modules available to edit.</div>`}
     </div>
@@ -1981,7 +1988,7 @@ if (step === "reading-lists") {
             </div>
           </button>
         </h2>
-        <div id="${collapseId}" class="accordion-collapse collapse ${isFirst?"show":""}" aria-labelledby="${headingId}" data-bs-parent="#readingAccordion">
+        <div id="${collapseId}" class="accordion-collapse collapse ${isFirst?"show":""}" aria-labelledby="${headingId}">
           <div class="accordion-body">
             <div class="small text-secondary mb-3">Add core and recommended reading for this module. Resources older than 5 years will be flagged.</div>
             ${items || '<div class="small text-secondary mb-2">No reading list items yet.</div>'}
@@ -1998,6 +2005,7 @@ if (step === "reading-lists") {
         <h5 class="card-title mb-3">Reading Lists</h5>
         <div class="small text-secondary mb-3">Define core and recommended reading for each module. Items published more than 5 years ago will be flagged for review.</div>
         ${modulePicker}
+            ${accordionControlsHtml('readingAccordion')}
             <div class="accordion" id="readingAccordion">
               ${modulesForEdit.length ? blocks : '<div class="small text-secondary">No modules available.</div>'}
             </div>
@@ -2281,7 +2289,7 @@ if (step === "schedule") {
               </div>
             </button>
           </h2>
-          <div id="${collapseId}" class="accordion-collapse collapse ${isFirst?"show":""}" aria-labelledby="${headingId}" data-bs-parent="#mappingAccordion">
+          <div id="${collapseId}" class="accordion-collapse collapse ${isFirst?"show":""}" aria-labelledby="${headingId}">
             <div class="accordion-body">
               <div class="list-group">${checks || '<div class="small text-secondary">No modules available to map.</div>'}</div>
             </div>
@@ -2299,6 +2307,7 @@ if (step === "schedule") {
         <div class="card-body">
           <h5 class="card-title mb-3">Map PLOs to modules (QQI-critical)</h5>
           ${modeNote}
+          ${accordionControlsHtml('mappingAccordion')}
           <div class="accordion" id="mappingAccordion">
             ${blocks}
           </div>
@@ -4671,6 +4680,46 @@ async function exportProgrammeDescriptorWord(p) {
   window.saveAs(out, `${safeTitle || "programme"}_programme_descriptor.docx`);
 }
 // ===== End Word export =====
+
+function accordionControlsHtml(accordionId) {
+  return `
+    <div class="d-flex justify-content-end gap-2 mb-2">
+      <button class="btn btn-link btn-sm p-0 m-0 text-decoration-none" data-accordion-expand-all="${accordionId}">Expand all</button>
+      <span class="text-secondary opacity-50">|</span>
+      <button class="btn btn-link btn-sm p-0 m-0 text-decoration-none" data-accordion-collapse-all="${accordionId}">Collapse all</button>
+    </div>
+  `;
+}
+
+// Global accordion expand/collapse listener
+document.addEventListener('click', (e) => {
+  const expandAllBtn = e.target.closest('[data-accordion-expand-all]');
+  const collapseAllBtn = e.target.closest('[data-accordion-collapse-all]');
+  
+  if (expandAllBtn || collapseAllBtn) {
+    const accordionId = (expandAllBtn || collapseAllBtn).getAttribute(expandAllBtn ? 'data-accordion-expand-all' : 'data-accordion-collapse-all');
+    const accordion = document.getElementById(accordionId);
+    if (accordion) {
+      const isExpand = !!expandAllBtn;
+      const collapses = accordion.querySelectorAll('.accordion-collapse');
+      const buttons = accordion.querySelectorAll('.accordion-button');
+      
+      collapses.forEach(el => {
+        if (isExpand) el.classList.add('show');
+        else el.classList.remove('show');
+      });
+      buttons.forEach(btn => {
+        if (isExpand) {
+          btn.classList.remove('collapsed');
+          btn.setAttribute('aria-expanded', 'true');
+        } else {
+          btn.classList.add('collapsed');
+          btn.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+  }
+});
 
 // Boot
 load();
