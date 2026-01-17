@@ -1017,7 +1017,6 @@ function render() {
                   <div class="small text-secondary"><span data-version-code="${v.id}">${escapeHtml(v.code || "No code")}</span> • ${modSummary} • <span data-version-intakes="${v.id}">${escapeHtml(intakeVal || "No intakes")}</span></div>
                 </div>
                 <div class="header-actions d-flex align-items-center gap-2 me-2">
-                  <span class="btn btn-sm ${isActive?"btn-primary":"btn-outline-primary"}" id="setActive_${v.id}" role="button">${isActive?"Active for stages":"Set active"}</span>
                   <span class="btn btn-sm btn-outline-danger" id="removeVer_${v.id}" role="button">Remove</span>
                 </div>
               </div>
@@ -2531,7 +2530,7 @@ function wireVersions() {
 
   const addBtn = document.getElementById("addVersionBtn");
   if (addBtn) {
-    btn.onclick = (e) => {
+    addBtn.onclick = (e) => {
       e.stopPropagation();
       const v = defaultVersion();
       // Helpful defaults: if no versions yet, preselect a sensible modality based on common cases
@@ -2544,9 +2543,6 @@ function wireVersions() {
 
   (p.versions || []).forEach((v) => {
     const byId = (suffix) => document.getElementById(`${suffix}_${v.id}`);
-
-    const setActive = document.getElementById(`setActive_${v.id}`);
-    if (setActive) setActive.onclick = (e) => { e.stopPropagation(); state.selectedVersionId = v.id; saveDebounced(); render(); };
 
     const removeBtn = document.getElementById(`removeVer_${v.id}`);
     if (removeBtn) removeBtn.onclick = (e) => {
