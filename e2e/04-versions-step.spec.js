@@ -12,11 +12,11 @@ test.describe('Step 3: Programme Versions', () => {
   });
 
   test('should show Add Version button', async ({ page }) => {
-    await expect(page.locator('button:has-text("Add Version")')).toBeVisible();
+    await expect(page.locator('button:has-text("+ Add version")')).toBeVisible();
   });
 
   test('should add a new version', async ({ page }) => {
-    await page.click('button:has-text("Add Version")');
+    await page.click('button:has-text("+ Add version")');
     await page.waitForTimeout(300);
     
     // Should show version form fields
@@ -24,7 +24,7 @@ test.describe('Step 3: Programme Versions', () => {
   });
 
   test('should configure version label and code', async ({ page }) => {
-    await page.click('button:has-text("Add Version")');
+    await page.click('button:has-text("+ Add version")');
     await page.waitForTimeout(300);
     
     // Find visible label input within the version card
@@ -38,7 +38,7 @@ test.describe('Step 3: Programme Versions', () => {
   });
 
   test('should select delivery modality', async ({ page }) => {
-    await page.click('button:has-text("Add Version")');
+    await page.click('button:has-text("+ Add version")');
     await page.waitForTimeout(300);
     
     // Look for delivery modality options (F2F, Blended, Online)
@@ -58,7 +58,7 @@ test.describe('Step 3: Programme Versions', () => {
   });
 
   test('should configure delivery pattern percentages', async ({ page }) => {
-    await page.click('button:has-text("Add Version")');
+    await page.click('button:has-text("+ Add version")');
     await page.waitForTimeout(500);
     
     // Look for percentage inputs for sync/async/on-campus
@@ -70,7 +70,7 @@ test.describe('Step 3: Programme Versions', () => {
   });
 
   test('should validate delivery pattern totals 100%', async ({ page }) => {
-    await page.click('button:has-text("Add Version")');
+    await page.click('button:has-text("+ Add version")');
     await page.waitForTimeout(500);
     
     // This validation is checked in the QQI flags
@@ -92,7 +92,7 @@ test.describe('Step 3: Programme Versions', () => {
   });
 
   test('should set cohort size and number of groups', async ({ page }) => {
-    await page.click('button:has-text("Add Version")');
+    await page.click('button:has-text("+ Add version")');
     await page.waitForTimeout(300);
     
     // Find cohort size input
@@ -108,7 +108,7 @@ test.describe('Step 3: Programme Versions', () => {
   });
 
   test('should configure online proctored exams setting', async ({ page }) => {
-    await page.click('button:has-text("Add Version")');
+    await page.click('button:has-text("+ Add version")');
     await page.waitForTimeout(300);
     
     // Look for proctored exams options (YES/NO/TBC)
@@ -123,15 +123,15 @@ test.describe('Step 3: Programme Versions', () => {
 
   test('should add multiple versions (FT, PT, Online)', async ({ page }) => {
     // Add Full-time version
-    await page.click('button:has-text("Add Version")');
+    await page.click('button:has-text("+ Add version")');
     await page.waitForTimeout(300);
     
     // Add Part-time version
-    await page.click('button:has-text("Add Version")');
+    await page.click('button:has-text("+ Add version")');
     await page.waitForTimeout(300);
     
     // Add Online version
-    await page.click('button:has-text("Add Version")');
+    await page.click('button:has-text("+ Add version")');
     await page.waitForTimeout(600);
     
     const data = await getProgrammeData(page);
@@ -140,7 +140,7 @@ test.describe('Step 3: Programme Versions', () => {
 
   test('should delete a version', async ({ page }) => {
     // Add a version first
-    await page.click('button:has-text("Add Version")');
+    await page.click('button:has-text("+ Add version")');
     await page.waitForTimeout(500);
     
     // Look for delete button
@@ -159,9 +159,9 @@ test.describe('Step 3: Version Selection', () => {
     await page.waitForTimeout(300);
     
     // Add two versions
-    await page.click('button:has-text("Add Version")');
+    await page.click('button:has-text("+ Add version")');
     await page.waitForTimeout(300);
-    await page.click('button:has-text("Add Version")');
+    await page.click('button:has-text("+ Add version")');
     await page.waitForTimeout(500);
     
     // Look for version tabs or selector
