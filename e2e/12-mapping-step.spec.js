@@ -11,44 +11,58 @@ test.describe('Step 11: PLO to Module Mapping', () => {
     
     // Set up PLOs
     await page.click('button:has-text("2. PLOs")');
-    await page.waitForTimeout(200);
+    await page.waitForTimeout(300);
     
     for (let i = 0; i < 3; i++) {
-      await page.click('button:has-text("Add PLO")');
-      await page.waitForTimeout(150);
-      await page.locator('[data-plo-id]').nth(i).fill(`PLO ${i + 1}: Test learning outcome`);
+      await page.click('button:has-text("+ Add PLO")');
+      await page.waitForTimeout(300);
+      
+      // Click "Expand all" to ensure all PLO accordions are visible
+      const expandAllBtn = page.locator('button:has-text("Expand all")');
+      if (await expandAllBtn.isVisible()) {
+        await expandAllBtn.click();
+        await page.waitForTimeout(200);
+      }
+      
+      // Fill the last (newly added) PLO
+      await page.locator('[data-plo-id]').last().fill(`PLO ${i + 1}: Test learning outcome`);
+      await page.waitForTimeout(200);
     }
-    await page.waitForTimeout(400);
+    await page.waitForTimeout(500);
     
     // Set up modules
     await page.click('button:has-text("5. Credits & Modules")');
-    await page.waitForTimeout(200);
+    await page.waitForTimeout(300);
     
     // First module
-    await page.click('button:has-text("Add Module")');
-    await page.waitForTimeout(150);
-    const codeInput1 = page.locator('[data-module-field="code"]').first();
-    const titleInput1 = page.locator('[data-module-field="title"]').first();
-    const creditsInput1 = page.locator('[data-module-field="credits"]').first();
-    await codeInput1.fill('MOD1');
-    await titleInput1.fill('Module 1');
-    await creditsInput1.fill('10');
+    await page.click('button:has-text("+ Add module")');
+    await page.waitForTimeout(300);
+    await page.locator('[data-module-field="code"]').first().fill('MOD1');
+    await page.locator('[data-module-field="title"]').first().fill('Module 1');
+    await page.locator('[data-module-field="credits"]').first().fill('10');
+    await page.waitForTimeout(300);
     
     // Second module
-    await page.click('button:has-text("Add Module")');
-    await page.waitForTimeout(150);
-    const codeInput2 = page.locator('[data-module-field="code"]').nth(1);
-    const titleInput2 = page.locator('[data-module-field="title"]').nth(1);
-    const creditsInput2 = page.locator('[data-module-field="credits"]').nth(1);
-    await codeInput2.fill('MOD2');
-    await titleInput2.fill('Module 2');
-    await creditsInput2.fill('10');
+    await page.click('button:has-text("+ Add module")');
+    await page.waitForTimeout(500);
     
-    await page.waitForTimeout(400);
+    // Click "Expand all" to ensure all module accordions are visible
+    const expandAllModulesBtn = page.locator('button:has-text("Expand all")');
+    if (await expandAllModulesBtn.isVisible()) {
+      await expandAllModulesBtn.click();
+      await page.waitForTimeout(300);
+    }
+    
+    // Fill second module (now visible after expand)
+    await page.locator('[data-module-field="code"]').nth(1).fill('MOD2');
+    await page.locator('[data-module-field="title"]').nth(1).fill('Module 2');
+    await page.locator('[data-module-field="credits"]').nth(1).fill('10');
+    
+    await page.waitForTimeout(500);
     
     // Navigate to Mapping
     await page.click('button:has-text("11. Mapping")');
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(400);
   });
 
   test('should display mapping section heading', async ({ page }) => {
@@ -85,6 +99,10 @@ test.describe('Step 11: PLO to Module Mapping', () => {
   });
 
   test('should save multiple PLO-module mappings', async ({ page }) => {
+    // Expand all PLO accordions first to make checkboxes visible
+    await page.click('button:has-text("Expand all")');
+    await page.waitForTimeout(200);
+    
     // Map multiple PLOs to modules
     const checkboxes = page.locator('input[type="checkbox"]');
     const count = await checkboxes.count();
@@ -108,6 +126,10 @@ test.describe('Step 11: PLO to Module Mapping', () => {
   });
 
   test('should clear warning when all PLOs are mapped', async ({ page }) => {
+    // Expand all PLO accordions first to make checkboxes visible
+    await page.click('button:has-text("Expand all")');
+    await page.waitForTimeout(200);
+    
     // Map all PLOs
     const checkboxes = page.locator('input[type="checkbox"]');
     const count = await checkboxes.count();
@@ -152,13 +174,13 @@ test.describe('Step 11: Mapping Matrix View', () => {
     // Set up data
     await page.click('button:has-text("2. PLOs")');
     await page.waitForTimeout(200);
-    await page.click('button:has-text("Add PLO")');
+    await page.click('button:has-text("+ Add PLO")');
     await page.locator('[data-plo-id]').first().fill('PLO 1');
     await page.waitForTimeout(300);
     
     await page.click('button:has-text("5. Credits & Modules")');
     await page.waitForTimeout(200);
-    await page.click('button:has-text("Add Module")');
+    await page.click('button:has-text("+ Add module")');
     await page.waitForTimeout(400);
     
     await page.click('button:has-text("11. Mapping")');
