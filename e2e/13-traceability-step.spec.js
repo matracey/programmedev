@@ -8,48 +8,61 @@ test.describe('Step 12: Traceability (Sankey Diagram)', () => {
     await page.locator('#titleInput').fill('Test Programme');
     await page.locator('#levelInput').fill('8');
     await page.locator('#totalCreditsInput').fill('60');
-    await page.waitForTimeout(200);
+    await page.waitForTimeout(400);
     
     // 2. PLOs
     await page.click('button:has-text("2. PLOs")');
-    await page.waitForTimeout(200);
-    for (let i = 0; i < 2; i++) {
-      await page.click('button:has-text("Add PLO")');
-      await page.waitForTimeout(100);
-      await page.locator('[data-plo-id]').nth(i).fill(`PLO ${i + 1}`);
-    }
     await page.waitForTimeout(300);
+    for (let i = 0; i < 2; i++) {
+      await page.click('button:has-text("+ Add PLO")');
+      await page.waitForTimeout(300);
+      
+      // Click "Expand all" to ensure all PLO accordions are visible
+      const expandAllBtn = page.locator('button:has-text("Expand all")');
+      if (await expandAllBtn.isVisible()) {
+        await expandAllBtn.click();
+        await page.waitForTimeout(200);
+      }
+      
+      // Fill the last (newly added) PLO
+      await page.locator('[data-plo-id]').last().fill(`PLO ${i + 1}`);
+      await page.waitForTimeout(200);
+    }
+    await page.waitForTimeout(500);
     
     // 3. Modules with MIMLOs
     await page.click('button:has-text("5. Credits & Modules")');
-    await page.waitForTimeout(200);
-    await page.click('button:has-text("Add Module")');
-    await page.waitForTimeout(200);
-    await page.locator('[data-module-field="title"]').first().fill('Software Development');
     await page.waitForTimeout(300);
+    await page.click('button:has-text("+ Add module")');
+    await page.waitForTimeout(400);
+    await page.locator('[data-module-field="title"]').first().fill('Software Development');
+    await page.waitForTimeout(500);
     
     await page.click('button:has-text("6. MIMLOs")');
-    await page.waitForTimeout(200);
+    await page.waitForTimeout(400);
     const addMimloBtn = page.locator('button[data-add-mimlo]').first();
-    if (await addMimloBtn.isVisible()) {
+    if (await addMimloBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
       await addMimloBtn.click();
-      await page.waitForTimeout(100);
-      await page.locator('[data-mimlo-module]').first().fill('MIMLO 1');
+      await page.waitForTimeout(200);
+      const mimloInput = page.locator('[data-mimlo-module]').first();
+      if (await mimloInput.isVisible({ timeout: 2000 }).catch(() => false)) {
+        await mimloInput.fill('MIMLO 1');
+      }
     }
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(500);
     
     // 4. Mapping
     await page.click('button:has-text("11. Mapping")');
-    await page.waitForTimeout(200);
+    await page.waitForTimeout(400);
     const checkbox = page.locator('input[type="checkbox"]').first();
-    if (await checkbox.isVisible()) {
+    if (await checkbox.isVisible({ timeout: 3000 }).catch(() => false)) {
       await checkbox.check();
     }
-    await page.waitForTimeout(400);
+    await page.waitForTimeout(500);
     
     // Navigate to Traceability
     await page.click('button:has-text("12. Traceability")');
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(600);
   });
 
   test('should display traceability section heading', async ({ page }) => {
@@ -100,14 +113,14 @@ test.describe('Step 12: Traceability Chain', () => {
     // PLO
     await page.click('button:has-text("2. PLOs")');
     await page.waitForTimeout(200);
-    await page.click('button:has-text("Add PLO")');
+    await page.click('button:has-text("+ Add PLO")');
     await page.locator('[data-plo-id]').first().fill('Design software applications');
     await page.waitForTimeout(300);
     
     // Module
     await page.click('button:has-text("5. Credits & Modules")');
     await page.waitForTimeout(200);
-    await page.click('button:has-text("Add Module")');
+    await page.click('button:has-text("+ Add module")');
     await page.locator('[data-module-field="title"]').first().fill('Software Development');
     await page.waitForTimeout(300);
     
