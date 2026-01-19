@@ -12,7 +12,7 @@ test.describe('Step 6: MIMLOs (Module Intended Learning Outcomes)', () => {
     // Navigate to Credits & Modules
     await page.click('button:has-text("5. Credits & Modules")');
     await page.waitForTimeout(200);
-    await page.click('button:has-text("Add Module")');
+    await page.click('button:has-text("+ Add module")');
     await page.waitForTimeout(300);
     
     // Fill module details using data attributes
@@ -38,7 +38,7 @@ test.describe('Step 6: MIMLOs (Module Intended Learning Outcomes)', () => {
     // Add a second module so the selector appears
     await page.click('button:has-text("5. Credits & Modules")');
     await page.waitForTimeout(200);
-    await page.click('button:has-text("Add Module")');
+    await page.click('button:has-text("+ Add module")');
     await page.waitForTimeout(300);
     
     await page.click('button:has-text("6. MIMLOs")');
@@ -50,7 +50,7 @@ test.describe('Step 6: MIMLOs (Module Intended Learning Outcomes)', () => {
 
   test('should add a MIMLO to a module', async ({ page }) => {
     // Click Add MIMLO button
-    const addBtn = page.locator('button:has-text("Add MIMLO"), button[data-add-mimlo]');
+    const addBtn = page.locator('button:has-text("+ Add MIMLO"), button[data-add-mimlo]');
     
     if (await addBtn.first().isVisible()) {
       await addBtn.first().click();
@@ -123,12 +123,18 @@ test.describe('Step 6: MIMLOs (Module Intended Learning Outcomes)', () => {
   test('should switch between modules', async ({ page }) => {
     // Add second module
     await page.click('button:has-text("5. Credits & Modules")');
-    await page.waitForTimeout(200);
-    await page.click('button:has-text("Add Module")');
+    await page.waitForTimeout(300);
+    await page.click('button:has-text("+ Add module")');
     await page.waitForTimeout(600); // Wait for debounced save
     
-    // In the modules step, there's no data-module-card - use nth inputs
-    // Fill the second module's code and title (index 1)
+    // Click "Expand all" to ensure all module accordions are visible
+    const expandAllBtn = page.locator('button:has-text("Expand all")');
+    if (await expandAllBtn.isVisible()) {
+      await expandAllBtn.click();
+      await page.waitForTimeout(300);
+    }
+    
+    // Fill the second module's code and title (now visible after expand)
     await page.locator('[data-module-field="code"]').nth(1).fill('CMP8002');
     await page.locator('[data-module-field="title"]').nth(1).fill('Databases');
     await page.waitForTimeout(600);
@@ -164,7 +170,7 @@ test.describe('Step 6: MIMLO Learning Outcome Linting', () => {
     // Add module and go to MIMLOs
     await page.click('button:has-text("5. Credits & Modules")');
     await page.waitForTimeout(200);
-    await page.click('button:has-text("Add Module")');
+    await page.click('button:has-text("+ Add module")');
     await page.waitForTimeout(300);
     
     await page.click('button:has-text("6. MIMLOs")');
