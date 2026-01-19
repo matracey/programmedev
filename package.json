@@ -8,6 +8,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.57.0",
-    "http-server": "^14.1.1"
+    "http-server": "^14.1.1",
+    "wait-on": "^8.0.1"
   }
 }

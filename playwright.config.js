@@ -10,7 +10,13 @@ module.exports = defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   // workers: 8,
-  reporter: 'html',
+  reporter: process.env.CI 
+    ? [
+        ['html'],
+        ['junit', { outputFile: 'test-results/junit.xml' }],
+        ['list'],
+      ]
+    : 'html',
   timeout: 30 * 1000,
   quiet: false,
   
