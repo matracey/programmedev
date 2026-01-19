@@ -12,7 +12,7 @@ test.describe('Step 8: Assessments', () => {
     // Set up module with MIMLOs first
     await page.click('button:has-text("5. Credits & Modules")');
     await page.waitForTimeout(200);
-    await page.click('button:has-text("Add Module")');
+    await page.click('button:has-text("+ Add module")');
     await page.waitForTimeout(200);
     
     // Fill module details using data attributes
@@ -53,11 +53,11 @@ test.describe('Step 8: Assessments', () => {
   });
 
   test('should show Add Assessment button', async ({ page }) => {
-    await expect(page.locator('button:has-text("Add Assessment")')).toBeVisible();
+    await expect(page.locator('button:has-text("+ Add assessment")')).toBeVisible();
   });
 
   test('should add an assessment', async ({ page }) => {
-    await page.click('button:has-text("Add Assessment")');
+    await page.click('button:has-text("+ Add assessment")');
     await page.waitForTimeout(600); // Wait for debounced save (400ms)
     
     const data = await getProgrammeData(page);
@@ -65,7 +65,7 @@ test.describe('Step 8: Assessments', () => {
   });
 
   test('should set assessment title', async ({ page }) => {
-    await page.click('button:has-text("Add Assessment")');
+    await page.click('button:has-text("+ Add assessment")');
     await page.waitForTimeout(300);
     
     const titleInput = page.locator('[data-asm-title]').first();
@@ -77,7 +77,7 @@ test.describe('Step 8: Assessments', () => {
   });
 
   test('should select assessment type', async ({ page }) => {
-    await page.click('button:has-text("Add Assessment")');
+    await page.click('button:has-text("+ Add assessment")');
     await page.waitForTimeout(300);
     
     // Find assessment type selector using data attribute
@@ -92,7 +92,7 @@ test.describe('Step 8: Assessments', () => {
   });
 
   test('should set assessment weighting', async ({ page }) => {
-    await page.click('button:has-text("Add Assessment")');
+    await page.click('button:has-text("+ Add assessment")');
     await page.waitForTimeout(300);
     
     const weightingInput = page.locator('[data-asm-weight]').first();
@@ -105,11 +105,11 @@ test.describe('Step 8: Assessments', () => {
 
   test('should validate weightings sum to 100%', async ({ page }) => {
     // Add two assessments with incorrect weightings
-    await page.click('button:has-text("Add Assessment")');
+    await page.click('button:has-text("+ Add assessment")');
     await page.waitForTimeout(200);
     await page.locator('[data-asm-weight]').first().fill('60');
     
-    await page.click('button:has-text("Add Assessment")');
+    await page.click('button:has-text("+ Add assessment")');
     await page.waitForTimeout(200);
     await page.locator('[data-asm-weight]').nth(1).fill('60');
     await page.waitForTimeout(600);
@@ -120,7 +120,7 @@ test.describe('Step 8: Assessments', () => {
   });
 
   test('should select assessment mode (Online/Hybrid/OnCampus)', async ({ page }) => {
-    await page.click('button:has-text("Add Assessment")');
+    await page.click('button:has-text("+ Add assessment")');
     await page.waitForTimeout(300);
     
     // Look for mode selector using data attribute
@@ -133,7 +133,7 @@ test.describe('Step 8: Assessments', () => {
   });
 
   test('should link assessment to MIMLOs', async ({ page }) => {
-    await page.click('button:has-text("Add Assessment")');
+    await page.click('button:has-text("+ Add assessment")');
     await page.waitForTimeout(300);
     
     // Look for MIMLO checkboxes using data attribute
@@ -149,7 +149,7 @@ test.describe('Step 8: Assessments', () => {
   });
 
   test('should configure academic integrity options', async ({ page }) => {
-    await page.click('button:has-text("Add Assessment")');
+    await page.click('button:has-text("+ Add assessment")');
     await page.waitForTimeout(300);
     
     // Look for integrity checkboxes using data attributes
@@ -163,7 +163,7 @@ test.describe('Step 8: Assessments', () => {
   });
 
   test('should add assessment notes', async ({ page }) => {
-    await page.click('button:has-text("Add Assessment")');
+    await page.click('button:has-text("+ Add assessment")');
     await page.waitForTimeout(300);
     
     const notesTextarea = page.locator('[data-asm-notes], textarea').first();
@@ -177,7 +177,7 @@ test.describe('Step 8: Assessments', () => {
   });
 
   test('should delete an assessment', async ({ page }) => {
-    await page.click('button:has-text("Add Assessment")');
+    await page.click('button:has-text("+ Add assessment")');
     await page.waitForTimeout(500);
     
     const deleteBtn = page.locator('button[data-remove-asm], button:has-text("Remove")').first();
@@ -201,7 +201,7 @@ test.describe('Step 8: Assessment Types', () => {
     
     await page.click('button:has-text("5. Credits & Modules")');
     await page.waitForTimeout(200);
-    await page.click('button:has-text("Add Module")');
+    await page.click('button:has-text("+ Add module")');
     await page.waitForTimeout(400);
     
     await page.click('button:has-text("8. Assessments")');
@@ -209,7 +209,7 @@ test.describe('Step 8: Assessment Types', () => {
   });
 
   test('should offer common assessment types', async ({ page }) => {
-    await page.click('button:has-text("Add Assessment")');
+    await page.click('button:has-text("+ Add assessment")');
     await page.waitForTimeout(300);
     
     const typeSelect = page.locator('[data-asm-type]').first();
