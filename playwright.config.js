@@ -21,7 +21,7 @@ export default defineConfig({
   quiet: false,
   
   use: {
-    baseURL: 'http://localhost:3000',
+    baseURL: 'http://localhost:5173',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
@@ -37,7 +37,7 @@ export default defineConfig({
   // Assume server is already running on port 3000
   // webServer: {
   //   command: 'npm run start',
-  //   url: 'http://localhost:3000',
+  //   url: 'http://localhost:5173',
   //   reuseExistingServer: !process.env.CI,
   // },
 });
