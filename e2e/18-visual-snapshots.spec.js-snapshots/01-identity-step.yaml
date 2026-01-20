@@ -1,0 +1,38 @@
+- heading "Identity (QQI-critical)" [level=5]
+- text: Programme title
+- textbox: Higher Diploma in Science in Computing
+- text: Award type
+- combobox:
+  - option "Select an award type" [disabled]
+  - option "Higher Certificate"
+  - option "Ordinary Bachelor Degree"
+  - option "Honours Bachelor Degree"
+  - option "Higher Diploma" [selected]
+  - option "Postgraduate Diploma"
+  - option "Masters"
+  - option "Micro-credential"
+  - option "Other (type below)"
+- text: NFQ level
+- spinbutton: "8"
+- text: Total credits (ECTS)
+- spinbutton: /\d+/
+- text: School / Discipline
+- combobox:
+  - option "Select a School" [disabled]
+  - option "Computing" [selected]
+  - option "Business"
+  - option "Psychology"
+  - option "Education"
+- text: QQI award standards (up to 2) Select 1-2 award standards. If using 2, you'll map each PLO to criteria from one of them.
+- combobox:
+  - option "Select a standard"
+  - option "Computing (Levels 6–9)" [selected]
+  - option "Professional (Levels 5–9)"
+  - option "Generic Major — Masters Degree (Level 9)"
+- combobox:
+  - option "Select a standard (optional)" [selected]
+  - option "Computing (Levels 6–9)"
+  - option "Professional (Levels 5–9)"
+  - option "Generic Major — Masters Degree (Level 9)"
+- text: These will drive PLO mapping and autocompletion. Intake months
+- textbox "Comma-separated, e.g., Sep, Jan"

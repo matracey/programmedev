@@ -1,0 +1,40 @@
+- heading "Reading Lists" [level=5]
+- text: Define core and recommended reading for each module. Items published more than 5 years ago will be flagged for review.
+- button "Expand all"
+- text: "|"
+- button "Collapse all"
+- heading "CMP8001 — Software Development 1 item" [level=2]:
+  - button "CMP8001 — Software Development 1 item" [expanded]
+- text: Add core and recommended reading for this module. Resources older than 5 years will be flagged. Resource 1
+- button "Remove"
+- text: Author(s)
+- textbox "e.g., Smith, J. & Jones, M."
+- text: Title
+- textbox "Book or article title": "Clean Code: A Handbook of Agile Software Craftsmanship"
+- text: Publisher
+- textbox "Publisher name"
+- text: Year
+- spinbutton: /\d+/
+- text: ISBN
+- button "ISBN": 🔍 Lookup
+- textbox /e\.g\., \d+-0-\d+-\d+-1/
+- text: Type
+- combobox:
+  - option "Core / Essential" [selected]
+  - option "Recommended"
+  - option "Supplementary"
+- text: Notes (optional)
+- textbox "e.g., Chapters 1-5"
+- button "+ Add reading"
+- heading "CMP8002 — Object Oriented Software Engineering 1 item 1 outdated" [level=2]:
+  - button "CMP8002 — Object Oriented Software Engineering 1 item 1 outdated"
+- heading "CMP8003 — Introduction to Databases 1 item 1 outdated" [level=2]:
+  - button "CMP8003 — Introduction to Databases 1 item 1 outdated"
+- heading "CMP8004 — Web Design and Client-Side Scripting 1 item 1 outdated" [level=2]:
+  - button "CMP8004 — Web Design and Client-Side Scripting 1 item 1 outdated"
+- heading "CMP8005 — Computer Architecture, Operating Systems and Networks 1 item 1 outdated" [level=2]:
+  - button "CMP8005 — Computer Architecture, Operating Systems and Networks 1 item 1 outdated"
+- heading "CMP8006 — Agile Software Development 1 item 1 outdated" [level=2]:
+  - button "CMP8006 — Agile Software Development 1 item 1 outdated"
+- heading "CMP8007 — Capstone Project 1 item 1 outdated" [level=2]:
+  - button "CMP8007 — Capstone Project 1 item 1 outdated"

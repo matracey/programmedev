@@ -1,0 +1,124 @@
+- heading "QQI Snapshot (copy/paste-ready)" [level=5]
+- button "Export Programme Descriptor (Word)"
+- text: "/Generates a \\.docx using the template in assets\\. Programme summary Title: Higher Diploma in Science in Computing Award: Higher Diploma NFQ level: 8 School: Computing Total credits: \\d+ Modules/"
+- list:
+  - listitem: /CMP8001 — Software Development \(\d+ cr\)/
+  - listitem: /CMP8002 — Object Oriented Software Engineering \(\d+ cr\)/
+  - listitem: CMP8003 — Introduction to Databases (5 cr)
+  - listitem: CMP8004 — Web Design and Client-Side Scripting (5 cr)
+  - listitem: CMP8005 — Computer Architecture, Operating Systems and Networks (5 cr)
+  - listitem: /CMP8006 — Agile Software Development \(\d+ cr\)/
+  - listitem: /CMP8007 — Capstone Project \(\d+ cr\)/
+- text: Programme Learning Outcomes (PLOs)
+- list:
+  - listitem: Design, develop and test software applications using object-oriented programming principles and industry-standard development practices
+  - listitem: Apply software engineering methodologies to plan, manage and deliver software projects within professional contexts
+  - listitem: Design and implement database solutions using relational database management systems and SQL
+  - listitem: Create responsive and accessible web applications using modern web technologies and frameworks
+  - listitem: Demonstrate understanding of computer architecture, operating systems and network fundamentals
+  - listitem: Work effectively in agile software development teams, applying iterative development practices
+  - listitem: Research, design and implement a substantial software project demonstrating integration of learned skills
+  - listitem: Communicate technical concepts effectively through documentation and presentations
+- text: "/Programme versions Version 1: Full-time \\(FT\\) Duration: 1 year • Intakes: September • Cohort: \\d+ • Groups: 2 Online proctored exams: NO Delivery patterns F2F: \\d+% sync online, \\d+% async directed, \\d+% on-campus Stage structure/"
+- list:
+  - listitem: Stage 1 — target 25cr (assigned 25cr) CMP8001, CMP8003, CMP8004, CMP8005
+  - listitem: Stage 2 — target 35cr (assigned 35cr) CMP8002, CMP8006, CMP8007
+- text: "/Delivery notes: Primary delivery through on-campus lectures and labs with supplementary online materials\\. Version 2: Part-time Blended \\(PTB\\) Duration: 2 years • Intakes: September, January • Cohort: \\d+ • Groups: 2 Online proctored exams: NO Delivery patterns BLENDED: \\d+% sync online, \\d+% async directed, \\d+% on-campus Stage structure/"
+- list:
+  - listitem: Year 1 - Semester 1 — target 15cr (assigned 15cr) CMP8001, CMP8003
+  - listitem: Year 1 - Semester 2 — target 20cr (assigned 20cr) CMP8002, CMP8004, CMP8005
+  - listitem: Year 2 - Semester 1 — target 10cr (assigned 10cr) CMP8006
+  - listitem: Year 2 - Semester 2 — target 15cr (assigned 15cr) CMP8007
+- text: "/Delivery notes: Blended delivery with evening\\/weekend on-campus sessions and significant online component\\. On-campus sessions typically Saturday mornings\\. Version 3: Part-time Fully Online \\(PTO\\) Duration: 2 years • Intakes: September, January, May • Cohort: \\d+ • Groups: 4 Online proctored exams: YES Delivery patterns ONLINE: \\d+% sync online, \\d+% async directed, 0% on-campus Stage structure/"
+- list:
+  - listitem: Year 1 - Semester 1 — target 15cr (assigned 15cr) CMP8001, CMP8003
+  - listitem: Year 1 - Semester 2 — target 20cr (assigned 20cr) CMP8002, CMP8004, CMP8005
+  - listitem: Year 2 - Semester 1 — target 10cr (assigned 10cr) CMP8006
+  - listitem: Year 2 - Semester 2 — target 15cr (assigned 15cr) CMP8007
+- text: "Proctoring notes: All exams are conducted online using Proctorio proctoring software. Students must have webcam and stable internet connection. Alternative arrangements available for students with accessibility needs. Delivery notes: Fully online delivery with live synchronous sessions scheduled in evenings (Irish time). All materials available asynchronously. No on-campus attendance required. PLO ↔ Module Mapping Matrix"
+- table:
+  - rowgroup:
+    - row "PLO CMP8001 CMP8002 CMP8003 CMP8004 CMP8005 CMP8006 CMP8007":
+      - columnheader "PLO"
+      - columnheader "CMP8001"
+      - columnheader "CMP8002"
+      - columnheader "CMP8003"
+      - columnheader "CMP8004"
+      - columnheader "CMP8005"
+      - columnheader "CMP8006"
+      - columnheader "CMP8007"
+  - rowgroup:
+    - row "PLO 1 ✓ ✓":
+      - rowheader "PLO 1"
+      - cell "✓"
+      - cell "✓"
+      - cell
+      - cell
+      - cell
+      - cell
+      - cell
+    - row "PLO 2 ✓ ✓":
+      - columnheader "PLO 2"
+      - cell
+      - cell "✓"
+      - cell
+      - cell
+      - cell
+      - cell "✓"
+      - cell
+    - row "PLO 3 ✓":
+      - columnheader "PLO 3"
+      - cell
+      - cell
+      - cell "✓"
+      - cell
+      - cell
+      - cell
+      - cell
+    - row "PLO 4 ✓":
+      - columnheader "PLO 4"
+      - cell
+      - cell
+      - cell
+      - cell "✓"
+      - cell
+      - cell
+      - cell
+    - row "PLO 5 ✓":
+      - columnheader "PLO 5"
+      - cell
+      - cell
+      - cell
+      - cell
+      - cell "✓"
+      - cell
+      - cell
+    - row "PLO 6 ✓":
+      - columnheader "PLO 6"
+      - cell
+      - cell
+      - cell
+      - cell
+      - cell
+      - cell "✓"
+      - cell
+    - row "PLO 7 ✓":
+      - columnheader "PLO 7"
+      - cell
+      - cell
+      - cell
+      - cell
+      - cell
+      - cell
+      - cell "✓"
+    - row "PLO 8 ✓ ✓":
+      - rowheader "PLO 8"
+      - cell "✓"
+      - cell
+      - cell
+      - cell
+      - cell
+      - cell
+      - cell "✓"
+- button "Copy JSON to clipboard"
+- button "Download JSON"

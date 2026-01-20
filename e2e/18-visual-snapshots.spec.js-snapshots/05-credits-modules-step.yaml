@@ -1,0 +1,42 @@
+- heading "Credits & modules (QQI-critical)" [level=5]
+- button "+ Add module"
+- text: Total programme credits (from Identity)
+- spinbutton [disabled]: /\d+/
+- text: "Tip: keep the module list light at MVP stage — codes can be placeholders."
+- button "Expand all"
+- text: "|"
+- button "Collapse all"
+- heading /Module 1 CMP8001 • Software Development • \d+ cr Remove/ [level=2]:
+  - button /Module 1 CMP8001 • Software Development • \d+ cr Remove/ [expanded]:
+    - text: ""
+    - button "Remove"
+- text: Code (optional)
+- textbox: CMP8001
+- text: Title
+- textbox: Software Development
+- text: Credits
+- spinbutton: /\d+/
+- heading /Module 2 CMP8002 • Object Oriented Software Engineering • \d+ cr Remove/ [level=2]:
+  - button /Module 2 CMP8002 • Object Oriented Software Engineering • \d+ cr Remove/:
+    - text: ""
+    - button "Remove"
+- heading "Module 3 CMP8003 • Introduction to Databases • 5 cr Remove" [level=2]:
+  - button "Module 3 CMP8003 • Introduction to Databases • 5 cr Remove":
+    - text: ""
+    - button "Remove"
+- heading "Module 4 CMP8004 • Web Design and Client-Side Scripting • 5 cr Remove" [level=2]:
+  - button "Module 4 CMP8004 • Web Design and Client-Side Scripting • 5 cr Remove":
+    - text: ""
+    - button "Remove"
+- heading "Module 5 CMP8005 • Computer Architecture, Operating Systems and Networks • 5 cr Remove" [level=2]:
+  - button "Module 5 CMP8005 • Computer Architecture, Operating Systems and Networks • 5 cr Remove":
+    - text: ""
+    - button "Remove"
+- heading /Module 6 CMP8006 • Agile Software Development • \d+ cr Remove/ [level=2]:
+  - button /Module 6 CMP8006 • Agile Software Development • \d+ cr Remove/:
+    - text: ""
+    - button "Remove"
+- heading /Module 7 CMP8007 • Capstone Project • \d+ cr Remove/ [level=2]:
+  - button /Module 7 CMP8007 • Capstone Project • \d+ cr Remove/:
+    - text: ""
+    - button "Remove"

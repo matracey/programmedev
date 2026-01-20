@@ -1,0 +1,34 @@
+- heading "Map PLOs to modules (QQI-critical)" [level=5]
+- button "Expand all"
+- text: "|"
+- button "Collapse all"
+- heading "PLO 1 2 modules mapped Design, develop and test software applications using object-oriented programming principles and industry-standard development practices" [level=2]:
+  - button "PLO 1 2 modules mapped Design, develop and test software applications using object-oriented programming principles and industry-standard development practices" [expanded]
+- checkbox /CMP8001 — Software Development \(\d+ cr\)/ [checked]
+- text: /CMP8001 — Software Development \(\d+ cr\)/
+- checkbox /CMP8002 — Object Oriented Software Engineering \(\d+ cr\)/ [checked]
+- text: /CMP8002 — Object Oriented Software Engineering \(\d+ cr\)/
+- checkbox "CMP8003 — Introduction to Databases (5 cr)"
+- text: CMP8003 — Introduction to Databases (5 cr)
+- checkbox "CMP8004 — Web Design and Client-Side Scripting (5 cr)"
+- text: CMP8004 — Web Design and Client-Side Scripting (5 cr)
+- checkbox "CMP8005 — Computer Architecture, Operating Systems and Networks (5 cr)"
+- text: CMP8005 — Computer Architecture, Operating Systems and Networks (5 cr)
+- checkbox /CMP8006 — Agile Software Development \(\d+ cr\)/
+- text: /CMP8006 — Agile Software Development \(\d+ cr\)/
+- checkbox /CMP8007 — Capstone Project \(\d+ cr\)/
+- text: /CMP8007 — Capstone Project \(\d+ cr\)/
+- heading "PLO 2 2 modules mapped Apply software engineering methodologies to plan, manage and deliver software projects within professional contexts" [level=2]:
+  - button "PLO 2 2 modules mapped Apply software engineering methodologies to plan, manage and deliver software projects within professional contexts"
+- heading "PLO 3 1 module mapped Design and implement database solutions using relational database management systems and SQL" [level=2]:
+  - button "PLO 3 1 module mapped Design and implement database solutions using relational database management systems and SQL"
+- heading "PLO 4 1 module mapped Create responsive and accessible web applications using modern web technologies and frameworks" [level=2]:
+  - button "PLO 4 1 module mapped Create responsive and accessible web applications using modern web technologies and frameworks"
+- heading "PLO 5 1 module mapped Demonstrate understanding of computer architecture, operating systems and network fundamentals" [level=2]:
+  - button "PLO 5 1 module mapped Demonstrate understanding of computer architecture, operating systems and network fundamentals"
+- heading "PLO 6 1 module mapped Work effectively in agile software development teams, applying iterative development practices" [level=2]:
+  - button "PLO 6 1 module mapped Work effectively in agile software development teams, applying iterative development practices"
+- heading "PLO 7 1 module mapped Research, design and implement a substantial software project demonstrating integration of learned skills" [level=2]:
+  - button "PLO 7 1 module mapped Research, design and implement a substantial software project demonstrating integration of learned skills"
+- heading "PLO 8 2 modules mapped Communicate technical concepts effectively through documentation and presentations" [level=2]:
+  - button "PLO 8 2 modules mapped Communicate technical concepts effectively through documentation and presentations"

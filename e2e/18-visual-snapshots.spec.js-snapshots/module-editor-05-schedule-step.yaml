@@ -1,0 +1,210 @@
+- heading "Programme Schedule" [level=5]
+- text: QQI-style module schedule showing effort hours and assessment strategy per stage.
+- combobox:
+  - option "FT — Full-time" [selected]
+  - option "PTB — Part-time Blended"
+  - option "PTO — Part-time Fully Online"
+- button "Print"
+- table:
+  - rowgroup:
+    - 'row "Provider: National College of Ireland"':
+      - rowheader "Provider:"
+      - cell "National College of Ireland"
+    - 'row "Programme Title: Higher Diploma in Science in Computing"':
+      - rowheader "Programme Title:"
+      - cell "Higher Diploma in Science in Computing"
+    - 'row "Award Title: Higher Diploma"':
+      - rowheader "Award Title:"
+      - cell "Higher Diploma"
+    - 'row "Version: Full-time"':
+      - rowheader "Version:"
+      - cell "Full-time"
+- table:
+  - rowgroup:
+    - 'row "NFQ Level: 8"':
+      - rowheader "NFQ Level:"
+      - cell "8"
+    - 'row /Total Credits: \d+ ECTS/':
+      - rowheader "Total Credits:"
+      - cell /\d+ ECTS/
+    - 'row "Delivery Mode: Face-to-face"':
+      - rowheader "Delivery Mode:"
+      - cell "Face-to-face"
+    - 'row "Duration: 1 year"':
+      - rowheader "Duration:"
+      - cell "1 year"
+- text: "/Stage 1 Target: \\d+ ECTS \\| NFQ Level: 8/"
+- table:
+  - rowgroup:
+    - row "Module Title Sem Status NFQ ECTS Total Student Effort (hours) Assessment Strategy (%)":
+      - columnheader "Module Title"
+      - columnheader "Sem"
+      - columnheader "Status"
+      - columnheader "NFQ"
+      - columnheader "ECTS"
+      - columnheader "Total Student Effort (hours)"
+      - columnheader "Assessment Strategy (%)"
+    - row "Total Contact Dir. E-Learn Indep. Learn Work-based CA Project Practical Exam":
+      - columnheader "Total"
+      - columnheader "Contact"
+      - columnheader "Dir. E-Learn"
+      - columnheader "Indep. Learn"
+      - columnheader "Work-based"
+      - columnheader "CA"
+      - columnheader "Project"
+      - columnheader "Practical"
+      - columnheader "Exam"
+  - rowgroup:
+    - row /Software Development Semester 1 M 8 \d+ \d+ \d+ \d+ \d+ — \d+ \d+ \d+ —/:
+      - cell "Software Development"
+      - cell "Semester 1"
+      - cell "M"
+      - cell "8"
+      - cell /\d+/
+      - cell /\d+/
+      - cell /\d+/
+      - cell /\d+/
+      - cell /\d+/
+      - cell "—"
+      - cell /\d+/
+      - cell /\d+/
+      - cell /\d+/
+      - cell "—"
+    - row /Introduction to Databases Semester 1 M 8 5 \d+ \d+ \d+ \d+ — — \d+ — \d+/:
+      - cell "Introduction to Databases"
+      - cell "Semester 1"
+      - cell "M"
+      - cell "8"
+      - cell "5"
+      - cell /\d+/
+      - cell /\d+/
+      - cell /\d+/
+      - cell /\d+/
+      - cell "—"
+      - cell "—"
+      - cell /\d+/
+      - cell "—"
+      - cell /\d+/
+    - row /Web Design and Client-Side Scripting Semester 1 M 8 5 \d+ \d+ \d+ \d+ — — \d+ \d+ —/:
+      - cell "Web Design and Client-Side Scripting"
+      - cell "Semester 1"
+      - cell "M"
+      - cell "8"
+      - cell "5"
+      - cell /\d+/
+      - cell /\d+/
+      - cell /\d+/
+      - cell /\d+/
+      - cell "—"
+      - cell "—"
+      - cell /\d+/
+      - cell /\d+/
+      - cell "—"
+    - row /Computer Architecture, Operating Systems and Networks Semester 1 M 8 5 \d+ \d+ \d+ \d+ — \d+ — — \d+/:
+      - cell "Computer Architecture, Operating Systems and Networks"
+      - cell "Semester 1"
+      - cell "M"
+      - cell "8"
+      - cell "5"
+      - cell /\d+/
+      - cell /\d+/
+      - cell /\d+/
+      - cell /\d+/
+      - cell "—"
+      - cell /\d+/
+      - cell "—"
+      - cell "—"
+      - cell /\d+/
+    - row /Stage Total \d+ \d+ \d+ \d+ \d+ 0/:
+      - cell "Stage Total"
+      - cell
+      - cell
+      - cell
+      - cell /\d+/
+      - cell /\d+/
+      - cell /\d+/
+      - cell /\d+/
+      - cell /\d+/
+      - cell "0"
+      - cell
+- text: "/Stage 2 Target: \\d+ ECTS \\| NFQ Level: 8/"
+- table:
+  - rowgroup:
+    - row "Module Title Sem Status NFQ ECTS Total Student Effort (hours) Assessment Strategy (%)":
+      - columnheader "Module Title"
+      - columnheader "Sem"
+      - columnheader "Status"
+      - columnheader "NFQ"
+      - columnheader "ECTS"
+      - columnheader "Total Student Effort (hours)"
+      - columnheader "Assessment Strategy (%)"
+    - row "Total Contact Dir. E-Learn Indep. Learn Work-based CA Project Practical Exam":
+      - columnheader "Total"
+      - columnheader "Contact"
+      - columnheader "Dir. E-Learn"
+      - columnheader "Indep. Learn"
+      - columnheader "Work-based"
+      - columnheader "CA"
+      - columnheader "Project"
+      - columnheader "Practical"
+      - columnheader "Exam"
+  - rowgroup:
+    - row /Object Oriented Software Engineering Semester 2 M 8 \d+ \d+ \d+ \d+ \d+ — \d+ \d+ — —/:
+      - cell "Object Oriented Software Engineering"
+      - cell "Semester 2"
+      - cell "M"
+      - cell "8"
+      - cell /\d+/
+      - cell /\d+/
+      - cell /\d+/
+      - cell /\d+/
+      - cell /\d+/
+      - cell "—"
+      - cell /\d+/
+      - cell /\d+/
+      - cell "—"
+      - cell "—"
+    - row /Agile Software Development Semester 2 M 8 \d+ \d+ \d+ \d+ \d+ — \d+ \d+ — —/:
+      - cell "Agile Software Development"
+      - cell "Semester 2"
+      - cell "M"
+      - cell "8"
+      - cell /\d+/
+      - cell /\d+/
+      - cell /\d+/
+      - cell /\d+/
+      - cell /\d+/
+      - cell "—"
+      - cell /\d+/
+      - cell /\d+/
+      - cell "—"
+      - cell "—"
+    - row /Capstone Project Semester 2 M 8 \d+ \d+ \d+ \d+ \d+ — \d+ \d+ — —/:
+      - cell "Capstone Project"
+      - cell "Semester 2"
+      - cell "M"
+      - cell "8"
+      - cell /\d+/
+      - cell /\d+/
+      - cell /\d+/
+      - cell /\d+/
+      - cell /\d+/
+      - cell "—"
+      - cell /\d+/
+      - cell /\d+/
+      - cell "—"
+      - cell "—"
+    - row /Stage Total \d+ \d+ \d+ \d+ \d+ 0/:
+      - cell "Stage Total"
+      - cell
+      - cell
+      - cell
+      - cell /\d+/
+      - cell /\d+/
+      - cell /\d+/
+      - cell /\d+/
+      - cell /\d+/
+      - cell "0"
+      - cell
+- strong: "Legend:"
+- text: "Status: M = Mandatory, E = Elective | CA = Continuous Assessment | Contact = Classroom + Mentoring + Other Contact Hours"

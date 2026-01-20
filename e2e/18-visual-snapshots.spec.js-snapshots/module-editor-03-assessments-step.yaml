@@ -1,0 +1,145 @@
+- text: Assessments Create assessments per module, set weightings, and map to MIMLOs.
+- button "+ Add assessment"
+- text: Report type
+- combobox:
+  - 'option "By stage: assessment types + weighting" [selected]'
+  - 'option "By module: assessment types + weighting"'
+  - option "MIMLO coverage (unassessed outcomes)"
+- text: Version
+- combobox:
+  - option "Full-time" [selected]
+  - option "Part-time Blended"
+  - option "Part-time Fully Online"
+- button "Show below"
+- button "Open in new tab"
+- button "Expand all"
+- text: "|"
+- button "Collapse all"
+- heading /CMP8001 — Software Development Total \d+%/ [level=2]:
+  - button /CMP8001 — Software Development Total \d+%/ [expanded]
+- text: Programming Project
+- button "Remove"
+- text: Title
+- textbox: Programming Project
+- text: Type
+- combobox:
+  - option "Report/Essay"
+  - option "Project" [selected]
+  - option "Presentation"
+  - option "Portfolio"
+  - option "Practical/Lab"
+  - option "Exam (On campus)"
+  - option "Exam (Online)"
+  - option "Reflective Journal"
+  - option "Other"
+- text: Weighting %
+- spinbutton: /\d+/
+- text: Mode
+- combobox:
+  - option "Online"
+  - option "OnCampus"
+  - option "Hybrid" [selected]
+- text: Map to MIMLOs
+- checkbox [checked]
+- text: Design and implement object-oriented software solutions using industry-standard programming languages
+- checkbox [checked]
+- text: Apply software development methodologies to manage the software development lifecycle
+- checkbox
+- text: Evaluate and select appropriate data structures and algorithms for specific problem domains
+- checkbox [checked]
+- text: Demonstrate proficiency in version control and collaborative development practices Integrity controls
+- checkbox
+- text: Proctored
+- checkbox [checked]
+- text: Viva/oral
+- checkbox
+- text: In-class component
+- checkbox [checked]
+- text: Originality check
+- checkbox [checked]
+- text: AI declaration Notes
+- textbox: Individual software development project with viva presentation
+- text: Technical Report
+- button "Remove"
+- text: Title
+- textbox: Technical Report
+- text: Type
+- combobox:
+  - option "Report/Essay" [selected]
+  - option "Project"
+  - option "Presentation"
+  - option "Portfolio"
+  - option "Practical/Lab"
+  - option "Exam (On campus)"
+  - option "Exam (Online)"
+  - option "Reflective Journal"
+  - option "Other"
+- text: Weighting %
+- spinbutton: /\d+/
+- text: Mode
+- combobox:
+  - option "Online" [selected]
+  - option "OnCampus"
+  - option "Hybrid"
+- text: Map to MIMLOs
+- checkbox
+- text: Design and implement object-oriented software solutions using industry-standard programming languages
+- checkbox [checked]
+- text: Apply software development methodologies to manage the software development lifecycle
+- checkbox [checked]
+- text: Evaluate and select appropriate data structures and algorithms for specific problem domains
+- checkbox
+- text: Demonstrate proficiency in version control and collaborative development practices Integrity controls
+- checkbox
+- text: Proctored
+- checkbox
+- text: Viva/oral
+- checkbox
+- text: In-class component
+- checkbox [checked]
+- text: Originality check
+- checkbox [checked]
+- text: AI declaration Notes
+- textbox: Analysis of software development approaches
+- text: Practical Lab Exercises
+- button "Remove"
+- text: Title
+- textbox: Practical Lab Exercises
+- text: Type
+- combobox:
+  - option "Report/Essay"
+  - option "Project"
+  - option "Presentation"
+  - option "Portfolio"
+  - option "Practical/Lab" [selected]
+  - option "Exam (On campus)"
+  - option "Exam (Online)"
+  - option "Reflective Journal"
+  - option "Other"
+- text: Weighting %
+- spinbutton: /\d+/
+- text: Mode
+- combobox:
+  - option "Online"
+  - option "OnCampus"
+  - option "Hybrid" [selected]
+- text: Map to MIMLOs
+- checkbox [checked]
+- text: Design and implement object-oriented software solutions using industry-standard programming languages
+- checkbox
+- text: Apply software development methodologies to manage the software development lifecycle
+- checkbox [checked]
+- text: Evaluate and select appropriate data structures and algorithms for specific problem domains
+- checkbox [checked]
+- text: Demonstrate proficiency in version control and collaborative development practices Integrity controls
+- checkbox
+- text: Proctored
+- checkbox
+- text: Viva/oral
+- checkbox [checked]
+- text: In-class component
+- checkbox
+- text: Originality check
+- checkbox
+- text: AI declaration Notes
+- textbox: Weekly lab submissions

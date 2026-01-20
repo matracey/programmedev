@@ -1,0 +1,142 @@
+- heading "Programme Learning Outcomes (PLOs) (QQI-critical)" [level=5]
+- button "+ Add PLO"
+- text: "/Bloom helper \\(aligned to NFQ level 8\\) — for Programme Learning Outcomes Push beyond application: critical analysis, evaluation, and creation\\/design\\. analyse evaluate synthesise design develop critique justify implement Tip: start outcomes with a verb \\+ object \\+ standard \\(e\\.g\\., “Analyse X using Y to produce Z”\\)\\. Aim for ~6–\\d+ clear, assessable outcomes\\. Keep them measurable and assessable\\./"
+- button "Expand all"
+- text: "|"
+- button "Collapse all"
+- heading "PLO 1 Design, develop and test software applications using object-oriented programming principles and industry-standard development practices Remove" [level=2]:
+  - button "PLO 1 Design, develop and test software applications using object-oriented programming principles and industry-standard development practices Remove" [expanded]:
+    - text: ""
+    - button "Remove"
+- textbox "e.g., Analyse… / Design and implement…": Design, develop and test software applications using object-oriented programming principles and industry-standard development practices
+- text: Map this PLO to QQI award standards Criteria
+- combobox:
+  - option "Select criteria..." [selected]
+  - option "Competence"
+  - option "Know-how & Skill"
+  - option "Knowledge"
+- text: Thread
+- combobox:
+  - option "Select thread..." [selected]
+- button "Add mapping"
+- text: Knowledge / Breadth
+- button "×"
+- text: Know-how & Skill / Range
+- button "×"
+- text: Competence / Competence-Context
+- button "×"
+- text: Competence / Competence-Insight
+- button "×"
+- text: Competence / Competence-Learning to Learn
+- button "×"
+- text: Competence / Competence-Role
+- button "×"
+- text: Know-how & Skill / Know-how & Skill-Range
+- button "×"
+- text: Know-how & Skill / Know-how & Skill-Selectivity
+- button "×"
+- text: Knowledge / Knowledge-Breadth
+- button "×"
+- text: Knowledge / Knowledge-Kind
+- button "×"
+- heading "PLO 2 Apply software engineering methodologies to plan, manage and deliver software projects within professional contexts Remove" [level=2]:
+  - button "PLO 2 Apply software engineering methodologies to plan, manage and deliver software projects within professional contexts Remove":
+    - text: ""
+    - button "Remove"
+- heading "PLO 3 Design and implement database solutions using relational database management systems and SQL Remove" [level=2]:
+  - button "PLO 3 Design and implement database solutions using relational database management systems and SQL Remove":
+    - text: ""
+    - button "Remove"
+- heading "PLO 4 Create responsive and accessible web applications using modern web technologies and frameworks Remove" [level=2]:
+  - button "PLO 4 Create responsive and accessible web applications using modern web technologies and frameworks Remove":
+    - text: ""
+    - button "Remove"
+- heading "PLO 5 Demonstrate understanding of computer architecture, operating systems and network fundamentals Remove" [level=2]:
+  - button "PLO 5 Demonstrate understanding of computer architecture, operating systems and network fundamentals Remove":
+    - text: ""
+    - button "Remove"
+- heading "PLO 6 Work effectively in agile software development teams, applying iterative development practices Remove" [level=2]:
+  - button "PLO 6 Work effectively in agile software development teams, applying iterative development practices Remove":
+    - text: ""
+    - button "Remove"
+- heading "PLO 7 Research, design and implement a substantial software project demonstrating integration of learned skills Remove" [level=2]:
+  - button "PLO 7 Research, design and implement a substantial software project demonstrating integration of learned skills Remove":
+    - text: ""
+    - button "Remove"
+- heading "PLO 8 Communicate technical concepts effectively through documentation and presentations Remove" [level=2]:
+  - button "PLO 8 Communicate technical concepts effectively through documentation and presentations Remove":
+    - text: ""
+    - button "Remove"
+- separator
+- heading "PLO ↔ Award Standard Mapping Snapshot" [level=6]
+- table:
+  - rowgroup:
+    - row "PLO PLO Text Mapped Standards (at NFQ Level 8)":
+      - columnheader "PLO"
+      - columnheader "PLO Text"
+      - columnheader "Mapped Standards (at NFQ Level 8)"
+  - rowgroup:
+    - row:
+      - cell "PLO 1"
+      - cell "Design, develop and test software applications using object-oriented programming principles and industry-standard development practices"
+      - cell:
+        - list:
+          - listitem: Knowledge / Breadth
+          - listitem: Know-how & Skill / Range
+          - listitem: "Competence / Competence-Context Use advanced skills to conduct research/advanced technical or professional activity with accountability; transfer/apply diagnostic and creative skills. Includes: select/implement m…"
+          - listitem: "Competence / Competence-Insight Express a comprehensive, internalised, personal world view, manifesting solidarity with others. Includes: identify/address ethical issues; describe examples/benefits of diversity a…"
+          - listitem: "Competence / Competence-Learning to Learn Learn to act in variable and unfamiliar learning contexts; manage learning tasks independently, professionally and ethically. Includes: select/apply research skills; evaluate stren…"
+          - listitem: "Competence / Competence-Role Act effectively under guidance in a peer relationship with qualified practitioners; lead multiple, complex and heterogeneous groups. Includes: work as autonomous individual; lead c…"
+          - listitem: "Know-how & Skill / Know-how & Skill-Range Mastery of complex/specialised skills and tools; use/modify advanced skills/tools for closely guided research/professional/advanced technical activity. Includes: model/design compl…"
+          - listitem: "Know-how & Skill / Know-how & Skill-Selectivity Exercise judgement in complex planning, design, technical and/or management functions incl. resourcing. Includes: evaluate systems with quality attributes/trade-offs; specify/desig…"
+          - listitem: "Knowledge / Knowledge-Breadth Understanding of the theory, concepts and methods pertaining to a field (or fields) of learning; knowledge and understanding of advanced concepts in: Computer Systems; Software Eng…"
+          - listitem: Knowledge / Knowledge-Kind Detailed knowledge and understanding in one or more specialised areas, some at current boundaries. Learner can explain specialist concepts including state-of-the-art technology; de…
+    - row "PLO 2 Apply software engineering methodologies to plan, manage and deliver software projects within professional contexts Know-how & Skill / Selectivity Competence / Context":
+      - cell "PLO 2"
+      - cell "Apply software engineering methodologies to plan, manage and deliver software projects within professional contexts"
+      - cell "Know-how & Skill / Selectivity Competence / Context":
+        - list:
+          - listitem: Know-how & Skill / Selectivity
+          - listitem: Competence / Context
+    - row "PLO 3 Design and implement database solutions using relational database management systems and SQL Knowledge / Kind Know-how & Skill / Range":
+      - cell "PLO 3"
+      - cell "Design and implement database solutions using relational database management systems and SQL"
+      - cell "Knowledge / Kind Know-how & Skill / Range":
+        - list:
+          - listitem: Knowledge / Kind
+          - listitem: Know-how & Skill / Range
+    - row "PLO 4 Create responsive and accessible web applications using modern web technologies and frameworks Know-how & Skill / Range Know-how & Skill / Selectivity":
+      - cell "PLO 4"
+      - cell "Create responsive and accessible web applications using modern web technologies and frameworks"
+      - cell "Know-how & Skill / Range Know-how & Skill / Selectivity":
+        - list:
+          - listitem: Know-how & Skill / Range
+          - listitem: Know-how & Skill / Selectivity
+    - row "PLO 5 Demonstrate understanding of computer architecture, operating systems and network fundamentals Knowledge / Breadth Knowledge / Kind":
+      - cell "PLO 5"
+      - cell "Demonstrate understanding of computer architecture, operating systems and network fundamentals"
+      - cell "Knowledge / Breadth Knowledge / Kind":
+        - list:
+          - listitem: Knowledge / Breadth
+          - listitem: Knowledge / Kind
+    - row "PLO 6 Work effectively in agile software development teams, applying iterative development practices Competence / Role Competence / Learning to Learn":
+      - cell "PLO 6"
+      - cell "Work effectively in agile software development teams, applying iterative development practices"
+      - cell "Competence / Role Competence / Learning to Learn":
+        - list:
+          - listitem: Competence / Role
+          - listitem: Competence / Learning to Learn
+    - row "PLO 7 Research, design and implement a substantial software project demonstrating integration of learned skills Competence / Insight Competence / Context":
+      - cell "PLO 7"
+      - cell "Research, design and implement a substantial software project demonstrating integration of learned skills"
+      - cell "Competence / Insight Competence / Context":
+        - list:
+          - listitem: Competence / Insight
+          - listitem: Competence / Context
+    - row "PLO 8 Communicate technical concepts effectively through documentation and presentations Know-how & Skill / Selectivity Competence / Role":
+      - cell "PLO 8"
+      - cell "Communicate technical concepts effectively through documentation and presentations"
+      - cell "Know-how & Skill / Selectivity Competence / Role":
+        - list:
+          - listitem: Know-how & Skill / Selectivity
+          - listitem: Competence / Role

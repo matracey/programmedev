@@ -1,0 +1,29 @@
+- heading "MIMLOs (Minimum Intended Module Learning Outcomes)" [level=5]
+- text: "Bloom helper (aligned to NFQ level 8) — for MIMLOs Push beyond application: critical analysis, evaluation, and creation/design. analyse evaluate synthesise design develop critique justify implement Tip: start outcomes with a verb + object + standard (e.g., “Analyse X using Y to produce Z”)."
+- button "Expand all"
+- text: "|"
+- button "Collapse all"
+- heading /CMP8001 — Software Development 4 MIMLOs • \d+ cr/ [level=2]:
+  - button /CMP8001 — Software Development 4 MIMLOs • \d+ cr/ [expanded]
+- text: Add 3–6 MIMLOs per module to start.
+- textbox: Design and implement object-oriented software solutions using industry-standard programming languages
+- button "Remove"
+- textbox: Apply software development methodologies to manage the software development lifecycle
+- button "Remove"
+- textbox: Evaluate and select appropriate data structures and algorithms for specific problem domains
+- button "Remove"
+- textbox: Demonstrate proficiency in version control and collaborative development practices
+- button "Remove"
+- button "+ Add MIMLO"
+- heading /CMP8002 — Object Oriented Software Engineering 4 MIMLOs • \d+ cr/ [level=2]:
+  - button /CMP8002 — Object Oriented Software Engineering 4 MIMLOs • \d+ cr/
+- heading "CMP8003 — Introduction to Databases 3 MIMLOs • 5 cr" [level=2]:
+  - button "CMP8003 — Introduction to Databases 3 MIMLOs • 5 cr"
+- heading "CMP8004 — Web Design and Client-Side Scripting 3 MIMLOs • 5 cr" [level=2]:
+  - button "CMP8004 — Web Design and Client-Side Scripting 3 MIMLOs • 5 cr"
+- heading "CMP8005 — Computer Architecture, Operating Systems and Networks 3 MIMLOs • 5 cr" [level=2]:
+  - button "CMP8005 — Computer Architecture, Operating Systems and Networks 3 MIMLOs • 5 cr"
+- heading /CMP8006 — Agile Software Development 4 MIMLOs • \d+ cr/ [level=2]:
+  - button /CMP8006 — Agile Software Development 4 MIMLOs • \d+ cr/
+- heading /CMP8007 — Capstone Project 4 MIMLOs • \d+ cr/ [level=2]:
+  - button /CMP8007 — Capstone Project 4 MIMLOs • \d+ cr/

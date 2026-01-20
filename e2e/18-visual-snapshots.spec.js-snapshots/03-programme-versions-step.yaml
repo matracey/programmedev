@@ -1,0 +1,50 @@
+- heading "Programme Versions" [level=4]
+- text: Create versions (e.g., FT/PT/Online). Each version can have different delivery patterns, capacity, intakes and stage structure.
+- button "+ Add version"
+- button "Expand all"
+- text: "|"
+- button "Collapse all"
+- 'heading "Version 1: Full-time FT • Face-to-face • September Remove" [level=2]':
+  - 'button "Version 1: Full-time FT • Face-to-face • September Remove" [expanded]':
+    - text: ""
+    - button "Remove"
+- text: Version label
+- textbox: Full-time
+- text: Code
+- textbox: FT
+- text: Duration
+- textbox "e.g., 1 year FT / 2 years PT"
+- text: Intakes
+- textbox "Comma-separated, e.g., Sep, Jan"
+- text: Target cohort size
+- spinbutton: /\d+/
+- text: Number of groups
+- spinbutton: "2"
+- text: Delivery modality
+- radio "Face-to-face" [checked]
+- text: Face-to-face
+- radio "Blended"
+- text: Blended
+- radio "Fully online"
+- text: /Fully online F2F delivery pattern \(must total \d+%\) OK \d+% Synchronous Online Classes %/
+- spinbutton: /\d+/
+- text: Asynchronous Directed Learning %
+- spinbutton: /\d+/
+- text: On Campus Learning Event %
+- spinbutton: /\d+/
+- text: Delivery notes
+- 'textbox "High-level plan: where learning happens, key touchpoints."': Primary delivery through on-campus lectures and labs with supplementary online materials.
+- text: Online proctored exams?
+- combobox:
+  - option "TBC"
+  - option "No" [selected]
+  - option "Yes"
+- text: "Stages in this version: 2 (define in the next step)."
+- 'heading "Version 2: Part-time Blended PTB • Blended • September, January Remove" [level=2]':
+  - 'button "Version 2: Part-time Blended PTB • Blended • September, January Remove"':
+    - text: ""
+    - button "Remove"
+- 'heading "Version 3: Part-time Fully Online PTO • Fully online • September, January, May Remove" [level=2]':
+  - 'button "Version 3: Part-time Fully Online PTO • Fully online • September, January, May Remove"':
+    - text: ""
+    - button "Remove"

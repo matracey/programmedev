@@ -1,0 +1,146 @@
+- heading "Effort Hours by Version / Modality" [level=5]
+- paragraph: Define how student learning effort is distributed across different activity types for each programme version and delivery modality. This helps demonstrate the workload balance and staffing requirements (teacher/learner ratios).
+- button "Expand all"
+- text: "|"
+- button "Collapse all"
+- heading /CMP8001 — Software Development \d+ ECTS × \d+ = \d+ expected hours/ [level=2]:
+  - button /CMP8001 — Software Development \d+ ECTS × \d+ = \d+ expected hours/ [expanded]:
+    - text: ""
+    - strong: /\d+/
+    - text: ""
+- table:
+  - rowgroup:
+    - row "Version / Modality Classroom & Demonstrations Mentoring & Small-group Other Contact (specify) Directed E-learning Independent Learning Other Hours (specify) Work-based Learning Total Effort":
+      - columnheader "Version / Modality"
+      - columnheader "Classroom & Demonstrations"
+      - columnheader "Mentoring & Small-group"
+      - columnheader "Other Contact (specify)"
+      - columnheader "Directed E-learning"
+      - columnheader "Independent Learning"
+      - columnheader "Other Hours (specify)"
+      - columnheader "Work-based Learning"
+      - columnheader "Total Effort"
+    - row "Hours Min Ratio Hours Min Ratio Hours Ratio Type Hours Type":
+      - columnheader "Hours"
+      - columnheader "Min Ratio"
+      - columnheader "Hours"
+      - columnheader "Min Ratio"
+      - columnheader "Hours"
+      - columnheader "Ratio"
+      - columnheader "Type"
+      - columnheader "Hours"
+      - columnheader "Type"
+  - rowgroup:
+    - row /Full-time — Face-to-face \d+ 1:\d+ \d+ 1:\d+ 0 \d+ \d+ \d+ Lab setup 0 \d+/:
+      - cell "Full-time — Face-to-face"
+      - cell /\d+/:
+        - spinbutton: /\d+/
+      - cell /1:\d+/:
+        - textbox /1:\d+/
+      - cell /\d+/:
+        - spinbutton: /\d+/
+      - cell /1:\d+/:
+        - textbox /1:\d+/
+      - cell "0":
+        - spinbutton: "0"
+      - cell:
+        - textbox "1:X"
+      - cell:
+        - textbox "Specify..."
+      - cell /\d+/:
+        - spinbutton: /\d+/
+      - cell /\d+/:
+        - spinbutton: /\d+/
+      - cell /\d+/:
+        - spinbutton: /\d+/
+      - cell "Lab setup":
+        - textbox "Specify..."
+      - cell "0":
+        - spinbutton: "0"
+      - cell /\d+/
+    - row /Part-time Blended — Blended \d+ 1:\d+ \d+ 1:\d+ 0 \d+ \d+ \d+ Lab setup 0 \d+/:
+      - cell "Part-time Blended — Blended"
+      - cell /\d+/:
+        - spinbutton: /\d+/
+      - cell /1:\d+/:
+        - textbox /1:\d+/: /1:\d+/
+      - cell /\d+/:
+        - spinbutton: /\d+/
+      - cell /1:\d+/:
+        - textbox /1:\d+/: /1:\d+/
+      - cell "0":
+        - spinbutton: "0"
+      - cell:
+        - textbox "1:X"
+      - cell:
+        - textbox "Specify..."
+      - cell /\d+/:
+        - spinbutton: /\d+/
+      - cell /\d+/:
+        - spinbutton: /\d+/
+      - cell /\d+/:
+        - spinbutton: /\d+/
+      - cell "Lab setup":
+        - textbox "Specify..."
+      - cell "0":
+        - spinbutton: "0"
+      - cell /\d+/
+    - row /Part-time Fully Online — Fully online 0 1:\d+ \d+ 1:\d+ \d+ 1:\d+ Live coding sessions \d+ \d+ 0 0 \d+/:
+      - cell "Part-time Fully Online — Fully online"
+      - cell "0":
+        - spinbutton: "0"
+      - cell /1:\d+/:
+        - textbox /1:\d+/
+      - cell /\d+/:
+        - spinbutton: /\d+/
+      - cell /1:\d+/:
+        - textbox /1:\d+/: /1:\d+/
+      - cell /\d+/:
+        - spinbutton: /\d+/
+      - cell /1:\d+/:
+        - textbox "1:X": /1:\d+/
+      - cell "Live coding sessions":
+        - textbox "Specify...": Live coding sessions
+      - cell /\d+/:
+        - spinbutton: /\d+/
+      - cell /\d+/:
+        - spinbutton: /\d+/
+      - cell "0":
+        - spinbutton: "0"
+      - cell:
+        - textbox "Specify..."
+      - cell "0":
+        - spinbutton: "0"
+      - cell /\d+/
+- strong: "Tip:"
+- text: /Total effort hours should equal \d+ \(based on \d+ ECTS credits × \d+ hours per credit\)\./
+- heading /CMP8002 — Object Oriented Software Engineering \d+ ECTS × \d+ = \d+ expected hours/ [level=2]:
+  - button /CMP8002 — Object Oriented Software Engineering \d+ ECTS × \d+ = \d+ expected hours/:
+    - text: ""
+    - strong: /\d+/
+    - text: ""
+- heading /CMP8003 — Introduction to Databases 5 ECTS × \d+ = \d+ expected hours/ [level=2]:
+  - button /CMP8003 — Introduction to Databases 5 ECTS × \d+ = \d+ expected hours/:
+    - text: ""
+    - strong: /\d+/
+    - text: ""
+- heading /CMP8004 — Web Design and Client-Side Scripting 5 ECTS × \d+ = \d+ expected hours/ [level=2]:
+  - button /CMP8004 — Web Design and Client-Side Scripting 5 ECTS × \d+ = \d+ expected hours/:
+    - text: ""
+    - strong: /\d+/
+    - text: ""
+- heading /CMP8005 — Computer Architecture, Operating Systems and Networks 5 ECTS × \d+ = \d+ expected hours/ [level=2]:
+  - button /CMP8005 — Computer Architecture, Operating Systems and Networks 5 ECTS × \d+ = \d+ expected hours/:
+    - text: ""
+    - strong: /\d+/
+    - text: ""
+- heading /CMP8006 — Agile Software Development \d+ ECTS × \d+ = \d+ expected hours/ [level=2]:
+  - button /CMP8006 — Agile Software Development \d+ ECTS × \d+ = \d+ expected hours/:
+    - text: ""
+    - strong: /\d+/
+    - text: ""
+- heading /CMP8007 — Capstone Project \d+ ECTS × \d+ = \d+ expected hours/ [level=2]:
+  - button /CMP8007 — Capstone Project \d+ ECTS × \d+ = \d+ expected hours/:
+    - text: ""
+    - strong: /\d+/
+    - text: ""

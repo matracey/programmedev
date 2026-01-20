@@ -1,0 +1,45 @@
+- heading "Stage Structure" [level=4]
+- text: Define stages for the selected programme version and assign modules to each stage.
+- combobox:
+  - option "FT — Full-time" [selected]
+  - option "PTB — Part-time Blended"
+  - option "PTO — Part-time Fully Online"
+- button "+ Add stage"
+- button "Expand all"
+- text: "|"
+- button "Collapse all"
+- heading "Stage 1 Seq 1 • Target 25cr • Assigned 25cr Remove" [level=2]:
+  - button "Stage 1 Seq 1 • Target 25cr • Assigned 25cr Remove" [expanded]:
+    - text: ""
+    - button "Remove"
+- text: Stage name
+- textbox: Stage 1
+- text: Sequence
+- spinbutton: "1"
+- text: Credits target
+- spinbutton: /\d+/
+- text: /Assigned modules sum to \d+ credits\./
+- checkbox "Enable exit award for this stage"
+- text: Enable exit award for this stage Modules in this stage
+- checkbox /CMP8001 — Software Development \(\d+ cr\)/ [checked]
+- text: /CMP8001 — Software Development \(\d+ cr\) Semester \/ timing tag \(optional\)/
+- textbox "e.g., S1 / S2 / Year / Block 1"
+- checkbox /CMP8002 — Object Oriented Software Engineering \(\d+ cr\)/
+- text: /CMP8002 — Object Oriented Software Engineering \(\d+ cr\)/
+- checkbox "CMP8003 — Introduction to Databases (5 cr)" [checked]
+- text: CMP8003 — Introduction to Databases (5 cr) Semester / timing tag (optional)
+- textbox "e.g., S1 / S2 / Year / Block 1"
+- checkbox "CMP8004 — Web Design and Client-Side Scripting (5 cr)" [checked]
+- text: CMP8004 — Web Design and Client-Side Scripting (5 cr) Semester / timing tag (optional)
+- textbox "e.g., S1 / S2 / Year / Block 1"
+- checkbox "CMP8005 — Computer Architecture, Operating Systems and Networks (5 cr)" [checked]
+- text: CMP8005 — Computer Architecture, Operating Systems and Networks (5 cr) Semester / timing tag (optional)
+- textbox "e.g., S1 / S2 / Year / Block 1"
+- checkbox /CMP8006 — Agile Software Development \(\d+ cr\)/
+- text: /CMP8006 — Agile Software Development \(\d+ cr\)/
+- checkbox /CMP8007 — Capstone Project \(\d+ cr\)/
+- text: /CMP8007 — Capstone Project \(\d+ cr\)/
+- heading "Stage 2 Seq 2 • Target 35cr • Assigned 35cr Remove" [level=2]:
+  - button "Stage 2 Seq 2 • Target 35cr • Assigned 35cr Remove":
+    - text: ""
+    - button "Remove"
