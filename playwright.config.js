@@ -1,10 +1,10 @@
 // @ts-check
-const { defineConfig, devices } = require('@playwright/test');
+import { defineConfig, devices } from '@playwright/test';
 
 /**
  * @see https://playwright.dev/docs/test-configuration
  */
-module.exports = defineConfig({
+export default defineConfig({
   testDir: './e2e',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
@@ -21,7 +21,7 @@ module.exports = defineConfig({
   quiet: false,
   
   use: {
-    baseURL: 'http://localhost:3000',
+    baseURL: 'http://localhost:5173',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
@@ -37,7 +37,7 @@ module.exports = defineConfig({
   // Assume server is already running on port 3000
   // webServer: {
   //   command: 'npm run start',
-  //   url: 'http://localhost:3000',
+  //   url: 'http://localhost:5173',
   //   reuseExistingServer: !process.env.CI,
   // },
 });

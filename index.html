@@ -1,99 +1,65 @@
-<!DOCTYPE html>
-
+<!doctype html>
 <html lang="en" data-bs-theme="light">
-<head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>NCI Programme Design Studio — MVP</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
-<link href="./assets/styles.css" rel="stylesheet"/>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NCI Programme Design Studio — MVP</title>
+  </head>
+  <body>
+    <!-- Top Navbar -->
+    <nav class="navbar navbar-expand-lg bg-body border-bottom sticky-top">
+      <div class="container-fluid">
+        <div class="d-flex flex-column">
+          <span class="small text-secondary fw-semibold">NCI Programme Design Studio v2</span>
+          <span class="h5 mb-0" id="programmeTitleNav">New Programme (Draft)</span>
+        </div>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <span class="badge text-bg-secondary" id="completionBadge">0% complete</span>
+          <span class="small text-secondary" id="saveStatus">Not saved yet</span>
+          <button class="btn btn-outline-secondary btn-sm" id="exportBtn">Export JSON</button>
+          <label class="btn btn-outline-secondary btn-sm mb-0">
+            Import JSON <input accept="application/json" hidden id="importInput" type="file" />
+          </label>
+          <button class="btn btn-outline-danger btn-sm" id="resetBtn">Reset</button>
+          <button class="btn btn-outline-secondary btn-sm" id="themeToggle" title="Toggle dark/light mode">
+            <span id="themeIcon">🌙</span>
+          </button>
+        </div>
+      </div>
+    </nav>
 
-</head>
-<body>
-<nav class="navbar navbar-expand-lg bg-body border-bottom sticky-top">
-<div class="container-fluid">
-<div class="d-flex flex-column">
-<span class="small text-secondary fw-semibold">NCI Programme Design Studio</span>
-<span class="h5 mb-0" id="programmeTitleNav">New Programme (Draft)</span>
-</div>
-<div class="d-flex align-items-center gap-2 flex-wrap">
-<span class="badge text-bg-secondary" id="completionBadge">0% complete</span>
-<span class="small text-secondary" id="saveStatus">Not saved yet</span>
-<button class="btn btn-outline-secondary btn-sm" id="exportBtn">Export JSON</button>
-<label class="btn btn-outline-secondary btn-sm mb-0">
-        Import JSON <input accept="application/json" hidden="" id="importInput" type="file"/>
-</label>
-<button class="btn btn-outline-danger btn-sm" id="resetBtn">Reset</button>
-<button class="btn btn-outline-secondary btn-sm" id="themeToggle" title="Toggle dark/light mode">
-  <span id="themeIcon">🌙</span>
-</button>
-</div>
-</div>
-</nav>
-<main class="container-fluid py-3">
-<div class="row g-3">
-<aside class="col-12 col-lg-3">
-<div class="card shadow-sm">
-<div class="card-body">
-<div class="fw-semibold mb-2">Workflow</div>
-<div class="list-group" id="stepList"></div>
-<div class="d-flex justify-content-between mt-3">
-<button class="btn btn-outline-secondary btn-sm" id="backBtn">Back</button>
-<button class="btn btn-dark btn-sm" id="nextBtn">Next</button>
-</div>
-</div>
-</div>
-<div class="card shadow-sm mt-3">
-<div class="card-body">
-<div class="fw-semibold mb-2">QQI Flags</div>
-<div class="d-flex flex-column gap-2" id="flagsBox"></div>
-</div>
-</div>
-</aside>
-<section class="col-12 col-lg-9">
-<div id="content"></div>
-</section>
-</div>
-</main>
-<!-- Bootstrap -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Main Content Area -->
+    <main class="container-fluid py-3">
+      <div class="row g-3">
+        <!-- Sidebar -->
+        <aside class="col-12 col-lg-3">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <div class="fw-semibold mb-2">Workflow</div>
+              <div class="list-group" id="stepList"></div>
+              <div class="d-flex justify-content-between mt-3">
+                <button class="btn btn-outline-secondary btn-sm" id="backBtn">Back</button>
+                <button class="btn btn-dark btn-sm" id="nextBtn">Next</button>
+              </div>
+            </div>
+          </div>
+          <div class="card shadow-sm mt-3">
+            <div class="card-body">
+              <div class="fw-semibold mb-2">QQI Flags</div>
+              <div class="d-flex flex-column gap-2" id="flagsBox"></div>
+            </div>
+          </div>
+        </aside>
 
-<!-- Word export libraries -->
-<script src="https://cdn.jsdelivr.net/npm/pizzip@3.2.0/dist/pizzip.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/docxtemplater@3.56.0/build/docxtemplater.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+        <!-- Content Panel -->
+        <section class="col-12 col-lg-9">
+          <div id="content"></div>
+        </section>
+      </div>
+    </main>
 
-<!-- Plotly for Sankey diagrams -->
-<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
-
-<!-- Theme toggle -->
-<script>
-(function() {
-  const html = document.documentElement;
-  const stored = localStorage.getItem('nci_pds_theme');
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const initial = stored || (prefersDark ? 'dark' : 'light');
-  html.setAttribute('data-bs-theme', initial);
-  
-  document.addEventListener('DOMContentLoaded', () => {
-    const btn = document.getElementById('themeToggle');
-    const icon = document.getElementById('themeIcon');
-    function updateIcon() {
-      icon.textContent = html.getAttribute('data-bs-theme') === 'dark' ? '☀️' : '🌙';
-    }
-    updateIcon();
-    btn.onclick = () => {
-      const next = html.getAttribute('data-bs-theme') === 'dark' ? 'light' : 'dark';
-      html.setAttribute('data-bs-theme', next);
-      localStorage.setItem('nci_pds_theme', next);
-      updateIcon();
-    };
-  });
-})();
-</script>
-
-<!-- App -->
-<script src="./assets/lo_lint.js"></script>
-<script src="./assets/app.js"></script>
-</body>
+    <!-- App Entry Point -->
+    <script type="module" src="/src/main.js"></script>
+  </body>
 </html>

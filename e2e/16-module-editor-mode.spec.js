@@ -1,6 +1,6 @@
 // @ts-check
-const { test, expect, loadProgrammeData, getProgrammeData, navigateToStep } = require('./fixtures/test-fixtures');
-const { moduleEditorViewData } = require('./fixtures/test-data');
+import { test, expect, loadProgrammeData, getProgrammeData, navigateToStep } from './fixtures/test-fixtures.js';
+import { moduleEditorViewData } from './fixtures/test-data.js';
 
 test.describe('Module Editor Mode', () => {
   test.beforeEach(async ({ page }) => {

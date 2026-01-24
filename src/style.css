@@ -1,5 +1,11 @@
-:root{
-  --card-radius:1rem;
+@import 'bootstrap/scss/bootstrap.scss';
+
+/**
+ * Styles for QQI Programme Design Studio
+ */
+
+:root {
+  --card-radius: 1rem;
 }
 
 /* Light mode variables */
@@ -33,57 +39,59 @@ body {
   color: var(--bs-body-color);
 }
 
-.card{
-  border-radius:var(--card-radius);
+.card {
+  border-radius: var(--card-radius);
   background-color: var(--bs-body-bg);
   border-color: var(--bs-border-color);
 }
 
-.btn, .form-control, .form-select{
-  border-radius:0.8rem;
+.btn,
+.form-control,
+.form-select {
+  border-radius: 0.8rem;
 }
 
-.list-group-item{
-  border-radius:0.8rem !important;
-  margin-bottom:0.35rem;
+.list-group-item {
+  border-radius: 0.8rem !important;
+  margin-bottom: 0.35rem;
   background-color: var(--bs-body-bg);
 }
 
-.small-muted{
-  font-size:.85rem;
+.small-muted {
+  font-size: 0.85rem;
   color: var(--muted-text);
 }
 
-.tag{
-  font-size:.75rem;
-  font-weight:700;
-  padding:.25rem .5rem;
-  border-radius:999px;
-  display:inline-block;
+.tag {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  display: inline-block;
 }
 
-.tag-error{
+.tag-error {
   background: var(--tag-error-bg);
   color: var(--tag-error-text);
 }
 
-.tag-warn{
+.tag-warn {
   background: var(--tag-warn-bg);
   color: var(--tag-warn-text);
 }
 
-.tag-ok{
+.tag-ok {
   background: var(--tag-ok-bg);
   color: var(--tag-ok-text);
 }
 
-pre.jsonbox{
-  max-height:340px;
-  overflow:auto;
+pre.jsonbox {
+  max-height: 340px;
+  overflow: auto;
   background: var(--jsonbox-bg);
   color: var(--jsonbox-text);
-  border-radius:1rem;
-  padding:1rem;
+  border-radius: 1rem;
+  padding: 1rem;
 }
 
 /* Ensure cards inside content adapt */
@@ -106,7 +114,7 @@ pre.jsonbox{
 
 .flag-item:hover {
   transform: translateX(2px);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .flag-item.flag-error {
@@ -135,41 +143,7 @@ pre.jsonbox{
   text-decoration: underline;
 }
 
-/* Completion badge styling */
-#completionBadge {
-  padding: 0.4rem 0.8rem;
-  transition: all 0.2s ease-in-out;
-  cursor: pointer;
-  display: inline-block;
-  border-radius: 0.5rem;
-}
-
-#completionBadge:hover:not(:has(~ .popover)) {
-  transform: scale(1.05);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-}
-
-#completionBadge.text-bg-success {
-  cursor: default;
-}
-
-#completionBadge.text-bg-success:hover {
-  transform: none;
-}
-
-/* Popover styling */
-.popover {
-  border-radius: 0.5rem;
-  border: 1px solid var(--bs-border-color);
-}
-
-.popover-header {
-  background-color: var(--bs-primary-bg-subtle);
+.flags-summary {
+  padding-bottom: 0.5rem;
   border-bottom: 1px solid var(--bs-border-color);
-  font-weight: 600;
-}
-
-.popover-body {
-  padding: 0.75rem;
-  background-color: var(--bs-body-bg);
 }
