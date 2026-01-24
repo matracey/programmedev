@@ -7,7 +7,7 @@ import { state } from '../../state/store.js';
 import { escapeHtml } from '../../utils/dom.js';
 import { ploText, mimloText } from '../../utils/helpers.js';
 import { getDevModeToggleHtml, wireDevModeToggle } from '../dev-mode.js';
-import { accordionControlsHtml, wireAccordionControls } from './shared.js';
+import { accordionControlsHtml, wireAccordionControls, captureOpenCollapseIds } from './shared.js';
 import { exportProgrammeToWord } from '../../export/word.js';
 import { completionPercent } from '../../utils/validation.js';
 
@@ -41,6 +41,7 @@ export function renderSnapshotStep() {
   const devModeToggleHtml = getDevModeToggleHtml();
   const versions = Array.isArray(p.versions) ? p.versions : [];
   const isComplete100 = completionPercent(p) === 100;
+  const openCollapseIds = captureOpenCollapseIds('snapshotAccordion');
 
   // Build module labels for matrix
   const moduleLabels = (p.modules || []).map((m, i) => {
@@ -95,18 +96,19 @@ export function renderSnapshotStep() {
 
     const headingId = `snap_${v.id}_heading`;
     const collapseId = `snap_${v.id}_collapse`;
+    const isActive = openCollapseIds.has(collapseId) ? true : (openCollapseIds.size === 0 && idx === 0);
     const summary = `${escapeHtml(v.label || v.code || "Version")} • ${escapeHtml(v.duration || "—")} • Intakes: ${escapeHtml((v.intakes || []).join(", ") || "—")}`;
     return `
       <div class="accordion-item bg-body">
         <h2 class="accordion-header" id="${headingId}">
-          <button class="accordion-button ${idx === 0 ? '' : 'collapsed'}" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="${idx === 0}" aria-controls="${collapseId}">
+          <button class="accordion-button ${isActive ? '' : 'collapsed'}" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="${isActive}" aria-controls="${collapseId}">
             <div>
               <div class="fw-semibold">Version ${idx + 1}</div>
               <div class="small text-secondary">${summary}</div>
             </div>
           </button>
         </h2>
-        <div id="${collapseId}" class="accordion-collapse collapse ${idx === 0 ? 'show' : ''}" aria-labelledby="${headingId}">
+        <div id="${collapseId}" class="accordion-collapse collapse ${isActive ? 'show' : ''}" aria-labelledby="${headingId}">
           <div class="accordion-body">
             <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
               <div>

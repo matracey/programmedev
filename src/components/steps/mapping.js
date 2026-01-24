@@ -7,7 +7,7 @@ import { state, saveDebounced } from '../../state/store.js';
 import { escapeHtml } from '../../utils/dom.js';
 import { ploText } from '../../utils/helpers.js';
 import { getDevModeToggleHtml, wireDevModeToggle } from '../dev-mode.js';
-import { accordionControlsHtml, wireAccordionControls } from './shared.js';
+import { accordionControlsHtml, wireAccordionControls, captureOpenCollapseIds } from './shared.js';
 
 /**
  * Get editable module IDs for module editor mode
@@ -30,6 +30,7 @@ export function renderMappingStep() {
   const devModeToggleHtml = getDevModeToggleHtml();
   const plos = p.plos || [];
   const modules = p.modules || [];
+  const openCollapseIds = captureOpenCollapseIds('mappingAccordion');
 
   // Ensure ploToModules exists
   if (!p.ploToModules) p.ploToModules = {};
@@ -79,19 +80,20 @@ export function renderMappingStep() {
 
     const headingId = `map_${o.id}_heading`;
     const collapseId = `map_${o.id}_collapse`;
+    const isActive = openCollapseIds.has(collapseId) ? true : (openCollapseIds.size === 0 && idx === 0);
     const preview = (o.text || '').trim();
     const previewShort = preview.length > 120 ? `${preview.slice(0, 120)}…` : (preview || '—');
     return `
       <div class="accordion-item bg-body">
         <h2 class="accordion-header" id="${headingId}">
-          <button class="accordion-button ${idx === 0 ? '' : 'collapsed'}" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="${idx === 0}" aria-controls="${collapseId}">
+          <button class="accordion-button ${isActive ? '' : 'collapsed'}" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="${isActive}" aria-controls="${collapseId}">
             <div>
               <div class="fw-semibold">PLO ${idx + 1}</div>
               <div class="small text-secondary">${escapeHtml(previewShort)}</div>
             </div>
           </button>
         </h2>
-        <div id="${collapseId}" class="accordion-collapse collapse ${idx === 0 ? 'show' : ''}" aria-labelledby="${headingId}">
+        <div id="${collapseId}" class="accordion-collapse collapse ${isActive ? 'show' : ''}" aria-labelledby="${headingId}">
           <div class="accordion-body">
             <div class="list-group">${checks || '<div class="small text-secondary">No modules available to map.</div>'}</div>
           </div>

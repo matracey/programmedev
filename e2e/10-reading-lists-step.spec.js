@@ -1,6 +1,13 @@
 // @ts-check
 import { test, expect, loadProgrammeData, getProgrammeData, navigateToStep } from './fixtures/test-fixtures.js';
 
+// Helper: capture IDs of open Bootstrap collapse panels within an accordion
+async function getOpenCollapseIds(page, accordionId) {
+  return new Set(
+    await page.$$eval(`#${accordionId} .accordion-collapse.show`, els => els.map(e => e.id))
+  );
+}
+
 test.describe('Step 9: Reading Lists', () => {
   test.beforeEach(async ({ page }) => {
     // Fill Identity step first
@@ -184,6 +191,27 @@ test.describe('Step 9: Reading Lists', () => {
       const data = await getProgrammeData(page);
       expect(data.modules[0].readingList.length).toBe(0);
     }
+  });
+
+  test('keeps open module panels after add reading (re-render)', async ({ page }) => {
+    // Open first module accordion in Reading Lists
+    const firstHeader = page.locator('#readingAccordion .accordion-button').first();
+    const expanded = await firstHeader.getAttribute('aria-expanded');
+    if (expanded !== 'true') await firstHeader.click();
+
+    const before = await getOpenCollapseIds(page, 'readingAccordion');
+
+    // Add a reading to trigger re-render
+    const addBtn = page.locator('button[data-add-reading]').first();
+    if (await addBtn.count() > 0) {
+      await addBtn.click();
+      await page.waitForTimeout(600);
+    } else {
+      await page.evaluate(() => window.render && window.render());
+    }
+
+    const after = await getOpenCollapseIds(page, 'readingAccordion');
+    before.forEach(id => expect(after.has(id)).toBeTruthy());
   });
 });
 

@@ -7,7 +7,7 @@ import { escapeHtml } from '../../utils/dom.js';
 import { mimloText, ensureMimloObjects } from '../../utils/helpers.js';
 import { getDevModeToggleHtml, wireDevModeToggle } from '../dev-mode.js';
 import { lintLearningOutcome } from '../../lib/lo-lint.js';
-import { bloomsGuidanceHtml, accordionControlsHtml, wireAccordionControls } from './shared.js';
+import { bloomsGuidanceHtml, accordionControlsHtml, wireAccordionControls, captureOpenCollapseIds } from './shared.js';
 
 /**
  * Render the MIMLOs step
@@ -18,6 +18,7 @@ export function renderMimlosStep() {
   if (!content) return;
 
   const devModeToggleHtml = getDevModeToggleHtml();
+  const openCollapseIds = captureOpenCollapseIds('mimloAccordion');
 
   const editableIds = editableModuleIds();
   const selectedId = getSelectedModuleId();
@@ -61,12 +62,13 @@ export function renderMimlosStep() {
     const isHidden = (p.mode === "MODULE_EDITOR" && editableIds.length > 1 && m.id !== selectedId);
     const headingId = `mimlo_${m.id}_heading`;
     const collapseId = `mimlo_${m.id}_collapse`;
+    const isActive = openCollapseIds.has(collapseId) ? true : (openCollapseIds.size === 0 && idx === 0);
     const countBadge = `<span class="badge text-bg-secondary">${(m.mimlos || []).length} item${(m.mimlos || []).length !== 1 ? 's' : ''}</span>`;
 
     return `
       <div class="accordion-item bg-body" ${isHidden ? 'style="display:none"' : ''} data-module-card="${m.id}">
         <h2 class="accordion-header" id="${headingId}">
-          <button class="accordion-button ${idx === 0 ? '' : 'collapsed'}" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="${idx === 0}" aria-controls="${collapseId}">
+          <button class="accordion-button ${isActive ? '' : 'collapsed'}" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="${isActive}" aria-controls="${collapseId}">
             <div class="d-flex w-100 justify-content-between align-items-center">
               <div class="fw-semibold">${escapeHtml((m.code ? m.code + " — " : "") + m.title)}</div>
               <div class="d-flex align-items-center gap-2">
@@ -75,7 +77,7 @@ export function renderMimlosStep() {
             </div>
           </button>
         </h2>
-        <div id="${collapseId}" class="accordion-collapse collapse ${idx === 0 ? 'show' : ''}" aria-labelledby="${headingId}">
+        <div id="${collapseId}" class="accordion-collapse collapse ${isActive ? 'show' : ''}" aria-labelledby="${headingId}">
           <div class="accordion-body">
             <div class="small-muted mb-3">Add 3–6 MIMLOs per module to start.</div>
             ${items || `<div class="small text-secondary mb-2">No MIMLOs yet.</div>`}

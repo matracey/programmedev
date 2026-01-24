@@ -7,7 +7,7 @@ import { escapeHtml } from '../../utils/dom.js';
 import { uid } from '../../utils/uid.js';
 import { getDevModeToggleHtml, wireDevModeToggle } from '../dev-mode.js';
 import { lintLearningOutcome } from '../../lib/lo-lint.js';
-import { bloomsGuidanceHtml, accordionControlsHtml, wireAccordionControls } from './shared.js';
+import { bloomsGuidanceHtml, accordionControlsHtml, wireAccordionControls, captureOpenCollapseIds } from './shared.js';
 
 // Track selected standard per PLO for multi-standard support
 const ploSelectedStandards = {};
@@ -19,6 +19,9 @@ export function renderOutcomesStep() {
   const p = state.programme;
   const content = document.getElementById("content");
   if (!content) return;
+
+  // Capture currently expanded PLO accordions before re-render
+  const openCollapseIds = captureOpenCollapseIds('ploAccordion');
 
   const devModeToggleHtml = getDevModeToggleHtml();
   const hasMultipleStandards = (p.awardStandardIds || []).length > 1;
@@ -78,7 +81,9 @@ export function renderOutcomesStep() {
     const previewShort = preview.length > 120 ? `${preview.slice(0, 120)}…` : (preview || "No text yet");
     const headingId = `plo_${o.id}_heading`;
     const collapseId = `plo_${o.id}_collapse`;
-    const isActive = (state.expandPloId && state.expandPloId === o.id) ? true : (idx === 0);
+    const isActive = openCollapseIds.has(collapseId)
+      ? true
+      : (openCollapseIds.size === 0 && idx === 0);
 
     // Standard selector dropdown for multi-standard support
     const standardSelectorHtml = hasMultipleStandards ? `
@@ -242,7 +247,6 @@ function wireOutcomesStep() {
   document.getElementById("addPloBtn").onclick = () => {
     const newId = uid("plo");
     p.plos.push({ id: newId, text: "", standardMappings: [] });
-    state.expandPloId = newId;
     saveDebounced();
     window.render?.();
   };

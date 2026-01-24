@@ -1,6 +1,13 @@
 // @ts-check
 import { test, expect, loadProgrammeData, getProgrammeData, navigateToStep } from './fixtures/test-fixtures.js';
 
+// Helper: capture IDs of open Bootstrap collapse panels within an accordion
+async function getOpenCollapseIds(page, accordionId) {
+  return new Set(
+    await page.$$eval(`#${accordionId} .accordion-collapse.show`, els => els.map(e => e.id))
+  );
+}
+
 test.describe('Step 8: Assessments', () => {
   test.beforeEach(async ({ page }) => {
     // Fill Identity step first
@@ -106,16 +113,19 @@ test.describe('Step 8: Assessments', () => {
   test('should validate weightings sum to 100%', async ({ page }) => {
     // Add two assessments with incorrect weightings
     await page.getByRole('button', { name: '+ Add', exact: true }).click();
-    let unexpandedLocator = page.getByRole('button', { expanded: false })
-    if (await unexpandedLocator.count() > 0) {
-      await unexpandedLocator.last().click();
+    // Expand all assessment panels to reveal inputs
+    const expandAll = page.locator('[data-accordion-expand-all="assessmentsAccordion"]');
+    if (await expandAll.count() > 0) {
+      await expandAll.click();
+      await page.waitForTimeout(200);
     }
     await page.locator('[data-asm-weight]').first().fill('60');
     
     await page.getByRole('button', { name: '+ Add', exact: true }).click();
-    unexpandedLocator = page.getByRole('button', { expanded: false })
-    if (await unexpandedLocator.count() > 0) {
-      await unexpandedLocator.last().click();
+    // Expand all again in case the new panel is collapsed
+    if (await expandAll.count() > 0) {
+      await expandAll.click();
+      await page.waitForTimeout(200);
     }
     await page.locator('[data-asm-weight]').nth(1).fill('60');
     await page.waitForTimeout(600);
@@ -194,6 +204,30 @@ test.describe('Step 8: Assessments', () => {
       const data = await getProgrammeData(page);
       expect(data.modules[0].assessments.length).toBe(0);
     }
+  });
+
+  test('keeps open module panels after add assessment (re-render)', async ({ page }) => {
+    // Open first module accordion in Assessments view
+    const firstHeader = page.locator('#assessmentsAccordion .accordion-button').first();
+    if (await firstHeader.count() > 0) {
+      const expanded = await firstHeader.getAttribute('aria-expanded');
+      if (expanded !== 'true') await firstHeader.click();
+    }
+
+    const before = await getOpenCollapseIds(page, 'assessmentsAccordion');
+
+    // Add an assessment to trigger re-render
+    const addBtn = page.getByRole('button', { name: '+ Add', exact: true }).first();
+    if (await addBtn.count() > 0) {
+      await addBtn.click();
+      await page.waitForTimeout(600);
+    } else {
+      // Fallback: force re-render
+      await page.evaluate(() => window.render && window.render());
+    }
+
+    const after = await getOpenCollapseIds(page, 'assessmentsAccordion');
+    before.forEach(id => expect(after.has(id)).toBeTruthy());
   });
 });
 

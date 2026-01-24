@@ -13,7 +13,7 @@
 import { state, saveDebounced, editableModuleIds, getSelectedModuleId } from '../../state/store.js';
 import { escapeHtml } from '../../utils/dom.js';
 import { getDevModeToggleHtml, wireDevModeToggle } from '../dev-mode.js';
-import { accordionControlsHtml, wireAccordionControls } from './shared.js';
+import { accordionControlsHtml, wireAccordionControls, captureOpenCollapseIds } from './shared.js';
 
 /**
  * Render the Reading Lists step
@@ -25,6 +25,7 @@ export function renderReadingListsStep() {
 
   const devModeToggleHtml = getDevModeToggleHtml();
   const currentYear = new Date().getFullYear();
+  const openCollapseIds = captureOpenCollapseIds('readingAccordion');
 
   const editableIds = editableModuleIds();
   const selectedId = getSelectedModuleId();
@@ -112,10 +113,11 @@ export function renderReadingListsStep() {
 
     const headingId = `reading_${m.id}_heading`;
     const collapseId = `reading_${m.id}_collapse`;
+    const isActive = openCollapseIds.has(collapseId) ? true : (openCollapseIds.size === 0 && idx === 0);
     return `
       <div class="accordion-item bg-body" ${isHidden ? 'style="display:none"' : ''} data-module-card="${m.id}">
         <h2 class="accordion-header" id="${headingId}">
-          <button class="accordion-button ${idx === 0 ? '' : 'collapsed'}" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="${idx === 0}" aria-controls="${collapseId}">
+          <button class="accordion-button ${isActive ? '' : 'collapsed'}" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="${isActive}" aria-controls="${collapseId}">
             <div class="d-flex justify-content-between align-items-center w-100">
               <div class="fw-semibold">${escapeHtml((m.code ? m.code + ' — ' : '') + m.title)}</div>
               <div class="d-flex gap-2 align-items-center">
@@ -125,7 +127,7 @@ export function renderReadingListsStep() {
             </div>
           </button>
         </h2>
-        <div id="${collapseId}" class="accordion-collapse collapse ${idx === 0 ? 'show' : ''}" aria-labelledby="${headingId}">
+        <div id="${collapseId}" class="accordion-collapse collapse ${isActive ? 'show' : ''}" aria-labelledby="${headingId}">
           <div class="accordion-body">
             <div class="small text-secondary mb-3">Add core and recommended reading for this module. Resources older than 5 years will be flagged.</div>
             ${items || '<div class="small text-secondary mb-2">No reading list items yet.</div>'}

@@ -1,6 +1,13 @@
 // @ts-check
 import { test, expect, loadProgrammeData, getProgrammeData, navigateToStep } from './fixtures/test-fixtures.js';
 
+// Helper: capture IDs of open Bootstrap collapse panels within an accordion
+async function getOpenCollapseIds(page, accordionId) {
+  return new Set(
+    await page.$$eval(`#${accordionId} .accordion-collapse.show`, els => els.map(e => e.id))
+  );
+}
+
 test.describe('Step 4: Stage Structure', () => {
   test.beforeEach(async ({ page }) => {
     // Add a version first (required for stages)
@@ -129,6 +136,30 @@ test.describe('Step 4: Stage Structure', () => {
       await downBtn.click();
       await page.waitForTimeout(500);
     }
+  });
+
+  test('keeps open stage panels after add stage (re-render)', async ({ page }) => {
+    // Add two stages to have multiple accordions
+    await page.click('#addStageBtn');
+    await page.waitForTimeout(300);
+    await page.click('#addStageBtn');
+    await page.waitForTimeout(600);
+
+    // Open first two stage accordions
+    const headers = page.locator('#stagesAccordion .accordion-button');
+    for (let i = 0; i < Math.min(await headers.count(), 2); i++) {
+      const expanded = await headers.nth(i).getAttribute('aria-expanded');
+      if (expanded !== 'true') await headers.nth(i).click();
+    }
+
+    const before = await getOpenCollapseIds(page, 'stagesAccordion');
+
+    // Trigger re-render by adding a stage
+    await page.click('#addStageBtn');
+    await page.waitForTimeout(600);
+
+    const after = await getOpenCollapseIds(page, 'stagesAccordion');
+    before.forEach(id => expect(after.has(id)).toBeTruthy());
   });
 });
 

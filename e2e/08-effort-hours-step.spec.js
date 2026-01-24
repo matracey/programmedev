@@ -1,6 +1,13 @@
 // @ts-check
 import { test, expect, loadProgrammeData, getProgrammeData, navigateToStep } from './fixtures/test-fixtures.js';
 
+// Helper: capture IDs of open Bootstrap collapse panels within an accordion
+async function getOpenCollapseIds(page, accordionId) {
+  return new Set(
+    await page.$$eval(`#${accordionId} .accordion-collapse.show`, els => els.map(e => e.id))
+  );
+}
+
 test.describe('Step 7: Effort Hours', () => {
   test.beforeEach(async ({ page }) => {
     // Fill Identity step first
@@ -147,6 +154,7 @@ test.describe('Step 7: Effort Hours', () => {
     // Add another version with modality
     await page.click('button:has-text("3. Programme Versions")');
     await page.waitForTimeout(200);
+    await expect(page.locator('h4:has-text("Programme Versions")')).toBeVisible();
     await page.click('button:has-text("+ Add version")');
     await page.waitForTimeout(400);
     
@@ -180,6 +188,22 @@ test.describe('Step 7: Effort Hours', () => {
       await specifyInput.fill('Lab setup and preparation');
       await page.waitForTimeout(500);
     }
+  });
+
+  test('keeps open module panels after re-render', async ({ page }) => {
+    // Open first module accordion in Effort Hours
+    const firstHeader = page.locator('#effortHoursAccordion .accordion-button').first();
+    const expanded = await firstHeader.getAttribute('aria-expanded');
+    if (expanded !== 'true') await firstHeader.click();
+
+    const before = await getOpenCollapseIds(page, 'effortHoursAccordion');
+
+    // Force a re-render of the page
+    await page.evaluate(() => window.render && window.render());
+    await page.waitForTimeout(600);
+
+    const after = await getOpenCollapseIds(page, 'effortHoursAccordion');
+    before.forEach(id => expect(after.has(id)).toBeTruthy());
   });
 });
 

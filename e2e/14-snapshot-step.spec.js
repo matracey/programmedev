@@ -2,6 +2,13 @@
 import { test, expect, loadProgrammeData, getProgrammeData, navigateToStep } from './fixtures/test-fixtures.js';
 import { higherDiplomaComputing } from './fixtures/test-data.js';
 
+// Helper: capture IDs of open Bootstrap collapse panels within an accordion
+async function getOpenCollapseIds(page, accordionId) {
+  return new Set(
+    await page.$$eval(`#${accordionId} .accordion-collapse.show`, els => els.map(e => e.id))
+  );
+}
+
 test.describe('Step 13: QQI Snapshot', () => {
   test.beforeEach(async ({ page }) => {
     // Load complete programme data
@@ -52,6 +59,24 @@ test.describe('Step 13: QQI Snapshot', () => {
     const hasTable = await page.locator('table').count() > 0;
     const hasMatrixText = await page.getByText('Mapping Matrix', { exact: false }).count() > 0;
     expect(hasTable || hasMatrixText).toBeTruthy();
+  });
+
+  test('keeps open version panels after re-render', async ({ page }) => {
+    // Open first version accordion in snapshot view
+    const firstHeader = page.locator('#snapshotAccordion .accordion-button').first();
+    if (await firstHeader.count() > 0) {
+      const expanded = await firstHeader.getAttribute('aria-expanded');
+      if (expanded !== 'true') await firstHeader.click();
+    }
+
+    const before = await getOpenCollapseIds(page, 'snapshotAccordion');
+
+    // Force a re-render of the page
+    await page.evaluate(() => window.render && window.render());
+    await page.waitForTimeout(600);
+
+    const after = await getOpenCollapseIds(page, 'snapshotAccordion');
+    before.forEach(id => expect(after.has(id)).toBeTruthy());
   });
 
   test('should show Export JSON button', async ({ page }) => {

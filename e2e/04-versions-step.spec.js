@@ -1,6 +1,15 @@
 // @ts-check
 import { test, expect, loadProgrammeData, getProgrammeData, navigateToStep } from './fixtures/test-fixtures.js';
 
+// Utility: capture open collapse IDs for an accordion container
+async function getOpenCollapseIds(page, accordionId) {
+  return await page.evaluate((accId) => {
+    const container = document.getElementById(accId);
+    if (!container) return [];
+    return Array.from(container.querySelectorAll('.accordion-collapse.show')).map(el => el.id);
+  }, accordionId);
+}
+
 test.describe('Step 3: Programme Versions', () => {
   test.beforeEach(async ({ page }) => {
     await page.click('button:has-text("3. Programme Versions")');
@@ -18,17 +27,27 @@ test.describe('Step 3: Programme Versions', () => {
   test('should add a new version', async ({ page }) => {
     await page.click('button:has-text("+ Add version")');
     await page.waitForTimeout(300);
+    // Ensure version card is visible and expanded
+    await expect(page.locator('#versionsAccordion .accordion-item').first()).toBeVisible();
+    const header = page.locator('#versionsAccordion .accordion-button').first();
+    const expanded = await header.getAttribute('aria-expanded');
+    if (expanded !== 'true') await header.click();
     
-    // Should show version form fields
-    await expect(page.locator('text=Label')).toBeVisible();
+    // Should show version form fields (label input)
+    await expect(page.locator('label:has-text("Version label")')).toBeVisible();
+    await expect(page.locator('input[id^="vlabel_"]').first()).toBeVisible();
   });
 
   test('should configure version label and code', async ({ page }) => {
     await page.click('button:has-text("+ Add version")');
     await page.waitForTimeout(300);
     
-    // Find visible label input within the version card
-    const labelInput = page.getByRole('textbox').first();
+    // Expand the first version panel and fill label
+    await expect(page.locator('#versionsAccordion .accordion-item').first()).toBeVisible();
+    const header = page.locator('#versionsAccordion .accordion-button').first();
+    const expanded = await header.getAttribute('aria-expanded');
+    if (expanded !== 'true') await header.click();
+    const labelInput = page.locator('input[id^="vlabel_"]').first();
     await labelInput.fill('Full-time');
     
     await page.waitForTimeout(600);
@@ -95,8 +114,12 @@ test.describe('Step 3: Programme Versions', () => {
     await page.click('button:has-text("+ Add version")');
     await page.waitForTimeout(300);
     
-    // Find cohort size input
-    const cohortInput = page.locator('input[type="number"]').first();
+    // Expand first version and find cohort size input
+    await expect(page.locator('#versionsAccordion .accordion-item').first()).toBeVisible();
+    const header = page.locator('#versionsAccordion .accordion-button').first();
+    const expanded = await header.getAttribute('aria-expanded');
+    if (expanded !== 'true') await header.click();
+    const cohortInput = page.locator('input[id^="vcohort_"]').first();
     await cohortInput.fill('60');
     
     await page.waitForTimeout(600);
@@ -150,6 +173,36 @@ test.describe('Step 3: Programme Versions', () => {
       await deleteBtn.click();
       await page.waitForTimeout(500);
     }
+  });
+
+  test('keeps open version panels after proctor change (re-render)', async ({ page }) => {
+    // Ensure two versions exist
+    await page.click('button:has-text("+ Add version")');
+    await page.waitForTimeout(200);
+    await page.click('button:has-text("+ Add version")');
+    await page.waitForTimeout(300);
+
+    // Expand all
+    const expandAllBtn = page.locator('[data-accordion-expand-all="versionsAccordion"]');
+    await expect(expandAllBtn).toBeVisible();
+    await expect(page.locator('#versionsAccordion .accordion-item').nth(1)).toBeVisible();
+    await expandAllBtn.click();
+    await page.waitForTimeout(200);
+
+    const beforeOpenIds = await getOpenCollapseIds(page, 'versionsAccordion');
+    expect(beforeOpenIds.length).toBeGreaterThanOrEqual(2);
+
+    // Change proctor select for first version to trigger render
+    const proctorSel = page.locator('select[id^="vproctor_"]').first();
+    await expect(proctorSel).toBeVisible();
+    await proctorSel.selectOption('YES');
+    await page.waitForTimeout(400);
+
+    const afterOpenIds = await getOpenCollapseIds(page, 'versionsAccordion');
+    expect(afterOpenIds.length).toBe(beforeOpenIds.length);
+    const beforeSet = new Set(beforeOpenIds);
+    const afterSet = new Set(afterOpenIds);
+    beforeSet.forEach(id => expect(afterSet.has(id)).toBeTruthy());
   });
 });
 

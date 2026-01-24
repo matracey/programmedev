@@ -5,7 +5,7 @@
 import { state, saveDebounced, editableModuleIds, getSelectedModuleId } from '../../state/store.js';
 import { escapeHtml } from '../../utils/dom.js';
 import { getDevModeToggleHtml, wireDevModeToggle } from '../dev-mode.js';
-import { accordionControlsHtml, wireAccordionControls } from './shared.js';
+import { accordionControlsHtml, wireAccordionControls, captureOpenCollapseIds } from './shared.js';
 import { ensureMimloObjects, mimloText, formatPct } from '../../utils/helpers.js';
 
 // Assessment types matching legacy
@@ -236,6 +236,7 @@ export function renderAssessmentsStep() {
   if (!content) return;
 
   const devModeToggleHtml = getDevModeToggleHtml();
+  const openCollapseIds = captureOpenCollapseIds('assessmentsAccordion');
 
   const editableIds = editableModuleIds();
   const selectedId = getSelectedModuleId();
@@ -272,11 +273,12 @@ export function renderAssessmentsStep() {
       const integ = a.integrity || {};
       const asmHeadingId = `asm_${m.id}_${a.id}_heading`;
       const asmCollapseId = `asm_${m.id}_${a.id}_collapse`;
+      const asmActive = openCollapseIds.has(asmCollapseId) ? true : (openCollapseIds.size === 0 && asmIdx === 0);
 
       return `
         <div class="accordion-item bg-body">
           <h2 class="accordion-header" id="${asmHeadingId}">
-            <button class="accordion-button ${asmIdx === 0 ? '' : 'collapsed'} w-100" type="button" data-bs-toggle="collapse" data-bs-target="#${asmCollapseId}" aria-expanded="${asmIdx === 0}" aria-controls="${asmCollapseId}">
+            <button class="accordion-button ${asmActive ? '' : 'collapsed'} w-100" type="button" data-bs-toggle="collapse" data-bs-target="#${asmCollapseId}" aria-expanded="${asmActive}" aria-controls="${asmCollapseId}">
               <div class="d-flex w-100 align-items-center gap-2">
                 <div class="flex-grow-1 text-start">
                   <div class="fw-semibold">${escapeHtml(a.title || "Assessment")}</div>
@@ -288,7 +290,7 @@ export function renderAssessmentsStep() {
               </div>
             </button>
           </h2>
-          <div id="${asmCollapseId}" class="accordion-collapse collapse ${asmIdx === 0 ? 'show' : ''}" aria-labelledby="${asmHeadingId}">
+          <div id="${asmCollapseId}" class="accordion-collapse collapse ${asmActive ? 'show' : ''}" aria-labelledby="${asmHeadingId}">
             <div class="accordion-body">
               <div class="row g-2">
                 <div class="col-md-4">
@@ -358,10 +360,11 @@ export function renderAssessmentsStep() {
     const isHidden = (p.mode === "MODULE_EDITOR" && editableIds.length > 1 && m.id !== selectedId);
     const headingId = `asm_${m.id}_heading`;
     const collapseId = `asm_${m.id}_collapse`;
+    const modActive = openCollapseIds.has(collapseId) ? true : (openCollapseIds.size === 0 && idx === 0);
     return `
       <div class="accordion-item bg-body" ${isHidden ? 'style="display:none"' : ''} data-module-card="${m.id}">
         <h2 class="accordion-header" id="${headingId}">
-          <button class="accordion-button ${idx === 0 ? '' : 'collapsed'} w-100" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="${idx === 0}" aria-controls="${collapseId}">
+          <button class="accordion-button ${modActive ? '' : 'collapsed'} w-100" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="${modActive}" aria-controls="${collapseId}">
             <div class="d-flex w-100 align-items-center gap-2">
               <div class="flex-grow-1 text-start">
                 <div class="fw-semibold">${escapeHtml(m.code || "")} — ${escapeHtml(m.title || "")}</div>
@@ -374,7 +377,7 @@ export function renderAssessmentsStep() {
             </div>
           </button>
         </h2>
-        <div id="${collapseId}" class="accordion-collapse collapse ${idx === 0 ? 'show' : ''}" aria-labelledby="${headingId}">
+        <div id="${collapseId}" class="accordion-collapse collapse ${modActive ? 'show' : ''}" aria-labelledby="${headingId}">
           <div class="accordion-body">
             ${asmItems || `<div class="text-muted small">No assessments yet. Click "+ Add" to create one.</div>`}
           </div>

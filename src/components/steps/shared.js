@@ -85,3 +85,17 @@ export function wireAccordionControls(accordionId) {
     btn.onclick = () => toggleAll(false);
   });
 }
+
+/**
+ * Capture IDs of currently open accordion collapse elements for a container.
+ * Returns a Set of collapse element IDs (e.g., 'module_<id>_collapse').
+ */
+export function captureOpenCollapseIds(accordionId) {
+  const set = new Set();
+  const accordion = document.getElementById(accordionId);
+  if (!accordion) return set;
+  accordion.querySelectorAll('.accordion-collapse.show').forEach(el => {
+    if (el.id) set.add(el.id);
+  });
+  return set;
+}

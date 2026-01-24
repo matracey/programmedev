@@ -1,6 +1,13 @@
 // @ts-check
 import { test, expect, loadProgrammeData, getProgrammeData, navigateToStep } from './fixtures/test-fixtures.js';
 
+// Helper: capture IDs of open Bootstrap collapse panels within an accordion
+async function getOpenCollapseIds(page, accordionId) {
+  return new Set(
+    await page.$$eval(`#${accordionId} .accordion-collapse.show`, els => els.map(e => e.id))
+  );
+}
+
 test.describe('Step 11: PLO to Module Mapping', () => {
   test.beforeEach(async ({ page }) => {
     // Fill Identity step first
@@ -160,6 +167,24 @@ test.describe('Step 11: PLO to Module Mapping', () => {
     // Then unmap
     await checkbox.uncheck();
     await page.waitForTimeout(500);
+  });
+
+  test('keeps open PLO panels after re-render', async ({ page }) => {
+    // Open first two PLO accordions
+    const headers = page.locator('#mappingAccordion .accordion-button');
+    for (let i = 0; i < Math.min(await headers.count(), 2); i++) {
+      const expanded = await headers.nth(i).getAttribute('aria-expanded');
+      if (expanded !== 'true') await headers.nth(i).click();
+    }
+
+    const before = await getOpenCollapseIds(page, 'mappingAccordion');
+
+    // Force a re-render of the page
+    await page.evaluate(() => window.render && window.render());
+    await page.waitForTimeout(600);
+
+    const after = await getOpenCollapseIds(page, 'mappingAccordion');
+    before.forEach(id => expect(after.has(id)).toBeTruthy());
   });
 });
 

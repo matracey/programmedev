@@ -5,7 +5,7 @@
 import { state } from '../../state/store.js';
 import { escapeHtml } from '../../utils/dom.js';
 import { getDevModeToggleHtml, wireDevModeToggle } from '../dev-mode.js';
-import { accordionControlsHtml, wireAccordionControls } from './shared.js';
+import { accordionControlsHtml, wireAccordionControls, captureOpenCollapseIds } from './shared.js';
 
 /**
  * Render the Schedule step (QQI-style)
@@ -17,6 +17,7 @@ export function renderScheduleStep() {
 
   const devModeToggleHtml = getDevModeToggleHtml();
   const versions = Array.isArray(p.versions) ? p.versions : [];
+  const openCollapseIds = captureOpenCollapseIds('scheduleAccordion');
 
   if (!versions.length) {
     content.innerHTML = devModeToggleHtml + `
@@ -139,17 +140,18 @@ export function renderScheduleStep() {
 
       const headingId = `schedule_${stg.sequence}_heading`;
       const collapseId = `schedule_${stg.sequence}_collapse`;
+      const isActive = openCollapseIds.has(collapseId) ? true : (openCollapseIds.size === 0 && stgIdx === 0);
       return `
         <div class="accordion-item bg-body">
           <h2 class="accordion-header" id="${headingId}">
-            <button class="accordion-button ${isFirst ? '' : 'collapsed'}" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="${isFirst}" aria-controls="${collapseId}">
+            <button class="accordion-button ${isActive ? '' : 'collapsed'}" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="${isActive}" aria-controls="${collapseId}">
               <div class="d-flex justify-content-between align-items-center w-100">
                 <div class="fw-semibold">${escapeHtml(stg.name || `Stage ${stg.sequence}`)}</div>
                 <div class="small text-secondary">Target: ${stg.creditsTarget || 0} ECTS • NFQ ${p.nfqLevel || "—"}</div>
               </div>
             </button>
           </h2>
-          <div id="${collapseId}" class="accordion-collapse collapse ${isFirst ? 'show' : ''}" aria-labelledby="${headingId}">
+          <div id="${collapseId}" class="accordion-collapse collapse ${isActive ? 'show' : ''}" aria-labelledby="${headingId}">
             <div class="accordion-body p-0">
               <div class="table-responsive">
                 <table class="table table-sm table-bordered align-middle mb-0">

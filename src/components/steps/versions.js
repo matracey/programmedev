@@ -6,7 +6,7 @@ import { state, saveDebounced, defaultVersion } from '../../state/store.js';
 import { escapeHtml, tagHtml } from '../../utils/dom.js';
 import { defaultPatternFor, sumPattern } from '../../utils/helpers.js';
 import { getDevModeToggleHtml, wireDevModeToggle } from '../dev-mode.js';
-import { accordionControlsHtml, wireAccordionControls } from './shared.js';
+import { accordionControlsHtml, wireAccordionControls, captureOpenCollapseIds } from './shared.js';
 
 const MOD_DEFS = [
   { key: "F2F", label: "Face-to-face" },
@@ -24,14 +24,17 @@ export function renderVersionsStep() {
 
   const devModeToggleHtml = getDevModeToggleHtml();
   const versions = Array.isArray(p.versions) ? p.versions : [];
+  const openCollapseIds = captureOpenCollapseIds('versionsAccordion');
 
   const vCards = versions.map((v, idx) => {
     const intakeVal = (v.intakes || []).join(", ");
-    const isActive = state.selectedVersionId ? (state.selectedVersionId === v.id) : (idx === 0);
     const selectedMod = v.deliveryModality || "";
     const modSummary = selectedMod ? (MOD_DEFS.find(m => m.key === selectedMod)?.label || selectedMod) : "Choose modality";
     const collapseId = `ver_${v.id}_collapse`;
     const headingId = `ver_${v.id}_heading`;
+    const isActive = openCollapseIds.has(collapseId)
+      ? true
+      : (state.selectedVersionId ? (state.selectedVersionId === v.id) : (openCollapseIds.size === 0 && idx === 0));
     
     const modRadios = MOD_DEFS.map(m => `
       <div class="form-check form-check-inline">

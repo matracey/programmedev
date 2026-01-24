@@ -6,7 +6,7 @@
 import { state, saveDebounced, editableModuleIds, getSelectedModuleId } from '../../state/store.js';
 import { escapeHtml } from '../../utils/dom.js';
 import { getDevModeToggleHtml, wireDevModeToggle } from '../dev-mode.js';
-import { accordionControlsHtml, wireAccordionControls } from './shared.js';
+import { accordionControlsHtml, wireAccordionControls, captureOpenCollapseIds } from './shared.js';
 
 /**
  * Render the Effort Hours step
@@ -17,6 +17,7 @@ export function renderEffortHoursStep() {
   if (!content) return;
 
   const devModeToggleHtml = getDevModeToggleHtml();
+  const openCollapseIds = captureOpenCollapseIds('effortHoursAccordion');
 
   const editableIds = editableModuleIds();
   const selectedId = getSelectedModuleId();
@@ -149,11 +150,12 @@ export function renderEffortHoursStep() {
 
     const headingId = `effort_${m.id}_heading`;
     const collapseId = `effort_${m.id}_collapse`;
+    const isActive = openCollapseIds.has(collapseId) ? true : (openCollapseIds.size === 0 && idx === 0);
 
     return `
       <div class="accordion-item bg-body" ${isHidden ? 'style="display:none"' : ""} data-module-card="${m.id}">
         <h2 class="accordion-header" id="${headingId}">
-          <button class="accordion-button ${idx === 0 ? "" : "collapsed"} w-100" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="${idx === 0}" aria-controls="${collapseId}">
+          <button class="accordion-button ${isActive ? "" : "collapsed"} w-100" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="${isActive}" aria-controls="${collapseId}">
             <div class="d-flex w-100 align-items-center gap-2">
               <div class="flex-grow-1">
                 <div class="fw-semibold">${escapeHtml((m.code ? m.code + " — " : "") + m.title)}</div>
@@ -164,7 +166,7 @@ export function renderEffortHoursStep() {
             </div>
           </button>
         </h2>
-        <div id="${collapseId}" class="accordion-collapse collapse ${idx === 0 ? "show" : ""}" aria-labelledby="${headingId}">
+        <div id="${collapseId}" class="accordion-collapse collapse ${isActive ? "show" : ""}" aria-labelledby="${headingId}">
           <div class="accordion-body">
             ${noVersionsMsg || `
             <div class="table-responsive">
