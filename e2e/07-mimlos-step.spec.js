@@ -1,6 +1,13 @@
 // @ts-check
 import { test, expect, loadProgrammeData, getProgrammeData, navigateToStep } from './fixtures/test-fixtures.js';
 
+// Helper: capture IDs of open Bootstrap collapse panels within an accordion
+async function getOpenCollapseIds(page, accordionId) {
+  return new Set(
+    await page.$$eval(`#${accordionId} .accordion-collapse.show`, els => els.map(e => e.id))
+  );
+}
+
 test.describe('Step 6: MIMLOs (Module Intended Learning Outcomes)', () => {
   test.beforeEach(async ({ page }) => {
     // Fill Identity step first
@@ -156,6 +163,32 @@ test.describe('Step 6: MIMLOs (Module Intended Learning Outcomes)', () => {
     // Either empty message or add button should be visible
     const hasEmptyState = await noMimlosText.count() > 0 || await addBtn.count() > 0;
     expect(hasEmptyState).toBeTruthy();
+  });
+
+  test('keeps open module panels after add MIMLO (re-render)', async ({ page }) => {
+    // Ensure at least one module exists in MIMLOs
+    await page.click('button:has-text("6. MIMLOs")');
+    await page.waitForTimeout(300);
+
+    // Open first module accordion
+    const firstHeader = page.locator('#mimloAccordion .accordion-button').first();
+    const expanded = await firstHeader.getAttribute('aria-expanded');
+    if (expanded !== 'true') await firstHeader.click();
+
+    const before = await getOpenCollapseIds(page, 'mimloAccordion');
+
+    // Add a MIMLO to trigger re-render
+    const addBtn = page.locator('button[data-add-mimlo]').first();
+    if (await addBtn.isVisible()) {
+      await addBtn.click();
+      await page.waitForTimeout(600);
+    } else {
+      // Fallback: force re-render
+      await page.evaluate(() => window.render && window.render());
+    }
+
+    const after = await getOpenCollapseIds(page, 'mimloAccordion');
+    before.forEach(id => expect(after.has(id)).toBeTruthy());
   });
 });
 

@@ -1,6 +1,13 @@
 // @ts-check
 import { test, expect, loadProgrammeData, getProgrammeData, navigateToStep } from './fixtures/test-fixtures.js';
 
+// Helper: capture IDs of open Bootstrap collapse panels within an accordion
+async function getOpenCollapseIds(page, accordionId) {
+  return new Set(
+    await page.$$eval(`#${accordionId} .accordion-collapse.show`, els => els.map(e => e.id))
+  );
+}
+
 test.describe('Step 10: Programme Schedule', () => {
   test.beforeEach(async ({ page }) => {
     // Fill Identity first
@@ -71,6 +78,7 @@ test.describe('Step 10: Programme Schedule', () => {
     // Add another version
     await page.click('button:has-text("3. Programme Versions")');
     await page.waitForTimeout(200);
+    await expect(page.locator('h4:has-text("Programme Versions")')).toBeVisible();
     await page.click('button:has-text("+ Add version")');
     await page.waitForTimeout(400);
     
@@ -81,6 +89,25 @@ test.describe('Step 10: Programme Schedule', () => {
     // Multiple versions should exist in data
     const data = await getProgrammeData(page);
     expect(data.versions.length).toBeGreaterThanOrEqual(2);
+  });
+
+  test('keeps open stage panels after re-render', async ({ page }) => {
+    // Open first stage accordion in Schedule view
+    const firstHeader = page.locator('#scheduleAccordion .accordion-button').first();
+    if (await firstHeader.count() > 0) {
+      const expanded = await firstHeader.getAttribute('aria-expanded');
+      if (expanded !== 'true') await firstHeader.click();
+    }
+
+    const before = await getOpenCollapseIds(page, 'scheduleAccordion');
+
+    // Force a re-render
+    await page.evaluate(() => window.render && window.render());
+    await page.waitForTimeout(600);
+
+    const after = await getOpenCollapseIds(page, 'scheduleAccordion');
+    // Previously open stage should remain open after render
+    before.forEach(id => expect(after.has(id)).toBeTruthy());
   });
 });
 

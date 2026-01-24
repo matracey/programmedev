@@ -1,6 +1,13 @@
 // @ts-check
 import { test, expect, loadProgrammeData, getProgrammeData, navigateToStep } from './fixtures/test-fixtures.js';
 
+// Helper: capture IDs of open Bootstrap collapse panels within an accordion
+async function getOpenCollapseIds(page, accordionId) {
+  return new Set(
+    await page.$$eval(`#${accordionId} .accordion-collapse.show`, els => els.map(e => e.id))
+  );
+}
+
 test.describe('Step 5: Credits & Modules', () => {
   test.beforeEach(async ({ page }) => {
     // Fill Identity first to ensure localStorage is properly initialized
@@ -150,6 +157,31 @@ test.describe('Step 5: Credits & Modules', () => {
     
     // Should show mismatch error in flags
     await expect(page.locator('text=mismatch')).toBeVisible();
+  });
+
+  test('keeps open module panels after add module (re-render)', async ({ page }) => {
+    // Ensure at least two modules exist
+    await page.click('button:has-text("+ Add module")');
+    await page.waitForTimeout(300);
+    await page.click('button:has-text("+ Add module")');
+    await page.waitForTimeout(600);
+
+    // Open first two module accordions
+    const headers = page.locator('#modulesAccordion .accordion-button');
+    for (let i = 0; i < Math.min(await headers.count(), 2); i++) {
+      const expanded = await headers.nth(i).getAttribute('aria-expanded');
+      if (expanded !== 'true') await headers.nth(i).click();
+    }
+
+    const before = await getOpenCollapseIds(page, 'modulesAccordion');
+
+    // Trigger re-render by adding a module
+    await page.click('button:has-text("+ Add module")');
+    await page.waitForTimeout(600);
+
+    const after = await getOpenCollapseIds(page, 'modulesAccordion');
+    // Previously open panels should remain open
+    before.forEach(id => expect(after.has(id)).toBeTruthy());
   });
 });
 

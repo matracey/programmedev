@@ -1,6 +1,15 @@
 // @ts-check
 import { test, expect, loadProgrammeData, getProgrammeData, navigateToStep } from './fixtures/test-fixtures.js';
 
+// Utility: capture open collapse IDs for an accordion container
+async function getOpenCollapseIds(page, accordionId) {
+  return await page.evaluate((accId) => {
+    const container = document.getElementById(accId);
+    if (!container) return [];
+    return Array.from(container.querySelectorAll('.accordion-collapse.show')).map(el => el.id);
+  }, accordionId);
+}
+
 test.describe('Step 2: Programme Learning Outcomes (PLOs)', () => {
   test.beforeEach(async ({ page }) => {
     // Navigate to PLOs step
@@ -156,6 +165,51 @@ test.describe('Step 2: PLOs - Standard Mappings', () => {
     
     // This will pass if mapping UI exists
     expect(hasMappingUI || true).toBeTruthy(); // Soft check - UI may vary
+  });
+
+  test('keeps multiple PLO panels open after add mapping (re-render)', async ({ page }) => {
+    // Add two PLOs
+    await page.click('button:has-text("+ Add PLO")');
+    await page.waitForTimeout(200);
+    // Ensure panels are expanded before interacting
+    const expandAllBtn = page.locator('[data-accordion-expand-all="ploAccordion"]');
+    if (await expandAllBtn.count() > 0) {
+      await expandAllBtn.click();
+      await page.waitForTimeout(200);
+    }
+    await page.locator('[data-plo-id]').last().fill('PLO 1 text');
+    await page.waitForTimeout(120);
+
+    await page.click('button:has-text("+ Add PLO")');
+    await page.waitForTimeout(200);
+    if (await expandAllBtn.count() > 0) {
+      await expandAllBtn.click();
+      await page.waitForTimeout(200);
+    }
+    await page.locator('[data-plo-id]').last().fill('PLO 2 text');
+    await page.waitForTimeout(120);
+
+    const beforeOpenIds = await getOpenCollapseIds(page, 'ploAccordion');
+    expect(beforeOpenIds.length).toBeGreaterThanOrEqual(2);
+
+    // Add a mapping for the first PLO to trigger window.render()
+    const critSel = page.locator('select[data-plo-map-criteria]').first();
+    const threadSel = page.locator('select[data-plo-map-thread]').first();
+    await expect(critSel).toBeVisible();
+    await critSel.selectOption({ index: 1 });
+    await page.waitForTimeout(100);
+    await expect(threadSel).toBeVisible();
+    await threadSel.selectOption({ index: 1 });
+    await page.waitForTimeout(100);
+
+    await page.locator('[data-add-plo-map]').first().click();
+    await page.waitForTimeout(400);
+
+    const afterOpenIds = await getOpenCollapseIds(page, 'ploAccordion');
+    expect(afterOpenIds.length).toBe(beforeOpenIds.length);
+    const beforeSet = new Set(beforeOpenIds);
+    const afterSet = new Set(afterOpenIds);
+    beforeSet.forEach(id => expect(afterSet.has(id)).toBeTruthy());
   });
 });
 
