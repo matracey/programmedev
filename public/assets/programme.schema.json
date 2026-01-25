@@ -118,6 +118,7 @@
     "module": {
       "type": "object",
       "required": ["id", "title", "credits"],
+      "description": "A module within the programme",
       "properties": {
         "id": {
           "type": "string",
@@ -221,6 +222,7 @@
     "mimlo": {
       "type": "object",
       "required": ["id", "text"],
+      "description": "Minimum Intended Module Learning Outcome",
       "properties": {
         "id": {
           "type": "string",
@@ -236,6 +238,7 @@
     "assessment": {
       "type": "object",
       "required": ["id", "title", "type", "weighting"],
+      "description": "An assessment for a module",
       "properties": {
         "id": {
           "type": "string",
@@ -306,6 +309,7 @@
     "plo": {
       "type": "object",
       "required": ["id", "text"],
+      "description": "Programme Learning Outcome",
       "properties": {
         "id": {
           "type": "string",
@@ -326,6 +330,7 @@
     "standardMapping": {
       "type": "object",
       "required": ["criteria", "thread"],
+      "description": "Mapping to a QQI award standard thread",
       "properties": {
         "criteria": {
           "type": "string",
@@ -346,6 +351,7 @@
     "version": {
       "type": "object",
       "required": ["id", "label"],
+      "description": "A programme version (e.g., Full-time, Part-time, Online)",
       "properties": {
         "id": {
           "type": "string",
@@ -437,6 +443,7 @@
     "stage": {
       "type": "object",
       "required": ["id", "name", "sequence"],
+      "description": "A stage within a programme version",
       "properties": {
         "id": {
           "type": "string",
@@ -469,6 +476,7 @@
     },
     "exitAward": {
       "type": "object",
+      "description": "Exit award available at a stage",
       "properties": {
         "enabled": {
           "type": "boolean",
@@ -484,6 +492,7 @@
     "stageModule": {
       "type": "object",
       "required": ["moduleId"],
+      "description": "A module assignment within a stage",
       "properties": {
         "moduleId": {
           "type": "string",
