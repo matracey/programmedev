@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://nci.ie/schemas/programme.schema.json",
+  "$id": "https://ncirl.ie/schemas/programme.schema.json",
   "title": "NCI Programme Design Schema",
   "description": "Schema for NCI Programme Design Studio programme data (schemaVersion 2)",
   "type": "object",
@@ -30,7 +30,7 @@
       "description": "True if the award type is a custom value not in the standard list"
     },
     "nfqLevel": {
-      "type": "integer",
+      "type": ["integer", "null"],
       "minimum": 6,
       "maximum": 10,
       "description": "National Framework of Qualifications level (6-10)"
@@ -78,9 +78,11 @@
             "modulesMeta": { "type": "boolean" },
             "versions": { "type": "boolean" },
             "plos": { "type": "boolean" }
-          }
+          },
+          "additionalProperties": false
         }
-      }
+      },
+      "additionalProperties": false
     },
     "modules": {
       "type": "array",
@@ -106,11 +108,12 @@
       "items": { "$ref": "#/$defs/version" }
     },
     "updatedAt": {
-      "type": "string",
+      "type": ["string", "null"],
       "format": "date-time",
       "description": "ISO 8601 timestamp of last update"
     }
   },
+  "additionalProperties": false,
   "$defs": {
     "module": {
       "type": "object",
@@ -148,7 +151,8 @@
           "description": "Assessments for this module",
           "items": { "$ref": "#/$defs/assessment" }
         }
-      }
+      },
+      "additionalProperties": false
     },
     "effortHoursModality": {
       "type": "object",
@@ -211,7 +215,8 @@
           "minimum": 0,
           "description": "Hours of work-based learning"
         }
-      }
+      },
+      "additionalProperties": false
     },
     "mimlo": {
       "type": "object",
@@ -225,7 +230,8 @@
           "type": "string",
           "description": "MIMLO statement text"
         }
-      }
+      },
+      "additionalProperties": false
     },
     "assessment": {
       "type": "object",
@@ -267,7 +273,8 @@
           "type": "string",
           "description": "Additional notes about the assessment"
         }
-      }
+      },
+      "additionalProperties": false
     },
     "integrityControls": {
       "type": "object",
@@ -293,7 +300,8 @@
           "type": "boolean",
           "description": "Whether an AI use declaration is required"
         }
-      }
+      },
+      "additionalProperties": false
     },
     "plo": {
       "type": "object",
@@ -312,7 +320,8 @@
           "description": "Mappings to QQI award standards",
           "items": { "$ref": "#/$defs/standardMapping" }
         }
-      }
+      },
+      "additionalProperties": false
     },
     "standardMapping": {
       "type": "object",
@@ -331,7 +340,8 @@
           "type": "string",
           "description": "Reference to which award standard this mapping belongs to (relevant when multiple standards are selected)"
         }
-      }
+      },
+      "additionalProperties": false
     },
     "version": {
       "type": "object",
@@ -396,7 +406,8 @@
           "description": "Stages within this version",
           "items": { "$ref": "#/$defs/stage" }
         }
-      }
+      },
+      "additionalProperties": false
     },
     "deliveryPattern": {
       "type": "object",
@@ -420,7 +431,8 @@
           "maximum": 100,
           "description": "Percentage of on-campus delivery"
         }
-      }
+      },
+      "additionalProperties": false
     },
     "stage": {
       "type": "object",
@@ -452,7 +464,8 @@
           "description": "Modules assigned to this stage",
           "items": { "$ref": "#/$defs/stageModule" }
         }
-      }
+      },
+      "additionalProperties": false
     },
     "exitAward": {
       "type": "object",
@@ -465,7 +478,8 @@
           "type": "string",
           "description": "Title of the exit award"
         }
-      }
+      },
+      "additionalProperties": false
     },
     "stageModule": {
       "type": "object",
@@ -479,7 +493,8 @@
           "type": "string",
           "description": "Semester or timing tag (e.g., Autumn, Spring, S1)"
         }
-      }
+      },
+      "additionalProperties": false
     }
   }
 }
