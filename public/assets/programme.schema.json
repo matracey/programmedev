@@ -151,6 +151,11 @@
           "type": "array",
           "description": "Assessments for this module",
           "items": { "$ref": "#/$defs/assessment" }
+        },
+        "readingList": {
+          "type": "array",
+          "description": "Reading list items for this module",
+          "items": { "$ref": "#/$defs/readingListItem" }
         }
       },
       "additionalProperties": false
@@ -302,6 +307,47 @@
         "aiDeclaration": {
           "type": "boolean",
           "description": "Whether an AI use declaration is required"
+        }
+      },
+      "additionalProperties": false
+    },
+    "readingListItem": {
+      "type": "object",
+      "required": ["title"],
+      "description": "A reading list entry for a module",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the reading list item"
+        },
+        "type": {
+          "type": "string",
+          "description": "Type of reading (e.g., Core, Recommended, Supplementary)",
+          "examples": ["Core", "Recommended", "Supplementary"]
+        },
+        "title": {
+          "type": "string",
+          "description": "Title of the book or resource"
+        },
+        "author": {
+          "type": "string",
+          "description": "Author(s) of the resource"
+        },
+        "publisher": {
+          "type": "string",
+          "description": "Publisher of the resource"
+        },
+        "year": {
+          "type": "string",
+          "description": "Year of publication"
+        },
+        "isbn": {
+          "type": "string",
+          "description": "ISBN of the resource"
+        },
+        "notes": {
+          "type": "string",
+          "description": "Additional notes about the reading item"
         }
       },
       "additionalProperties": false
