@@ -4,7 +4,7 @@
       "fileMatch": [
         "samples/*.json"
       ],
-      "url": "./assets/programme.schema.json"
+      "url": "./public/assets/programme.schema.json"
     }
   ]
 }
