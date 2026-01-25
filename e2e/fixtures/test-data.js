@@ -282,4 +282,139 @@ const moduleEditorViewData = {
   ]
 };
 
-export { higherDiplomaComputing, moduleEditorViewData };
+/**
+ * Programme with electives for testing elective workflow
+ */
+const programmeWithElectives = {
+  "schemaVersion": 2,
+  "id": "masters-computing-electives",
+  "title": "MSc in Computing with Electives",
+  "awardType": "Masters",
+  "awardTypeIsOther": false,
+  "nfqLevel": 9,
+  "school": "Computing",
+  "totalCredits": 90,
+  "mode": "PROGRAMME_OWNER",
+  "updatedAt": "2026-01-15T10:00:00.000Z",
+  "electiveDefinitions": [
+    {
+      "id": "elec1",
+      "code": "SPEC1",
+      "name": "Specialization Track",
+      "credits": 15,
+      "groups": [
+        { "id": "elec1-a", "code": "DATA", "name": "Data Analytics Track" },
+        { "id": "elec1-b", "code": "CLOUD", "name": "Cloud Computing Track" }
+      ]
+    }
+  ],
+  "modules": [
+    {
+      "id": "mod_core1",
+      "code": "CMP9001",
+      "title": "Research Methods",
+      "credits": 10,
+      "type": "M",
+      "mimlos": [
+        { "id": "mimlo_c1_1", "text": "Apply research methodologies" }
+      ],
+      "assessments": []
+    },
+    {
+      "id": "mod_core2",
+      "code": "CMP9002",
+      "title": "Advanced Programming",
+      "credits": 10,
+      "type": "M",
+      "mimlos": [],
+      "assessments": []
+    },
+    {
+      "id": "mod_elec1",
+      "code": "CMP9010",
+      "title": "Data Mining",
+      "credits": 5,
+      "type": "E",
+      "electiveGroupId": "elec1-a",
+      "mimlos": [],
+      "assessments": []
+    },
+    {
+      "id": "mod_elec2",
+      "code": "CMP9011",
+      "title": "Machine Learning",
+      "credits": 10,
+      "type": "E",
+      "electiveGroupId": "elec1-a",
+      "mimlos": [],
+      "assessments": []
+    },
+    {
+      "id": "mod_elec3",
+      "code": "CMP9020",
+      "title": "Cloud Architecture",
+      "credits": 5,
+      "type": "E",
+      "electiveGroupId": "elec1-b",
+      "mimlos": [],
+      "assessments": []
+    },
+    {
+      "id": "mod_elec4",
+      "code": "CMP9021",
+      "title": "Cloud Security",
+      "credits": 10,
+      "type": "E",
+      "electiveGroupId": "elec1-b",
+      "mimlos": [],
+      "assessments": []
+    }
+  ],
+  "plos": [
+    { "id": "plo_1", "text": "Conduct independent research", "standardMappings": [] },
+    { "id": "plo_2", "text": "Design advanced software solutions", "standardMappings": [] },
+    { "id": "plo_3", "text": "Apply specialized knowledge in chosen track", "standardMappings": [] },
+    { "id": "plo_4", "text": "Evaluate emerging technologies", "standardMappings": [] },
+    { "id": "plo_5", "text": "Lead technical teams", "standardMappings": [] },
+    { "id": "plo_6", "text": "Communicate technical concepts effectively", "standardMappings": [] }
+  ],
+  "ploToModules": {
+    "plo_1": ["mod_core1"],
+    "plo_2": ["mod_core2"],
+    "plo_3": ["mod_elec1", "mod_elec2", "mod_elec3", "mod_elec4"],
+    "plo_4": [],
+    "plo_5": [],
+    "plo_6": []
+  },
+  "versions": [
+    {
+      "id": "ver_ft",
+      "label": "Full-time",
+      "code": "FT",
+      "duration": "1 year",
+      "intakes": ["September"],
+      "targetCohortSize": 40,
+      "numberOfGroups": 1,
+      "deliveryModality": "F2F",
+      "deliveryPatterns": {
+        "F2F": { "syncOnlinePct": 20, "asyncDirectedPct": 30, "onCampusPct": 50 }
+      },
+      "onlineProctoredExams": "NO",
+      "stages": [
+        {
+          "id": "stage_ft_1",
+          "name": "Stage 1",
+          "sequence": 1,
+          "creditsTarget": 90,
+          "exitAward": { "enabled": false, "awardTitle": "" },
+          "modules": [
+            { "moduleId": "mod_core1", "semester": "Semester 1" },
+            { "moduleId": "mod_core2", "semester": "Semester 1" }
+          ]
+        }
+      ]
+    }
+  ]
+};
+
+export { higherDiplomaComputing, moduleEditorViewData, programmeWithElectives };
