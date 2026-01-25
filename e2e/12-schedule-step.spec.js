@@ -8,7 +8,7 @@ async function getOpenCollapseIds(page, accordionId) {
   );
 }
 
-test.describe('Step 10: Programme Schedule', () => {
+test.describe('Step 11: Programme Schedule', () => {
   test.beforeEach(async ({ page }) => {
     // Fill Identity first
     await page.locator('#titleInput').fill('Test Programme');
@@ -35,7 +35,7 @@ test.describe('Step 10: Programme Schedule', () => {
     await page.waitForTimeout(600);
     
     // Navigate to Schedule
-    await page.click('button:has-text("10. Programme Schedule")');
+    await page.click('button:has-text("11. Programme Schedule")');
     await page.waitForTimeout(300);
   });
 
@@ -83,7 +83,7 @@ test.describe('Step 10: Programme Schedule', () => {
     await page.waitForTimeout(400);
     
     // Go back to schedule
-    await page.click('button:has-text("10. Programme Schedule")');
+    await page.click('button:has-text("11. Programme Schedule")');
     await page.waitForTimeout(300);
     
     // Multiple versions should exist in data
@@ -111,7 +111,7 @@ test.describe('Step 10: Programme Schedule', () => {
   });
 });
 
-test.describe('Step 10: Schedule Visualization', () => {
+test.describe('Step 11: Schedule Visualization', () => {
   test('should show visual representation of programme timeline', async ({ page }) => {
     // Fill Identity first
     await page.locator('#titleInput').fill('Test Programme');
@@ -133,7 +133,7 @@ test.describe('Step 10: Schedule Visualization', () => {
     await page.waitForTimeout(400);
     
     // Go to schedule
-    await page.click('button:has-text("10. Programme Schedule")');
+    await page.click('button:has-text("11. Programme Schedule")');
     await page.waitForTimeout(300);
     
     // Should show some visual representation (table, grid, etc.)

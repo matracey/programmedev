@@ -8,7 +8,7 @@ async function getOpenCollapseIds(page, accordionId) {
   );
 }
 
-test.describe('Step 8: Assessments', () => {
+test.describe('Step 9: Assessments', () => {
   test.beforeEach(async ({ page }) => {
     // Fill Identity step first
     await page.locator('#titleInput').fill('Test Programme');
@@ -33,7 +33,7 @@ test.describe('Step 8: Assessments', () => {
     await page.waitForTimeout(400);
     
     // Add MIMLOs (uses input, not textarea)
-    await page.click('button:has-text("6. MIMLOs")');
+    await page.click('button:has-text("7. MIMLOs")');
     await page.waitForTimeout(200);
     
     const addMimloBtn = page.locator('button[data-add-mimlo]').first();
@@ -45,7 +45,7 @@ test.describe('Step 8: Assessments', () => {
     }
     
     // Navigate to Assessments
-    await page.click('button:has-text("8. Assessments")');
+    await page.click('button:has-text("9. Assessments")');
     await page.waitForTimeout(300);
   });
 
@@ -231,7 +231,7 @@ test.describe('Step 8: Assessments', () => {
   });
 });
 
-test.describe('Step 8: Assessment Types', () => {
+test.describe('Step 9: Assessment Types', () => {
   test.beforeEach(async ({ page }) => {
     // Fill Identity first
     await page.locator('#titleInput').fill('Test Programme');
@@ -244,7 +244,7 @@ test.describe('Step 8: Assessment Types', () => {
     await page.click('button:has-text("+ Add module")');
     await page.waitForTimeout(400);
     
-    await page.click('button:has-text("8. Assessments")');
+    await page.click('button:has-text("9. Assessments")');
     await page.waitForTimeout(300);
   });
 

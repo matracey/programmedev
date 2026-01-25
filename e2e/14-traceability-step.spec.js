@@ -1,7 +1,7 @@
 // @ts-check
 import { test, expect, loadProgrammeData, getProgrammeData, navigateToStep } from './fixtures/test-fixtures.js';
 
-test.describe('Step 12: Traceability (Sankey Diagram)', () => {
+test.describe('Step 13: Traceability (Sankey Diagram)', () => {
   test.beforeEach(async ({ page }) => {
     // Set up complete data flow for traceability
     // 1. Identity with NFQ Level
@@ -38,7 +38,7 @@ test.describe('Step 12: Traceability (Sankey Diagram)', () => {
     await page.locator('[data-module-field="title"]').first().fill('Software Development');
     await page.waitForTimeout(500);
     
-    await page.click('button:has-text("6. MIMLOs")');
+    await page.click('button:has-text("7. MIMLOs")');
     await page.waitForTimeout(400);
     const addMimloBtn = page.locator('button[data-add-mimlo]').first();
     if (await addMimloBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
@@ -52,7 +52,7 @@ test.describe('Step 12: Traceability (Sankey Diagram)', () => {
     await page.waitForTimeout(500);
     
     // 4. Mapping
-    await page.click('button:has-text("11. Mapping")');
+    await page.click('button:has-text("12. Mapping")');
     await page.waitForTimeout(400);
     const checkbox = page.locator('input[type="checkbox"]').first();
     if (await checkbox.isVisible({ timeout: 3000 }).catch(() => false)) {
@@ -61,7 +61,7 @@ test.describe('Step 12: Traceability (Sankey Diagram)', () => {
     await page.waitForTimeout(500);
     
     // Navigate to Traceability
-    await page.click('button:has-text("12. Traceability")');
+    await page.click('button:has-text("13. Traceability")');
     await page.waitForTimeout(600);
   });
 
@@ -93,7 +93,7 @@ test.describe('Step 12: Traceability (Sankey Diagram)', () => {
 
   test('should show traceability even with incomplete data', async ({ page }) => {
     // Navigate directly to traceability - it should handle incomplete data gracefully
-    await page.click('button:has-text("12. Traceability")');
+    await page.click('button:has-text("13. Traceability")');
     await page.waitForTimeout(800);
     
     // Should show heading regardless of data state
@@ -101,7 +101,7 @@ test.describe('Step 12: Traceability (Sankey Diagram)', () => {
   });
 });
 
-test.describe('Step 12: Traceability Chain', () => {
+test.describe('Step 13: Traceability Chain', () => {
   test('should trace PLO → Module → MIMLO → Assessment chain', async ({ page }) => {
     // This is the key traceability chain for QQI validation
     
@@ -125,7 +125,7 @@ test.describe('Step 12: Traceability Chain', () => {
     await page.waitForTimeout(300);
     
     // MIMLO
-    await page.click('button:has-text("6. MIMLOs")');
+    await page.click('button:has-text("7. MIMLOs")');
     await page.waitForTimeout(200);
     const addMimloBtn = page.locator('button[data-add-mimlo]').first();
     if (await addMimloBtn.isVisible()) {
@@ -135,7 +135,7 @@ test.describe('Step 12: Traceability Chain', () => {
     await page.waitForTimeout(300);
     
     // Assessment linked to MIMLO
-    await page.click('button:has-text("8. Assessments")');
+    await page.click('button:has-text("9. Assessments")');
     await page.waitForTimeout(200);
     const addAsmBtn = page.locator('button[data-add-asm]').first();
     if (await addAsmBtn.isVisible()) {
@@ -150,7 +150,7 @@ test.describe('Step 12: Traceability Chain', () => {
     await page.waitForTimeout(300);
     
     // Map PLO to Module
-    await page.click('button:has-text("11. Mapping")');
+    await page.click('button:has-text("12. Mapping")');
     await page.waitForTimeout(200);
     const mapCheckbox = page.locator('input[type="checkbox"]').first();
     if (await mapCheckbox.isVisible()) {
@@ -159,7 +159,7 @@ test.describe('Step 12: Traceability Chain', () => {
     await page.waitForTimeout(400);
     
     // View Traceability
-    await page.click('button:has-text("12. Traceability")');
+    await page.click('button:has-text("13. Traceability")');
     await page.waitForTimeout(1000);
     
     // Chart should show the complete chain

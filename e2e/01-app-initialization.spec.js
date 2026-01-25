@@ -16,21 +16,22 @@ test.describe('Application Initialization', () => {
     await expect(badge).toContainText('0% complete');
   });
 
-  test('should display all 13 workflow steps', async ({ page }) => {
+  test('should display all 14 workflow steps', async ({ page }) => {
     const steps = [
       '1. Identity',
       '2. PLOs',
       '3. Programme Versions',
       '4. Stage Structure',
       '5. Credits & Modules',
-      '6. MIMLOs',
-      '7. Effort Hours',
-      '8. Assessments',
-      '9. Reading Lists',
-      '10. Programme Schedule',
-      '11. Mapping',
-      '12. Traceability',
-      '13. QQI Snapshot'
+      '6. Electives',
+      '7. MIMLOs',
+      '8. Effort Hours',
+      '9. Assessments',
+      '10. Reading Lists',
+      '11. Programme Schedule',
+      '12. Mapping',
+      '13. Traceability',
+      '14. QQI Snapshot'
     ];
     
     for (const step of steps) {
@@ -126,7 +127,7 @@ test.describe('Navigation', () => {
 
   test('should disable Next button on last step', async ({ page }) => {
     // Navigate to last step (QQI Snapshot)
-    await page.click('button:has-text("13. QQI Snapshot")');
+    await page.click('button:has-text("14. QQI Snapshot")');
     await page.waitForTimeout(300);
     
     const nextBtn = page.locator('#nextBtn');

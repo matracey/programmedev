@@ -8,7 +8,7 @@ async function getOpenCollapseIds(page, accordionId) {
   );
 }
 
-test.describe('Step 6: MIMLOs (Module Intended Learning Outcomes)', () => {
+test.describe('Step 7: MIMLOs (Module Intended Learning Outcomes)', () => {
   test.beforeEach(async ({ page }) => {
     // Fill Identity step first
     await page.locator('#titleInput').fill('Test Programme');
@@ -33,7 +33,7 @@ test.describe('Step 6: MIMLOs (Module Intended Learning Outcomes)', () => {
     await page.waitForTimeout(500);
     
     // Navigate to MIMLOs step
-    await page.click('button:has-text("6. MIMLOs")');
+    await page.click('button:has-text("7. MIMLOs")');
     await page.waitForTimeout(300);
   });
 
@@ -48,7 +48,7 @@ test.describe('Step 6: MIMLOs (Module Intended Learning Outcomes)', () => {
     await page.click('button:has-text("+ Add module")');
     await page.waitForTimeout(300);
     
-    await page.click('button:has-text("6. MIMLOs")');
+    await page.click('button:has-text("7. MIMLOs")');
     await page.waitForTimeout(300);
     
     // Module card with module name should be visible
@@ -147,7 +147,7 @@ test.describe('Step 6: MIMLOs (Module Intended Learning Outcomes)', () => {
     await page.waitForTimeout(600);
     
     // Go back to MIMLOs
-    await page.click('button:has-text("6. MIMLOs")');
+    await page.click('button:has-text("7. MIMLOs")');
     await page.waitForTimeout(300);
     
     // Both module cards should be visible in MIMLOs view (uses data-module-card)
@@ -167,7 +167,7 @@ test.describe('Step 6: MIMLOs (Module Intended Learning Outcomes)', () => {
 
   test('keeps open module panels after add MIMLO (re-render)', async ({ page }) => {
     // Ensure at least one module exists in MIMLOs
-    await page.click('button:has-text("6. MIMLOs")');
+    await page.click('button:has-text("7. MIMLOs")');
     await page.waitForTimeout(300);
 
     // Open first module accordion
@@ -192,7 +192,7 @@ test.describe('Step 6: MIMLOs (Module Intended Learning Outcomes)', () => {
   });
 });
 
-test.describe('Step 6: MIMLO Learning Outcome Linting', () => {
+test.describe('Step 7: MIMLO Learning Outcome Linting', () => {
   test.beforeEach(async ({ page }) => {
     // Fill Identity first
     await page.locator('#titleInput').fill('Test Programme');
@@ -206,7 +206,7 @@ test.describe('Step 6: MIMLO Learning Outcome Linting', () => {
     await page.click('button:has-text("+ Add module")');
     await page.waitForTimeout(300);
     
-    await page.click('button:has-text("6. MIMLOs")');
+    await page.click('button:has-text("7. MIMLOs")');
     await page.waitForTimeout(300);
   });
 

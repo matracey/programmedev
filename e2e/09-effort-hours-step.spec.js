@@ -8,7 +8,7 @@ async function getOpenCollapseIds(page, accordionId) {
   );
 }
 
-test.describe('Step 7: Effort Hours', () => {
+test.describe('Step 8: Effort Hours', () => {
   test.beforeEach(async ({ page }) => {
     // Fill Identity step first
     await page.locator('#titleInput').fill('Test Programme');
@@ -46,7 +46,7 @@ test.describe('Step 7: Effort Hours', () => {
     await page.waitForTimeout(500);
     
     // Navigate to Effort Hours
-    await page.click('button:has-text("7. Effort Hours")');
+    await page.click('button:has-text("8. Effort Hours")');
     await page.waitForTimeout(300);
   });
 
@@ -166,7 +166,7 @@ test.describe('Step 7: Effort Hours', () => {
     }
     
     // Go back to effort hours
-    await page.click('button:has-text("7. Effort Hours")');
+    await page.click('button:has-text("8. Effort Hours")');
     await page.waitForTimeout(400);
     
     // Should have at least one version/modality row (or multiple if both versions have modalities)
@@ -207,7 +207,7 @@ test.describe('Step 7: Effort Hours', () => {
   });
 });
 
-test.describe('Step 7: Effort Hours Per Modality', () => {
+test.describe('Step 8: Effort Hours Per Modality', () => {
   test('should have separate effort hours per delivery modality', async ({ page }) => {
     // Fill identity
     await page.locator('#titleInput').fill('Test Programme');
@@ -235,7 +235,7 @@ test.describe('Step 7: Effort Hours Per Modality', () => {
     await page.waitForTimeout(500);
     
     // Go to effort hours
-    await page.click('button:has-text("7. Effort Hours")');
+    await page.click('button:has-text("8. Effort Hours")');
     await page.waitForTimeout(400);
     
     // Check that the page shows effort hours section

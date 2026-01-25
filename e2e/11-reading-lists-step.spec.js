@@ -8,7 +8,7 @@ async function getOpenCollapseIds(page, accordionId) {
   );
 }
 
-test.describe('Step 9: Reading Lists', () => {
+test.describe('Step 10: Reading Lists', () => {
   test.beforeEach(async ({ page }) => {
     // Fill Identity step first
     await page.locator('#titleInput').fill('Test Programme');
@@ -33,7 +33,7 @@ test.describe('Step 9: Reading Lists', () => {
     await page.waitForTimeout(400);
     
     // Navigate to Reading Lists
-    await page.click('button:has-text("9. Reading Lists")');
+    await page.click('button:has-text("10. Reading Lists")');
     await page.waitForTimeout(300);
   });
 

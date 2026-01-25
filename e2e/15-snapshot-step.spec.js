@@ -9,14 +9,14 @@ async function getOpenCollapseIds(page, accordionId) {
   );
 }
 
-test.describe('Step 13: QQI Snapshot', () => {
+test.describe('Step 14: QQI Snapshot', () => {
   test.beforeEach(async ({ page }) => {
     // Load complete programme data
     await loadProgrammeData(page, higherDiplomaComputing);
     await page.waitForTimeout(500); // Extra wait for data to be processed
     
     // Navigate to QQI Snapshot
-    await page.click('button:has-text("13. QQI Snapshot")');
+    await page.click('button:has-text("14. QQI Snapshot")');
     await page.waitForTimeout(600);
   });
 
@@ -94,10 +94,10 @@ test.describe('Step 13: QQI Snapshot', () => {
   });
 });
 
-test.describe('Step 13: QQI Snapshot - Export Functions', () => {
+test.describe('Step 14: QQI Snapshot - Export Functions', () => {
   test.beforeEach(async ({ page }) => {
     await loadProgrammeData(page, higherDiplomaComputing);
-    await page.click('button:has-text("13. QQI Snapshot")');
+    await page.click('button:has-text("14. QQI Snapshot")');
     await page.waitForTimeout(500);
   });
 
@@ -150,11 +150,11 @@ test.describe('Step 13: QQI Snapshot - Export Functions', () => {
   });
 });
 
-test.describe('Step 13: QQI Snapshot - Version Cards', () => {
+test.describe('Step 14: QQI Snapshot - Version Cards', () => {
   test.beforeEach(async ({ page }) => {
     await loadProgrammeData(page, higherDiplomaComputing);
     await page.waitForTimeout(500);
-    await page.click('button:has-text("13. QQI Snapshot")');
+    await page.click('button:has-text("14. QQI Snapshot")');
     await page.waitForTimeout(600);
   });
 
@@ -186,10 +186,10 @@ test.describe('Step 13: QQI Snapshot - Version Cards', () => {
   });
 });
 
-test.describe('Step 13: QQI Snapshot - Validation Summary', () => {
+test.describe('Step 14: QQI Snapshot - Validation Summary', () => {
   test('should show validation status', async ({ page }) => {
     await loadProgrammeData(page, higherDiplomaComputing);
-    await page.click('button:has-text("13. QQI Snapshot")');
+    await page.click('button:has-text("14. QQI Snapshot")');
     await page.waitForTimeout(300);
     
     // Should show some validation info
@@ -199,7 +199,7 @@ test.describe('Step 13: QQI Snapshot - Validation Summary', () => {
 
   test('should indicate incomplete programme when validation fails', async ({ page }) => {
     // Start with empty programme
-    await page.click('button:has-text("13. QQI Snapshot")');
+    await page.click('button:has-text("14. QQI Snapshot")');
     await page.waitForTimeout(300);
     
     // Should show incomplete status or warnings - or just show empty state

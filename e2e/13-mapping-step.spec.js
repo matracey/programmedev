@@ -8,7 +8,7 @@ async function getOpenCollapseIds(page, accordionId) {
   );
 }
 
-test.describe('Step 11: PLO to Module Mapping', () => {
+test.describe('Step 12: PLO to Module Mapping', () => {
   test.beforeEach(async ({ page }) => {
     // Fill Identity step first
     await page.locator('#titleInput').fill('Test Programme');
@@ -68,7 +68,7 @@ test.describe('Step 11: PLO to Module Mapping', () => {
     await page.waitForTimeout(500);
     
     // Navigate to Mapping
-    await page.click('button:has-text("11. Mapping")');
+    await page.click('button:has-text("12. Mapping")');
     await page.waitForTimeout(400);
   });
 
@@ -188,7 +188,7 @@ test.describe('Step 11: PLO to Module Mapping', () => {
   });
 });
 
-test.describe('Step 11: Mapping Matrix View', () => {
+test.describe('Step 12: Mapping Matrix View', () => {
   test('should display mapping in matrix format', async ({ page }) => {
     // Fill Identity first
     await page.locator('#titleInput').fill('Test Programme');
@@ -208,7 +208,7 @@ test.describe('Step 11: Mapping Matrix View', () => {
     await page.click('button:has-text("+ Add module")');
     await page.waitForTimeout(400);
     
-    await page.click('button:has-text("11. Mapping")');
+    await page.click('button:has-text("12. Mapping")');
     await page.waitForTimeout(300);
     
     // Look for matrix/table structure
