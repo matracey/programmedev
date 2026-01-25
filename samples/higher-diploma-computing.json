@@ -8,7 +8,7 @@
   "school": "Computing",
   "awardStandardIds": ["qqi-computing-l6-9"],
   "awardStandardNames": ["QQI Computing Awards Standards (Levels 6–9)"],
-  "totalCredits": 60,
+  "totalCredits": 85,
   "mode": "PROGRAMME_OWNER",
   "updatedAt": "2026-01-15T10:00:00.000Z",
   "modules": [
@@ -698,6 +698,546 @@
           "notes": ""
         }
       ]
+    },
+    {
+      "id": "mod_workexp",
+      "code": "CMP8008",
+      "title": "Work Experience Placement",
+      "credits": 5,
+      "isElective": true,
+      "effortHours": {
+        "ver_ft_F2F": {
+          "classroomHours": 6,
+          "classroomRatio": "1:30",
+          "mentoringHours": 12,
+          "mentoringRatio": "1:15",
+          "directedElearningHours": 10,
+          "independentLearningHours": 22,
+          "workBasedHours": 75,
+          "otherHours": 0
+        },
+        "ver_pt_blended_BLENDED": {
+          "classroomHours": 3,
+          "classroomRatio": "1:30",
+          "mentoringHours": 12,
+          "mentoringRatio": "1:15",
+          "directedElearningHours": 10,
+          "independentLearningHours": 25,
+          "workBasedHours": 75,
+          "otherHours": 0
+        },
+        "ver_pt_online_ONLINE": {
+          "classroomHours": 0,
+          "mentoringHours": 15,
+          "mentoringRatio": "1:15",
+          "directedElearningHours": 10,
+          "independentLearningHours": 25,
+          "workBasedHours": 75,
+          "otherHours": 0
+        }
+      },
+      "mimlos": [
+        {
+          "id": "mimlo_workexp_1",
+          "text": "Apply computing skills in a professional workplace environment"
+        },
+        {
+          "id": "mimlo_workexp_2",
+          "text": "Demonstrate professional conduct and workplace communication skills"
+        },
+        {
+          "id": "mimlo_workexp_3",
+          "text": "Reflect critically on workplace learning experiences and professional development"
+        }
+      ],
+      "assessments": [
+        {
+          "id": "asm_workexp_1",
+          "title": "Employer Evaluation",
+          "type": "Work-based",
+          "weighting": 40,
+          "mode": "Hybrid",
+          "mimloIds": ["mimlo_workexp_1", "mimlo_workexp_2"],
+          "notes": "Employer assessment of student performance"
+        },
+        {
+          "id": "asm_workexp_2",
+          "title": "Reflective Portfolio",
+          "type": "Portfolio",
+          "weighting": 60,
+          "mode": "Online",
+          "integrity": {
+            "originalityCheck": true
+          },
+          "mimloIds": ["mimlo_workexp_2", "mimlo_workexp_3"],
+          "notes": "Weekly reflections and final summary report"
+        }
+      ],
+      "readingList": []
+    },
+    {
+      "id": "mod_appliedproj",
+      "code": "CMP8009",
+      "title": "Applied Research Project",
+      "credits": 5,
+      "isElective": true,
+      "effortHours": {
+        "ver_ft_F2F": {
+          "classroomHours": 6,
+          "classroomRatio": "1:60",
+          "mentoringHours": 18,
+          "mentoringRatio": "1:15",
+          "directedElearningHours": 15,
+          "independentLearningHours": 86,
+          "workBasedHours": 0,
+          "otherHours": 0
+        },
+        "ver_pt_blended_BLENDED": {
+          "classroomHours": 3,
+          "classroomRatio": "1:40",
+          "mentoringHours": 18,
+          "mentoringRatio": "1:15",
+          "directedElearningHours": 20,
+          "independentLearningHours": 84,
+          "workBasedHours": 0,
+          "otherHours": 0
+        },
+        "ver_pt_online_ONLINE": {
+          "classroomHours": 0,
+          "mentoringHours": 24,
+          "mentoringRatio": "1:15",
+          "directedElearningHours": 25,
+          "independentLearningHours": 76,
+          "workBasedHours": 0,
+          "otherHours": 0
+        }
+      },
+      "mimlos": [
+        {
+          "id": "mimlo_appliedproj_1",
+          "text": "Conduct independent research on a computing topic of professional relevance"
+        },
+        {
+          "id": "mimlo_appliedproj_2",
+          "text": "Apply research methodologies to investigate computing problems"
+        },
+        {
+          "id": "mimlo_appliedproj_3",
+          "text": "Communicate research findings through written and oral presentation"
+        }
+      ],
+      "assessments": [
+        {
+          "id": "asm_appliedproj_1",
+          "title": "Research Report",
+          "type": "Report/Essay",
+          "weighting": 70,
+          "mode": "Online",
+          "integrity": {
+            "originalityCheck": true,
+            "aiDeclaration": true
+          },
+          "mimloIds": ["mimlo_appliedproj_1", "mimlo_appliedproj_2", "mimlo_appliedproj_3"],
+          "notes": "4000-word research report with literature review"
+        },
+        {
+          "id": "asm_appliedproj_2",
+          "title": "Research Presentation",
+          "type": "Presentation",
+          "weighting": 30,
+          "mode": "Hybrid",
+          "integrity": {
+            "viva": true
+          },
+          "mimloIds": ["mimlo_appliedproj_2", "mimlo_appliedproj_3"],
+          "notes": "15-minute presentation with Q&A"
+        }
+      ],
+      "readingList": []
+    },
+    {
+      "id": "mod_dataanalytics",
+      "code": "CMP8010",
+      "title": "Advanced Data Analytics",
+      "credits": 10,
+      "isElective": true,
+      "effortHours": {
+        "ver_ft_F2F": {
+          "classroomHours": 48,
+          "classroomRatio": "1:60",
+          "mentoringHours": 12,
+          "mentoringRatio": "1:25",
+          "directedElearningHours": 40,
+          "independentLearningHours": 150,
+          "workBasedHours": 0,
+          "otherHours": 0
+        },
+        "ver_pt_blended_BLENDED": {
+          "classroomHours": 24,
+          "classroomRatio": "1:40",
+          "mentoringHours": 12,
+          "mentoringRatio": "1:20",
+          "directedElearningHours": 80,
+          "independentLearningHours": 134,
+          "workBasedHours": 0,
+          "otherHours": 0
+        },
+        "ver_pt_online_ONLINE": {
+          "classroomHours": 0,
+          "mentoringHours": 24,
+          "mentoringRatio": "1:20",
+          "otherContactHours": 12,
+          "otherContactSpecify": "Data workshops",
+          "directedElearningHours": 100,
+          "independentLearningHours": 114,
+          "workBasedHours": 0
+        }
+      },
+      "mimlos": [
+        {
+          "id": "mimlo_da_1",
+          "text": "Apply statistical analysis techniques to large datasets using Python and R"
+        },
+        {
+          "id": "mimlo_da_2",
+          "text": "Design and implement data pipelines for ETL processes"
+        },
+        {
+          "id": "mimlo_da_3",
+          "text": "Create effective data visualizations to communicate insights"
+        },
+        {
+          "id": "mimlo_da_4",
+          "text": "Evaluate data quality and apply appropriate cleaning techniques"
+        }
+      ],
+      "assessments": [
+        {
+          "id": "asm_da_1",
+          "title": "Data Analysis Project",
+          "type": "Project",
+          "weighting": 60,
+          "mode": "Hybrid",
+          "integrity": {
+            "originalityCheck": true,
+            "viva": true
+          },
+          "mimloIds": ["mimlo_da_1", "mimlo_da_2", "mimlo_da_3", "mimlo_da_4"],
+          "notes": "End-to-end data analysis project with presentation"
+        },
+        {
+          "id": "asm_da_2",
+          "title": "Practical Exercises",
+          "type": "Practical/Lab",
+          "weighting": 40,
+          "mode": "Online",
+          "integrity": {
+            "originalityCheck": true
+          },
+          "mimloIds": ["mimlo_da_1", "mimlo_da_3", "mimlo_da_4"],
+          "notes": "Weekly data analysis exercises"
+        }
+      ],
+      "readingList": [
+        {
+          "id": "reading_da_1",
+          "author": "Wes McKinney",
+          "title": "Python for Data Analysis",
+          "publisher": "O'Reilly Media",
+          "year": "2022",
+          "isbn": "978-1098104030",
+          "type": "core",
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "id": "mod_ml",
+      "code": "CMP8011",
+      "title": "Machine Learning Fundamentals",
+      "credits": 10,
+      "isElective": true,
+      "effortHours": {
+        "ver_ft_F2F": {
+          "classroomHours": 48,
+          "classroomRatio": "1:60",
+          "mentoringHours": 12,
+          "mentoringRatio": "1:25",
+          "directedElearningHours": 40,
+          "independentLearningHours": 150,
+          "workBasedHours": 0,
+          "otherHours": 0
+        },
+        "ver_pt_blended_BLENDED": {
+          "classroomHours": 24,
+          "classroomRatio": "1:40",
+          "mentoringHours": 12,
+          "mentoringRatio": "1:20",
+          "directedElearningHours": 80,
+          "independentLearningHours": 134,
+          "workBasedHours": 0,
+          "otherHours": 0
+        },
+        "ver_pt_online_ONLINE": {
+          "classroomHours": 0,
+          "mentoringHours": 24,
+          "mentoringRatio": "1:20",
+          "otherContactHours": 12,
+          "otherContactSpecify": "ML workshops",
+          "directedElearningHours": 100,
+          "independentLearningHours": 114,
+          "workBasedHours": 0
+        }
+      },
+      "mimlos": [
+        {
+          "id": "mimlo_ml_1",
+          "text": "Implement supervised and unsupervised machine learning algorithms"
+        },
+        {
+          "id": "mimlo_ml_2",
+          "text": "Evaluate model performance using appropriate metrics and validation techniques"
+        },
+        {
+          "id": "mimlo_ml_3",
+          "text": "Apply feature engineering and selection techniques to improve model accuracy"
+        },
+        {
+          "id": "mimlo_ml_4",
+          "text": "Deploy machine learning models using industry-standard frameworks"
+        }
+      ],
+      "assessments": [
+        {
+          "id": "asm_ml_1",
+          "title": "ML Pipeline Project",
+          "type": "Project",
+          "weighting": 60,
+          "mode": "Hybrid",
+          "integrity": {
+            "originalityCheck": true,
+            "viva": true
+          },
+          "mimloIds": ["mimlo_ml_1", "mimlo_ml_2", "mimlo_ml_3", "mimlo_ml_4"],
+          "notes": "Build and deploy an ML solution for a real-world problem"
+        },
+        {
+          "id": "asm_ml_2",
+          "title": "Algorithm Implementations",
+          "type": "Practical/Lab",
+          "weighting": 40,
+          "mode": "Online",
+          "integrity": {
+            "originalityCheck": true
+          },
+          "mimloIds": ["mimlo_ml_1", "mimlo_ml_2", "mimlo_ml_3"],
+          "notes": "Implement core ML algorithms from scratch"
+        }
+      ],
+      "readingList": [
+        {
+          "id": "reading_ml_1",
+          "author": "Aurélien Géron",
+          "title": "Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow",
+          "publisher": "O'Reilly Media",
+          "year": "2022",
+          "isbn": "978-1098125974",
+          "type": "core",
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "id": "mod_gamedev",
+      "code": "CMP8012",
+      "title": "Game Development",
+      "credits": 10,
+      "isElective": true,
+      "effortHours": {
+        "ver_ft_F2F": {
+          "classroomHours": 48,
+          "classroomRatio": "1:60",
+          "mentoringHours": 12,
+          "mentoringRatio": "1:25",
+          "directedElearningHours": 40,
+          "independentLearningHours": 150,
+          "workBasedHours": 0,
+          "otherHours": 0
+        },
+        "ver_pt_blended_BLENDED": {
+          "classroomHours": 24,
+          "classroomRatio": "1:40",
+          "mentoringHours": 12,
+          "mentoringRatio": "1:20",
+          "directedElearningHours": 80,
+          "independentLearningHours": 134,
+          "workBasedHours": 0,
+          "otherHours": 0
+        },
+        "ver_pt_online_ONLINE": {
+          "classroomHours": 0,
+          "mentoringHours": 24,
+          "mentoringRatio": "1:20",
+          "otherContactHours": 12,
+          "otherContactSpecify": "Game jams",
+          "directedElearningHours": 100,
+          "independentLearningHours": 114,
+          "workBasedHours": 0
+        }
+      },
+      "mimlos": [
+        {
+          "id": "mimlo_gd_1",
+          "text": "Design and implement game mechanics using industry-standard game engines"
+        },
+        {
+          "id": "mimlo_gd_2",
+          "text": "Apply game design patterns and architecture principles"
+        },
+        {
+          "id": "mimlo_gd_3",
+          "text": "Implement game physics, AI behaviours and user input systems"
+        },
+        {
+          "id": "mimlo_gd_4",
+          "text": "Optimize game performance for target platforms"
+        }
+      ],
+      "assessments": [
+        {
+          "id": "asm_gd_1",
+          "title": "Game Development Project",
+          "type": "Project",
+          "weighting": 70,
+          "mode": "Hybrid",
+          "integrity": {
+            "originalityCheck": true,
+            "viva": true
+          },
+          "mimloIds": ["mimlo_gd_1", "mimlo_gd_2", "mimlo_gd_3", "mimlo_gd_4"],
+          "notes": "Develop a complete game with documentation and presentation"
+        },
+        {
+          "id": "asm_gd_2",
+          "title": "Technical Prototypes",
+          "type": "Practical/Lab",
+          "weighting": 30,
+          "mode": "Online",
+          "integrity": {
+            "originalityCheck": true
+          },
+          "mimloIds": ["mimlo_gd_1", "mimlo_gd_3"],
+          "notes": "Weekly mini-game prototypes demonstrating specific mechanics"
+        }
+      ],
+      "readingList": [
+        {
+          "id": "reading_gd_1",
+          "author": "Jesse Schell",
+          "title": "The Art of Game Design: A Book of Lenses",
+          "publisher": "CRC Press",
+          "year": "2019",
+          "isbn": "978-1138632059",
+          "type": "core",
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "id": "mod_interactive",
+      "code": "CMP8013",
+      "title": "Interactive Media Design",
+      "credits": 10,
+      "isElective": true,
+      "effortHours": {
+        "ver_ft_F2F": {
+          "classroomHours": 48,
+          "classroomRatio": "1:60",
+          "mentoringHours": 12,
+          "mentoringRatio": "1:25",
+          "directedElearningHours": 40,
+          "independentLearningHours": 150,
+          "workBasedHours": 0,
+          "otherHours": 0
+        },
+        "ver_pt_blended_BLENDED": {
+          "classroomHours": 24,
+          "classroomRatio": "1:40",
+          "mentoringHours": 12,
+          "mentoringRatio": "1:20",
+          "directedElearningHours": 80,
+          "independentLearningHours": 134,
+          "workBasedHours": 0,
+          "otherHours": 0
+        },
+        "ver_pt_online_ONLINE": {
+          "classroomHours": 0,
+          "mentoringHours": 24,
+          "mentoringRatio": "1:20",
+          "otherContactHours": 12,
+          "otherContactSpecify": "Design critiques",
+          "directedElearningHours": 100,
+          "independentLearningHours": 114,
+          "workBasedHours": 0
+        }
+      },
+      "mimlos": [
+        {
+          "id": "mimlo_im_1",
+          "text": "Design interactive experiences using user-centred design methodologies"
+        },
+        {
+          "id": "mimlo_im_2",
+          "text": "Create 2D/3D assets and animations for interactive applications"
+        },
+        {
+          "id": "mimlo_im_3",
+          "text": "Implement audio-visual feedback systems for enhanced user engagement"
+        },
+        {
+          "id": "mimlo_im_4",
+          "text": "Evaluate interactive experiences through user testing and iteration"
+        }
+      ],
+      "assessments": [
+        {
+          "id": "asm_im_1",
+          "title": "Interactive Experience Project",
+          "type": "Project",
+          "weighting": 70,
+          "mode": "Hybrid",
+          "integrity": {
+            "originalityCheck": true,
+            "viva": true
+          },
+          "mimloIds": ["mimlo_im_1", "mimlo_im_2", "mimlo_im_3", "mimlo_im_4"],
+          "notes": "Design and develop an interactive media experience with user testing"
+        },
+        {
+          "id": "asm_im_2",
+          "title": "Design Portfolio",
+          "type": "Portfolio",
+          "weighting": 30,
+          "mode": "Online",
+          "integrity": {
+            "originalityCheck": true
+          },
+          "mimloIds": ["mimlo_im_1", "mimlo_im_2", "mimlo_im_4"],
+          "notes": "Curated portfolio of design work and process documentation"
+        }
+      ],
+      "readingList": [
+        {
+          "id": "reading_im_1",
+          "author": "Chris Crawford",
+          "title": "The Art of Interactive Design",
+          "publisher": "No Starch Press",
+          "year": "2002",
+          "isbn": "978-1886411845",
+          "type": "core",
+          "notes": ""
+        }
+      ]
     }
   ],
   "plos": [
@@ -864,6 +1404,48 @@
     "plo_7": ["mod_capstone"],
     "plo_8": ["mod_sd", "mod_capstone"]
   },
+  "electiveDefinitions": [
+    {
+      "id": "edef_stage3_workproj",
+      "code": "S3",
+      "name": "Stage 3 Professional Development",
+      "credits": 5,
+      "groups": [
+        {
+          "id": "egrp_s3_workexp",
+          "code": "S3-WE",
+          "name": "Work Experience Track",
+          "moduleIds": ["mod_workexp"]
+        },
+        {
+          "id": "egrp_s3_research",
+          "code": "S3-RP",
+          "name": "Applied Research Track",
+          "moduleIds": ["mod_appliedproj"]
+        }
+      ]
+    },
+    {
+      "id": "edef_a94c0013-81df-48d2-8ad6-9e0fc4b43756",
+      "code": "S4",
+      "name": "Stage 4 Specialization",
+      "credits": 20,
+      "groups": [
+        {
+          "id": "egrp_30018890-e690-44aa-b278-1b43910332f7",
+          "code": "S4-DA",
+          "name": "Data Analytics Specialization",
+          "moduleIds": ["mod_dataanalytics", "mod_ml"]
+        },
+        {
+          "id": "egrp_7815134d-e7d4-43c0-ba08-45c1f091a783",
+          "code": "S4-G",
+          "name": "Gaming Specialization",
+          "moduleIds": ["mod_gamedev", "mod_interactive"]
+        }
+      ]
+    }
+  ],
   "versions": [
     {
       "id": "ver_ft",
