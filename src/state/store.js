@@ -16,6 +16,7 @@ export const steps = [
   { key: "versions", title: "Programme Versions" },
   { key: "stages", title: "Stage Structure" },
   { key: "structure", title: "Credits & Modules" },
+  { key: "electives", title: "Electives" },
   { key: "mimlos", title: "MIMLOs" },
   { key: "effort-hours", title: "Effort Hours" },
   { key: "assessments", title: "Assessments" },
@@ -61,6 +62,10 @@ export const defaultProgramme = () => ({
   modules: [],
   plos: [],
   ploToModules: {},
+
+  // Elective definitions - each definition has a credit value and contains 1-N groups
+  // Students complete every definition, choosing one group from each
+  electiveDefinitions: [],       // [{ id, name, code, credits, groups: [{ id, name, code, moduleIds: [] }] }]
 
   // Versions
   versions: [],

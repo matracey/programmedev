@@ -102,6 +102,11 @@
         "items": { "type": "string" }
       }
     },
+    "electiveDefinitions": {
+      "type": "array",
+      "description": "Elective definitions with groups of selectable modules",
+      "items": { "$ref": "#/$defs/electiveDefinition" }
+    },
     "versions": {
       "type": "array",
       "description": "Programme versions (e.g., Full-time, Part-time, Online)",
@@ -136,6 +141,11 @@
           "type": "integer",
           "minimum": 0,
           "description": "ECTS credits for this module"
+        },
+        "isElective": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether this module is an elective (part of an elective group)"
         },
         "effortHours": {
           "type": "object",
@@ -390,6 +400,61 @@
         "standardId": {
           "type": "string",
           "description": "Reference to which award standard this mapping belongs to (relevant when multiple standards are selected)"
+        }
+      },
+      "additionalProperties": false
+    },
+    "electiveDefinition": {
+      "type": "object",
+      "required": ["id", "credits", "groups"],
+      "description": "An elective definition that students must complete by choosing one group",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the elective definition"
+        },
+        "code": {
+          "type": "string",
+          "description": "Short code for the elective definition (e.g., S3, S4)"
+        },
+        "name": {
+          "type": "string",
+          "description": "Display name for the elective definition"
+        },
+        "credits": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "ECTS credits for this elective definition"
+        },
+        "groups": {
+          "type": "array",
+          "description": "Groups of modules that students can choose from",
+          "items": { "$ref": "#/$defs/electiveGroup" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "electiveGroup": {
+      "type": "object",
+      "required": ["id", "moduleIds"],
+      "description": "A group of modules within an elective definition",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the elective group"
+        },
+        "code": {
+          "type": "string",
+          "description": "Short code for the elective group (e.g., S3-WE, S4-DA)"
+        },
+        "name": {
+          "type": "string",
+          "description": "Display name for the elective group"
+        },
+        "moduleIds": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "IDs of modules in this elective group"
         }
       },
       "additionalProperties": false
