@@ -1,8 +1,12 @@
 /**
  * Application state management
  * Handles state, persistence, and data factories
+ * 
+ * Uses Preact Signals for reactive state management.
+ * Legacy `state` object is preserved for backward compatibility during migration.
  */
 
+import { signal, computed, batch } from '@preact/signals';
 import { uid } from '../utils/uid.js';
 import { defaultPatternFor } from '../utils/helpers.js';
 
@@ -107,28 +111,115 @@ export const defaultStage = (sequence = 1) => ({
   modules: [],
 });
 
-/**
- * Application state
- */
-export const state = {
-  programme: defaultProgramme(),
-  stepIndex: 0,
-  saving: false,
-  lastSaved: null,
-  selectedVersionId: null,
-  selectedModuleId: null,
-};
+// ============================================================================
+// SIGNALS-BASED STATE (New reactive system)
+// ============================================================================
+
+/** Programme data signal */
+export const programmeSignal = signal(defaultProgramme());
+
+/** Current step index signal */
+export const stepIndexSignal = signal(0);
+
+/** Saving state signal */
+export const savingSignal = signal(false);
+
+/** Last saved timestamp signal */
+export const lastSavedSignal = signal(null);
+
+/** Selected version ID signal */
+export const selectedVersionIdSignal = signal(null);
+
+/** Selected module ID signal */
+export const selectedModuleIdSignal = signal(null);
 
 /**
- * Get active steps based on mode
+ * Computed: active steps based on mode
  */
-export function activeSteps() {
-  const p = state.programme;
+export const activeStepsSignal = computed(() => {
+  const p = programmeSignal.value;
   if (p.mode === "MODULE_EDITOR") {
     const allowed = new Set(["mimlos", "effort-hours", "assessments", "reading-lists", "schedule", "mapping", "traceability", "snapshot"]);
     return steps.filter(s => allowed.has(s.key));
   }
   return steps;
+});
+
+/**
+ * Computed: current step object
+ */
+export const currentStepSignal = computed(() => {
+  const aSteps = activeStepsSignal.value;
+  const idx = stepIndexSignal.value;
+  return aSteps[idx] || null;
+});
+
+/**
+ * Computed: editable module IDs based on mode
+ */
+export const editableModuleIdsSignal = computed(() => {
+  const p = programmeSignal.value;
+  if (!p) return [];
+  if (p.mode === "MODULE_EDITOR") {
+    const ids = p.moduleEditor?.assignedModuleIds || [];
+    return ids.length ? ids : (p.modules || []).map(m => m.id);
+  }
+  return (p.modules || []).map(m => m.id);
+});
+
+/**
+ * Helper to update programme with a partial update (triggers re-render)
+ */
+export function updateProgramme(updates) {
+  programmeSignal.value = { ...programmeSignal.value, ...updates };
+}
+
+/**
+ * Helper to update a nested property in programme
+ */
+export function mutateProgramme(mutator) {
+  const current = programmeSignal.value;
+  mutator(current);
+  // Trigger reactivity by creating a new object reference
+  programmeSignal.value = { ...current };
+}
+
+// ============================================================================
+// LEGACY STATE OBJECT (Backward compatibility during migration)
+// ============================================================================
+
+/**
+ * Legacy application state object - wraps signals for backward compatibility.
+ * Components using `state.programme` will continue to work.
+ * 
+ * Note: Direct mutations to state.programme work but won't trigger signal updates.
+ * Use updateProgramme() or mutateProgramme() for reactive updates.
+ */
+export const state = {
+  get programme() { return programmeSignal.value; },
+  set programme(val) { programmeSignal.value = val; },
+  
+  get stepIndex() { return stepIndexSignal.value; },
+  set stepIndex(val) { stepIndexSignal.value = val; },
+  
+  get saving() { return savingSignal.value; },
+  set saving(val) { savingSignal.value = val; },
+  
+  get lastSaved() { return lastSavedSignal.value; },
+  set lastSaved(val) { lastSavedSignal.value = val; },
+  
+  get selectedVersionId() { return selectedVersionIdSignal.value; },
+  set selectedVersionId(val) { selectedVersionIdSignal.value = val; },
+  
+  get selectedModuleId() { return selectedModuleIdSignal.value; },
+  set selectedModuleId(val) { selectedModuleIdSignal.value = val; },
+};
+
+/**
+ * Get active steps based on mode (legacy function wrapper)
+ */
+export function activeSteps() {
+  return activeStepsSignal.value;
 }
 
 /**

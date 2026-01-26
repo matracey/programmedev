@@ -19,10 +19,13 @@
     "vite": "npm:rolldown-vite@7.3.1"
   },
   "dependencies": {
+    "@preact/signals": "^2.6.1",
     "bootstrap": "^5.3.8",
     "docxtemplater": "^3.67.6",
     "file-saver": "^2.0.5",
+    "htm": "^3.1.1",
     "pizzip": "^3.2.0",
-    "plotly.js-dist-min": "^3.3.1"
+    "plotly.js-dist-min": "^3.3.1",
+    "preact": "^10.28.2"
   }
 }
