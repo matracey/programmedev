@@ -47,6 +47,18 @@ async function render() {
 }
 
 /**
+ * Render non-step parts of the UI (header, sidebar, flags)
+ * Used by Preact components to update header/flags without re-rendering the step
+ */
+function renderNonStep() {
+  renderHeader();
+  renderSteps(render);
+  
+  const flags = validateProgramme(state.programme);
+  renderFlags(flags, goToStep);
+}
+
+/**
  * Navigate to a specific step by key
  */
 function goToStep(stepKey) {
@@ -164,6 +176,8 @@ function init() {
   
   // Expose render globally for step components
   window.render = render;
+  // Expose renderNonStep for Preact components to update header/flags without re-rendering step
+  window.renderNonStep = renderNonStep;
   
   // Initial render
   render();
