@@ -1,13 +1,103 @@
 /**
- * Header rendering component
+ * Header Component (Preact + Legacy)
+ * 
+ * Renders the programme title, completion badge with popover, and save status.
+ * Includes both Preact component and legacy render function for incremental migration.
  */
 
-import { state, activeSteps } from '../state/store.js';
+import { useEffect, useRef } from 'preact/hooks';
+import { html } from '../lib/htm.js';
+import { 
+  programmeSignal, 
+  savingSignal, 
+  lastSavedSignal,
+  activeStepsSignal,
+  state,
+  activeSteps,
+} from '../state/store.js';
 import { completionPercent, validateProgramme } from '../utils/validation.js';
 import { escapeHtml } from '../utils/dom.js';
+import { generateTodoListHtml } from '../lib/bootstrap-hooks.js';
 
 /**
- * Render the header (programme title, completion badge, save status)
+ * Header Preact component - displays programme title, completion badge, and save status
+ */
+export function Header() {
+  const programme = programmeSignal.value;
+  const saving = savingSignal.value;
+  const lastSaved = lastSavedSignal.value;
+  const aSteps = activeStepsSignal.value;
+  
+  // Ensure mode is set
+  if (!programme.mode) programme.mode = 'PROGRAMME_OWNER';
+  
+  const title = programme.title?.trim() || "New Programme (Draft)";
+  const comp = completionPercent(programme);
+  
+  // Badge styling based on completion
+  const badgeClass = comp >= 75 ? "text-bg-success" : comp >= 40 ? "text-bg-warning" : "text-bg-secondary";
+  
+  // Save status text
+  const saveStatusText = saving 
+    ? "Saving…" 
+    : (lastSaved ? `Saved ${new Date(lastSaved).toLocaleString()}` : "Not saved yet");
+
+  // Generate popover content
+  const flags = validateProgramme(programme);
+  const stepMap = {};
+  aSteps.forEach(s => { stepMap[s.key] = s.title; });
+  const todoHtml = generateTodoListHtml(flags, stepMap);
+  const popoverTitle = comp === 100 ? "All complete!" : "Items to complete";
+
+  // Ref for Bootstrap popover
+  const badgeRef = useRef(null);
+  const popoverRef = useRef(null);
+
+  useEffect(() => {
+    if (!badgeRef.current || !window.bootstrap?.Popover) return;
+
+    // Dispose existing popover
+    if (popoverRef.current) {
+      popoverRef.current.dispose();
+    }
+
+    // Create new popover
+    popoverRef.current = new window.bootstrap.Popover(badgeRef.current, {
+      trigger: 'hover',
+      html: true,
+      placement: 'bottom',
+      title: popoverTitle,
+      content: todoHtml,
+    });
+
+    return () => {
+      if (popoverRef.current) {
+        popoverRef.current.dispose();
+        popoverRef.current = null;
+      }
+    };
+  }, [todoHtml, popoverTitle]);
+
+  return html`
+    <span class="h5 mb-0" id="programmeTitleNav">${title}</span>
+    <span 
+      ref=${badgeRef}
+      class="badge ${badgeClass}" 
+      id="completionBadge"
+      style="cursor: ${comp === 100 ? 'default' : 'pointer'}"
+    >
+      ${comp}% complete
+    </span>
+    <span class="small text-secondary" id="saveStatus">${saveStatusText}</span>
+  `;
+}
+
+// ============================================================================
+// LEGACY FUNCTIONS (for backward compatibility during migration)
+// ============================================================================
+
+/**
+ * Legacy render function - updates DOM directly
  */
 export function renderHeader() {
   const p = state.programme;
