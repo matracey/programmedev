@@ -309,8 +309,8 @@ export function wireIdentityStep(onUpdate) {
         const canRemove = i > 0 || p.awardStandardIds.length > 1;
 
         const optionList = (standardsCache || []).map(s => {
-          const id = s?.standard_id || "";
-          const name = s?.standard_name || s?.standardName || id;
+          const id = s?.id || "";
+          const name = s?.name || id;
           return `<option value="${escapeHtml(id)}" ${selectedId === id ? "selected" : ""}>${escapeHtml(name)}</option>`;
         }).join("") || `<option value="qqi-computing-l6-9" ${selectedId === "qqi-computing-l6-9" ? "selected" : ""}>Computing (Levels 6-9)</option>`;
 
@@ -336,7 +336,7 @@ export function wireIdentityStep(onUpdate) {
             p.awardStandardIds[index] = newValue;
             try {
               const s = await getAwardStandard(newValue);
-              p.awardStandardNames[index] = s?.standard_name || s?.standardName || "QQI Award Standard";
+              p.awardStandardNames[index] = s?.name || "QQI Award Standard";
             } catch (err) {
               console.warn('Failed to load standard', err);
               p.awardStandardNames[index] = "QQI Award Standard";

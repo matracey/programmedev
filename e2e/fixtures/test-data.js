@@ -3,7 +3,7 @@
  * Used for comprehensive E2E testing
  */
 const higherDiplomaComputing = {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "id": "hdip-computing-2026",
   "title": "Higher Diploma in Science in Computing",
   "awardType": "Higher Diploma",
@@ -204,7 +204,7 @@ const higherDiplomaComputing = {
  * Module Editor View test data
  */
 const moduleEditorViewData = {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "id": "hdip-computing-2026",
   "title": "Higher Diploma in Science in Computing",
   "awardType": "Higher Diploma",
@@ -286,7 +286,7 @@ const moduleEditorViewData = {
  * Programme with electives for testing elective workflow
  */
 const programmeWithElectives = {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "id": "masters-computing-electives",
   "title": "MSc in Computing with Electives",
   "awardType": "Masters",

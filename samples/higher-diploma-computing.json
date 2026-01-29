@@ -1,12 +1,12 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "id": "hdip-computing-2026",
   "title": "Higher Diploma in Science in Computing",
   "awardType": "Higher Diploma",
   "awardTypeIsOther": false,
   "nfqLevel": 8,
   "school": "Computing",
-  "awardStandardIds": ["qqi-computing-l6-9"],
+  "awardStandardIds": ["computing"],
   "awardStandardNames": ["QQI Computing Awards Standards (Levels 6–9)"],
   "totalCredits": 85,
   "mode": "PROGRAMME_OWNER",
@@ -1247,51 +1247,53 @@
       "standardMappings": [
         {
           "criteria": "Knowledge",
-          "thread": "Breadth"
+          "thread": "Breadth",
+          "standardId": "computing"
         },
         {
-          "criteria": "Know-how & Skill",
-          "thread": "Range"
-        },
-        {
-          "criteria": "Competence",
-          "thread": "Competence-Context",
-          "standardId": "qqi-computing-l6-9"
+          "criteria": "Know-How & Skill",
+          "thread": "Range",
+          "standardId": "computing"
         },
         {
           "criteria": "Competence",
-          "thread": "Competence-Insight",
-          "standardId": "qqi-computing-l6-9"
+          "thread": "Context",
+          "standardId": "computing"
         },
         {
           "criteria": "Competence",
-          "thread": "Competence-Learning to Learn",
-          "standardId": "qqi-computing-l6-9"
+          "thread": "Insight",
+          "standardId": "computing"
         },
         {
           "criteria": "Competence",
-          "thread": "Competence-Role",
-          "standardId": "qqi-computing-l6-9"
+          "thread": "Learning to Learn",
+          "standardId": "computing"
         },
         {
-          "criteria": "Know-how & Skill",
-          "thread": "Know-how & Skill-Range",
-          "standardId": "qqi-computing-l6-9"
+          "criteria": "Competence",
+          "thread": "Role",
+          "standardId": "computing"
         },
         {
-          "criteria": "Know-how & Skill",
-          "thread": "Know-how & Skill-Selectivity",
-          "standardId": "qqi-computing-l6-9"
+          "criteria": "Know-How & Skill",
+          "thread": "Range",
+          "standardId": "computing"
+        },
+        {
+          "criteria": "Know-How & Skill",
+          "thread": "Selectivity",
+          "standardId": "computing"
         },
         {
           "criteria": "Knowledge",
-          "thread": "Knowledge-Breadth",
-          "standardId": "qqi-computing-l6-9"
+          "thread": "Breadth",
+          "standardId": "computing"
         },
         {
           "criteria": "Knowledge",
-          "thread": "Knowledge-Kind",
-          "standardId": "qqi-computing-l6-9"
+          "thread": "Kind",
+          "standardId": "computing"
         }
       ]
     },
@@ -1300,12 +1302,14 @@
       "text": "Apply software engineering methodologies to plan, manage and deliver software projects within professional contexts",
       "standardMappings": [
         {
-          "criteria": "Know-how & Skill",
-          "thread": "Selectivity"
+          "criteria": "Know-How & Skill",
+          "thread": "Selectivity",
+          "standardId": "computing"
         },
         {
           "criteria": "Competence",
-          "thread": "Context"
+          "thread": "Context",
+          "standardId": "computing"
         }
       ]
     },
@@ -1315,11 +1319,13 @@
       "standardMappings": [
         {
           "criteria": "Knowledge",
-          "thread": "Kind"
+          "thread": "Kind",
+          "standardId": "computing"
         },
         {
-          "criteria": "Know-how & Skill",
-          "thread": "Range"
+          "criteria": "Know-How & Skill",
+          "thread": "Range",
+          "standardId": "computing"
         }
       ]
     },
@@ -1328,12 +1334,14 @@
       "text": "Create responsive and accessible web applications using modern web technologies and frameworks",
       "standardMappings": [
         {
-          "criteria": "Know-how & Skill",
-          "thread": "Range"
+          "criteria": "Know-How & Skill",
+          "thread": "Range",
+          "standardId": "computing"
         },
         {
-          "criteria": "Know-how & Skill",
-          "thread": "Selectivity"
+          "criteria": "Know-How & Skill",
+          "thread": "Selectivity",
+          "standardId": "computing"
         }
       ]
     },
@@ -1343,11 +1351,13 @@
       "standardMappings": [
         {
           "criteria": "Knowledge",
-          "thread": "Breadth"
+          "thread": "Breadth",
+          "standardId": "computing"
         },
         {
           "criteria": "Knowledge",
-          "thread": "Kind"
+          "thread": "Kind",
+          "standardId": "computing"
         }
       ]
     },
@@ -1357,11 +1367,13 @@
       "standardMappings": [
         {
           "criteria": "Competence",
-          "thread": "Role"
+          "thread": "Role",
+          "standardId": "computing"
         },
         {
           "criteria": "Competence",
-          "thread": "Learning to Learn"
+          "thread": "Learning to Learn",
+          "standardId": "computing"
         }
       ]
     },
@@ -1371,11 +1383,13 @@
       "standardMappings": [
         {
           "criteria": "Competence",
-          "thread": "Insight"
+          "thread": "Insight",
+          "standardId": "computing"
         },
         {
           "criteria": "Competence",
-          "thread": "Context"
+          "thread": "Context",
+          "standardId": "computing"
         }
       ]
     },
@@ -1384,12 +1398,14 @@
       "text": "Communicate technical concepts effectively through documentation and presentations",
       "standardMappings": [
         {
-          "criteria": "Know-how & Skill",
-          "thread": "Selectivity"
+          "criteria": "Know-How & Skill",
+          "thread": "Selectivity",
+          "standardId": "computing"
         },
         {
           "criteria": "Competence",
-          "thread": "Role"
+          "thread": "Role",
+          "standardId": "computing"
         }
       ]
     }

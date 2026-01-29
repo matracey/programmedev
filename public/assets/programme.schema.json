@@ -2,13 +2,13 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://ncirl.ie/schemas/programme.schema.json",
   "title": "NCI Programme Design Schema",
-  "description": "Schema for NCI Programme Design Studio programme data (schemaVersion 2)",
+  "description": "Schema for NCI Programme Design Studio programme data (schemaVersion 3)",
   "type": "object",
   "required": ["schemaVersion", "id", "title", "modules", "plos", "versions"],
   "properties": {
     "schemaVersion": {
       "type": "integer",
-      "const": 2,
+      "const": 3,
       "description": "Schema version number"
     },
     "id": {

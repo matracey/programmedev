@@ -2,7 +2,7 @@
  * Traceability step component (Full alignment chain with Sankey visualization)
  */
 
-import { state, getAwardStandard } from '../../state/store.js';
+import { state, getAwardStandard, getStandardIndicators } from '../../state/store.js';
 import { escapeHtml } from '../../utils/dom.js';
 import { ploText, mimloText } from '../../utils/helpers.js';
 import { getDevModeToggleHtml, wireDevModeToggle } from '../dev-mode.js';
@@ -198,11 +198,17 @@ function buildTraceRows(p, standardsDataArray) {
   const hasMultipleStandards = standardsDataArray.length > 1;
   
   // Build a combined list of level standards with their award standard ID
+  // Use new helper to flatten indicators from hierarchical structure
   const allLevelStandards = [];
   standardsDataArray.forEach(({ id, data }) => {
-    const levelStandards = (data?.levels?.[nfqLevel]) || [];
-    levelStandards.forEach(std => {
-      allLevelStandards.push({ ...std, awardStandardId: id });
+    const indicators = getStandardIndicators(data, nfqLevel);
+    indicators.forEach(ind => {
+      allLevelStandards.push({
+        criteria: ind.criteria,
+        thread: ind.thread,
+        descriptor: ind.descriptor,
+        awardStandardId: id
+      });
     });
   });
 

@@ -9,7 +9,7 @@ import './style.css';
 import * as bootstrap from 'bootstrap';
 
 // Import state management
-import { state, load, saveNow, resetProgramme, activeSteps } from './state/store.js';
+import { state, load, saveNow, resetProgramme, activeSteps, migrateProgramme, validateStandardMappings, getAwardStandard } from './state/store.js';
 
 // Import components
 import { renderHeader } from './components/header.js';
@@ -79,35 +79,42 @@ function wireGlobalButtons() {
         const text = await file.text();
         const data = JSON.parse(text);
         
-        // Migration: convert old single award standard to array format
-        if (typeof data.awardStandardId === 'string') {
-          const oldId = data.awardStandardId || '';
-          const oldName = data.awardStandardName || '';
-          data.awardStandardIds = oldId ? [oldId] : [];
-          data.awardStandardNames = oldName ? [oldName] : [];
-          delete data.awardStandardId;
-          delete data.awardStandardName;
-        }
-        if (!Array.isArray(data.awardStandardIds)) {
-          data.awardStandardIds = [];
-        }
-        if (!Array.isArray(data.awardStandardNames)) {
-          data.awardStandardNames = [];
+        // Automatically migrate programme to current schema version
+        const migrated = migrateProgramme(data);
+        
+        // Load all standards for validation (skip if no standards)
+        const standardsPromises = (migrated.awardStandardIds || []).map(id => 
+          getAwardStandard(id).catch(() => null)
+        );
+        const standards = (await Promise.all(standardsPromises)).filter(Boolean);
+        
+        // Validate mappings still work with new standards
+        const validation = validateStandardMappings(migrated, standards);
+        
+        if (validation.warnings.length > 0) {
+          console.warn('Standard mapping warnings:', validation.warnings);
         }
         
-        // Migration: convert old deliveryModalities array to single deliveryModality
-        if (Array.isArray(data.versions)) {
-          data.versions.forEach(v => {
-            if (Array.isArray(v.deliveryModalities) && !v.deliveryModality) {
-              v.deliveryModality = v.deliveryModalities[0] || 'F2F';
-              delete v.deliveryModalities;
-            }
-          });
+        if (!validation.isValid) {
+          console.error('Standard mapping errors:', validation.errors);
+          const proceed = confirm(
+            `Programme has ${validation.errors.length} invalid standard mapping(s). ` +
+            'These will need to be fixed manually. Import anyway?'
+          );
+          if (!proceed) {
+            e.target.value = '';
+            return;
+          }
         }
         
-        Object.assign(state.programme, data);
+        Object.assign(state.programme, migrated);
         saveNow();
         render();
+        
+        // Show success message with migration info
+        if (migrated.schemaVersion !== data.schemaVersion) {
+          alert(`Programme imported and upgraded from schema v${data.schemaVersion} to v${migrated.schemaVersion}`);
+        }
       } catch (err) {
         alert('Failed to import JSON: ' + err.message);
       }

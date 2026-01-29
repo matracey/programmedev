@@ -5,6 +5,7 @@
 
 import { uid } from '../utils/uid.js';
 import { defaultPatternFor } from '../utils/helpers.js';
+import { migrateProgramme } from '../utils/migrate-programme.js';
 
 // Storage key for localStorage
 const STORAGE_KEY = "nci_pds_mvp_programme_v1";
@@ -45,7 +46,7 @@ export const AWARD_TYPE_OPTIONS = [
  * Factory for empty programme object
  */
 export const defaultProgramme = () => ({
-  schemaVersion: 2,
+  schemaVersion: 3,
   id: "current",
 
   // Identity
@@ -172,40 +173,15 @@ export function load() {
     if (!raw) return;
     
     const parsed = JSON.parse(raw);
-    state.programme = { ...defaultProgramme(), ...parsed };
+    
+    // Run migrations
+    const migrated = migrateProgramme(parsed);
+    state.programme = { ...defaultProgramme(), ...migrated };
 
-    // Migration: convert old single standard to array format
-    if (typeof state.programme.awardStandardId === 'string') {
-      const oldId = state.programme.awardStandardId || '';
-      const oldName = state.programme.awardStandardName || '';
-      state.programme.awardStandardIds = oldId ? [oldId] : [];
-      state.programme.awardStandardNames = oldName ? [oldName] : [];
-      delete state.programme.awardStandardId;
-      delete state.programme.awardStandardName;
-    }
-    // Ensure arrays exist
-    if (!Array.isArray(state.programme.awardStandardIds)) {
-      state.programme.awardStandardIds = [];
-    }
-    if (!Array.isArray(state.programme.awardStandardNames)) {
-      state.programme.awardStandardNames = [];
-    }
-
-    // Migration to schemaVersion 2
-    if (!Array.isArray(state.programme.versions)) {
-      state.programme.versions = [];
-    }
-
-    // Create default version if needed
+    // Create default version if needed (initialization, not migration)
     if (state.programme.versions.length === 0) {
       const v = defaultVersion();
-      // Migrate legacy fields if they exist
-      // Migrate old deliveryMode/deliveryModalities to new deliveryModality
-      const legacyModality = Array.isArray(state.programme.deliveryModalities)
-        ? state.programme.deliveryModalities[0]
-        : (state.programme.deliveryMode || state.programme.deliveryModality || "F2F");
-
-      v.deliveryModality = legacyModality;
+      // Use legacy delivery patterns if they exist
       if (state.programme.deliveryPatterns) {
         v.deliveryPatterns = state.programme.deliveryPatterns;
       }
@@ -214,11 +190,6 @@ export function load() {
       }
       state.programme.versions.push(v);
     }
-
-    // Clean up legacy fields
-    delete state.programme.deliveryMode;
-    delete state.programme.syncPattern;
-    delete state.programme.deliveryModalities;
 
     if (!state.selectedVersionId && state.programme.versions.length) {
       state.selectedVersionId = state.programme.versions[0].id;
@@ -313,7 +284,9 @@ async function loadStandardsFile() {
     const res = await fetch("./assets/standards.json", { cache: "no-store" });
     if (!res.ok) throw new Error("Failed to load standards.json");
     const data = await res.json();
-    return Array.isArray(data?.standards) ? data.standards : [data];
+    // New format: { schemaVersion, generatedFrom, awardStandards: [...] }
+    return Array.isArray(data?.awardStandards) ? data.awardStandards : 
+           Array.isArray(data?.standards) ? data.standards : [data];
   })();
   return _standardsPromise;
 }
@@ -331,5 +304,16 @@ export async function getAwardStandards() {
 export async function getAwardStandard(standardId) {
   const list = await loadStandardsFile();
   if (!standardId) return list[0] || null;
-  return list.find(s => s && s.standard_id === standardId) || list[0] || null;
+  return list.find(s => s && s.id === standardId) || list[0] || null;
 }
+
+// Export helper functions from migrate-programme for convenience
+export { 
+  getStandardIndicators, 
+  getCriteriaList, 
+  getThreadList, 
+  getDescriptor,
+  migrateProgramme,
+  validateStandardMappings
+} from '../utils/migrate-programme.js';
+

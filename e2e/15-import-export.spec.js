@@ -22,7 +22,7 @@ test.describe('Import/Export Functionality', () => {
   test('should import programme from JSON file', async ({ page }) => {
     // Create a test JSON content
     const testProgramme = {
-      schemaVersion: 2,
+      schemaVersion: 3,
       title: "Imported Test Programme",
       awardType: "Masters",
       nfqLevel: 9,

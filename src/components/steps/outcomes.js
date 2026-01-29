@@ -2,7 +2,7 @@
  * Outcomes (PLOs) step component
  */
 
-import { state, saveDebounced, getAwardStandard, getAwardStandards } from '../../state/store.js';
+import { state, saveDebounced, getAwardStandard, getCriteriaList, getThreadList, getDescriptor } from '../../state/store.js';
 import { escapeHtml } from '../../utils/dom.js';
 import { uid } from '../../utils/uid.js';
 import { getDevModeToggleHtml, wireDevModeToggle } from '../dev-mode.js';
@@ -188,8 +188,10 @@ async function populatePloMappingControls(ploId) {
 
   try {
     const std = await getAwardStandard(selectedStandardId);
-    const level = String(p.nfqLevel || "");
-    const criteriaList = Object.keys(std.index || {}).sort((a, b) => a.localeCompare(b));
+    const level = Number(p.nfqLevel || 8);
+    
+    // Use new helper functions to get criteria and threads
+    const criteriaList = getCriteriaList(std, level).sort((a, b) => a.localeCompare(b));
 
     function setOptions(el, opts, placeholder = "Select...") {
       el.innerHTML = "";
@@ -208,7 +210,7 @@ async function populatePloMappingControls(ploId) {
     function updateDesc() {
       const c = critSel.value;
       const t = threadSel.value;
-      const d = (((std.index || {})[c] || {})[t] || {})[level] || "";
+      const d = getDescriptor(std, level, c, t);
       if (descEl) descEl.textContent = d ? d : (c && t ? "No descriptor found for this level." : "");
     }
 
@@ -223,7 +225,7 @@ async function populatePloMappingControls(ploId) {
     threadSel.parentNode.replaceChild(newThreadSel, threadSel);
 
     newCritSel.addEventListener("change", () => {
-      const threads = Object.keys((std.index || {})[newCritSel.value] || {}).sort((a, b) => a.localeCompare(b));
+      const threads = getThreadList(std, level, newCritSel.value).sort((a, b) => a.localeCompare(b));
       setOptions(newThreadSel, threads, "Select thread...");
       updateDesc();
     });
@@ -380,14 +382,14 @@ async function buildMappingSnapshot(p) {
     }
   }
 
-  const level = String(p.nfqLevel || "");
+  const level = Number(p.nfqLevel || 8);
   const hasMultipleStandards = (p.awardStandardIds || []).length > 1;
 
   const rowsHtml = plos.map((o, i) => {
     const maps = (o.standardMappings || []).map(m => {
       const stdId = m.standardId || (p.awardStandardIds || [])[0];
-      const std = standardsMap.get(stdId) || { index: {} };
-      const desc = (std.index?.[m.criteria]?.[m.thread]?.[level] || "").toString();
+      const std = standardsMap.get(stdId);
+      const desc = std ? getDescriptor(std, level, m.criteria, m.thread) : "";
       const shortDesc = desc.length > 180 ? (desc.slice(0, 180) + "…") : desc;
       const stdName = hasMultipleStandards ? `<span class="badge text-bg-info me-1">${escapeHtml((p.awardStandardNames || [])[(p.awardStandardIds || []).indexOf(stdId)] || stdId)}</span>` : '';
       return `<li>${stdName}<span class="fw-semibold">${escapeHtml(m.criteria)} / ${escapeHtml(m.thread)}</span><div class="text-secondary">${escapeHtml(shortDesc)}</div></li>`;

@@ -50,6 +50,21 @@ export const getProgrammeData = async (page) => {
 };
 
 /**
+ * Helper to get current in-memory programme state (after migrations have been applied)
+ * This returns the state.programme object which reflects migrations applied during load()
+ */
+export const getInMemoryProgrammeState = async (page) => {
+  return await page.evaluate(() => {
+    // Access the state from the window if exposed, or via the app's store
+    if (window.__pds_state) {
+      return window.__pds_state.programme;
+    }
+    // Fallback: trigger a minimal state read via localStorage after ensuring save
+    return null;
+  });
+};
+
+/**
  * Helper to navigate to a specific step by clicking on it
  */
 export const navigateToStep = async (page, stepNumber) => {
