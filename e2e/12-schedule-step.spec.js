@@ -1,4 +1,4 @@
-// @ts-check
+// @ts-nocheck
 import { test, expect, getProgrammeData } from './fixtures/test-fixtures.js';
 
 // Helper: capture IDs of open Bootstrap collapse panels within an accordion

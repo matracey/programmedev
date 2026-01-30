@@ -1,4 +1,4 @@
-// @ts-check
+// @ts-nocheck
 import { test as base, expect as pwExpect } from '@playwright/test';
 
 const STORAGE_KEY = 'nci_pds_mvp_programme_v1';

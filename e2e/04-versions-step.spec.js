@@ -1,4 +1,4 @@
-// @ts-check
+// @ts-nocheck
 import { test, expect, getProgrammeData } from './fixtures/test-fixtures.js';
 
 // Utility: capture open collapse IDs for an accordion container

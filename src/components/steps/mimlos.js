@@ -1,5 +1,8 @@
+// @ts-check
 /**
- * MIMLOs step component
+ * MIMLOs (Module Intended Minimum Learning Outcomes) step component.
+ * Manages learning outcomes for each module with linting and Bloom's guidance.
+ * @module components/steps/mimlos
  */
 
 import { state, saveDebounced, editableModuleIds, getSelectedModuleId } from '../../state/store.js';
@@ -10,7 +13,8 @@ import { lintLearningOutcome } from '../../lib/lo-lint.js';
 import { bloomsGuidanceHtml, accordionControlsHtml, wireAccordionControls, captureOpenCollapseIds } from './shared.js';
 
 /**
- * Render the MIMLOs step
+ * Renders the MIMLOs step UI.
+ * Displays module learning outcomes with text editing and quality linting.
  */
 export function renderMimlosStep() {
   const p = state.programme;
@@ -23,7 +27,7 @@ export function renderMimlosStep() {
   const editableIds = editableModuleIds();
   const selectedId = getSelectedModuleId();
   const canPickModule = (p.mode === "MODULE_EDITOR" && editableIds.length > 1);
-  const modulesForEdit = (p.modules || []).filter(m => editableIds.includes(m.id));
+  const modulesForEdit = (p.modules ?? []).filter(m => editableIds.includes(m.id));
 
   const modulePicker = canPickModule ? `
     <div class="row g-3 mb-3">
@@ -38,13 +42,13 @@ export function renderMimlosStep() {
 
   const blocks = modulesForEdit.map((m, idx) => {
     ensureMimloObjects(m);
-    const items = (m.mimlos || []).map((t, i) => {
+    const items = (m.mimlos ?? []).map((t, i) => {
       const mimloTxt = mimloText(t);
       const lintResult = lintLearningOutcome(mimloTxt);
-      const lintWarnings = lintResult.issues.filter(iss => iss.severity === 'warn').map(issue => `
+      const lintWarnings = lintResult.issues.filter(iss => iss.severity === 'warn').map((/** @type {any} */ issue) => `
         <div class="alert alert-warning py-1 px-2 mb-0 mt-1 small">
           <strong>⚠️ "${escapeHtml(issue.match)}"</strong> — ${escapeHtml(issue.message)}
-          ${issue.suggestions.length ? `<br><em>Try: ${issue.suggestions.map(s => escapeHtml(s)).join(", ")}</em>` : ""}
+          ${issue.suggestions.length ? `<br><em>Try: ${issue.suggestions.map((/** @type {string} */ s) => escapeHtml(s)).join(", ")}</em>` : ""}
         </div>
       `).join("");
 
@@ -64,7 +68,7 @@ export function renderMimlosStep() {
     const headingId = `mimlo_${m.id}_heading`;
     const collapseId = `mimlo_${m.id}_collapse`;
     const isActive = openCollapseIds.has(collapseId) ? true : (openCollapseIds.size === 0 && idx === 0);
-    const countBadge = `<span class="badge text-bg-secondary">${(m.mimlos || []).length} item${(m.mimlos || []).length !== 1 ? 's' : ''}</span>`;
+    const countBadge = `<span class="badge text-bg-secondary">${(m.mimlos ?? []).length} item${(m.mimlos ?? []).length !== 1 ? 's' : ''}</span>`;
 
     return `
       <div class="accordion-item bg-body" ${isHidden ? 'style="display:none"' : ''} data-module-card="${m.id}" data-testid="mimlo-module-${m.id}">
@@ -92,12 +96,12 @@ export function renderMimlosStep() {
   content.innerHTML = devModeToggleHtml + `
     <div class="card shadow-sm">
       <div class="card-body">
-        <h5 class="card-title mb-3" id="mimlos-heading">MIMLOs (Minimum Intended Module Learning Outcomes)</h5>
+        <h5 class="card-title mb-3" id="mimlos-heading"><i class="ph ph-graduation-cap me-2" aria-hidden="true"></i>MIMLOs (Minimum Intended Module Learning Outcomes)</h5>
         ${bloomsGuidanceHtml(p.nfqLevel, "MIMLOs")}
         ${modulePicker}
         ${accordionControlsHtml('mimloAccordion')}
         <div class="accordion" id="mimloAccordion" aria-labelledby="mimlos-heading" data-testid="mimlo-accordion">
-          ${modulesForEdit.length ? blocks : `<div class="small text-secondary">Add modules first (Credits & Modules step).</div>`}
+          ${modulesForEdit.length ? blocks : `<div class="alert alert-info mb-0" role="status"><i class="ph ph-info me-2" aria-hidden="true"></i>Add modules first (Credits & Modules step).</div>`}
         </div>
       </div>
     </div>
@@ -113,9 +117,10 @@ export function renderMimlosStep() {
  */
 function wireMimlosStep() {
   const p = state.programme;
-  p.mode = p.mode || 'PROGRAMME_OWNER';
+  p.mode ??= 'PROGRAMME_OWNER';
+  if (!p.modules) p.modules = [];
 
-  const picker = document.getElementById("modulePicker");
+  const picker = /** @type {HTMLSelectElement | null} */ (document.getElementById("modulePicker"));
   if (picker) {
     picker.onchange = () => {
       state.selectedModuleId = picker.value;
@@ -124,11 +129,12 @@ function wireMimlosStep() {
   }
 
   document.querySelectorAll("[data-add-mimlo]").forEach(btn => {
-    btn.onclick = () => {
+    /** @type {HTMLElement} */ (btn).onclick = () => {
       const id = btn.getAttribute("data-add-mimlo");
+      if (!p.modules) return;
       const m = p.modules.find(x => x.id === id);
       if (!m) return;
-      m.mimlos = m.mimlos || [];
+      m.mimlos ??= [];
       m.mimlos.push({ id: 'mimlo_' + crypto.randomUUID(), text: '' });
       saveDebounced();
       window.render?.();
@@ -136,44 +142,48 @@ function wireMimlosStep() {
   });
 
   document.querySelectorAll("[data-remove-mimlo]").forEach(btn => {
-    btn.onclick = () => {
+    /** @type {HTMLElement} */ (btn).onclick = () => {
       const id = btn.getAttribute("data-remove-mimlo");
-      const idx = Number(btn.getAttribute("data-remove-mimlo-index"));
+      const idx = Number(btn.getAttribute("data-remove-mimlo-index") ?? 0);
+      if (!p.modules) return;
       const m = p.modules.find(x => x.id === id);
       if (!m) return;
-      m.mimlos = (m.mimlos || []).filter((_, i) => i !== idx);
+      m.mimlos = (m.mimlos ?? []).filter((_, i) => i !== idx);
       saveDebounced();
       window.render?.();
     };
   });
 
   document.querySelectorAll("[data-mimlo-module]").forEach(inp => {
-    inp.addEventListener("input", (e) => {
+    inp.addEventListener("input", (/** @type {any} */ e) => {
       const id = inp.getAttribute("data-mimlo-module");
-      const idx = Number(inp.getAttribute("data-mimlo-index"));
+      const idx = Number(inp.getAttribute("data-mimlo-index") ?? 0);
+      if (!p.modules) return;
       const m = p.modules.find(x => x.id === id);
       if (!m) return;
 
-      m.mimlos = m.mimlos || [];
+      m.mimlos ??= [];
       ensureMimloObjects(m);
       if (!m.mimlos[idx]) m.mimlos[idx] = { id: 'mimlo_' + crypto.randomUUID(), text: '' };
-      m.mimlos[idx].text = e.target.value;
+      m.mimlos[idx].text = e.target?.value || '';
       saveDebounced();
 
       // Update lint warnings dynamically
-      const lintResult = lintLearningOutcome(e.target.value);
-      const warningsHtml = lintResult.issues.filter(i => i.severity === 'warn').map(issue => `
+      const lintResult = lintLearningOutcome(e.target?.value || '');
+      const warningsHtml = lintResult.issues.filter(i => i.severity === 'warn').map((/** @type {any} */ issue) => `
         <div class="alert alert-warning py-1 px-2 mb-0 small">
           <strong>⚠️ "${escapeHtml(issue.match)}"</strong> — ${escapeHtml(issue.message)}
-          ${issue.suggestions.length ? `<br><em>Try: ${issue.suggestions.map(s => escapeHtml(s)).join(", ")}</em>` : ""}
+          ${issue.suggestions.length ? `<br><em>Try: ${issue.suggestions.map((/** @type {string} */ s) => escapeHtml(s)).join(", ")}</em>` : ""}
         </div>
       `).join("");
 
-      let lintContainer = inp.closest('.input-group').parentElement.querySelector('.mimlo-lint-warnings');
+      const inputGroup = /** @type {HTMLElement} */ (inp).closest('.input-group');
+      if (!inputGroup?.parentElement) return;
+      let lintContainer = inputGroup.parentElement.querySelector('.mimlo-lint-warnings');
       if (!lintContainer) {
         lintContainer = document.createElement('div');
         lintContainer.className = 'mimlo-lint-warnings mt-1';
-        inp.closest('.input-group').insertAdjacentElement('afterend', lintContainer);
+        inputGroup.insertAdjacentElement('afterend', lintContainer);
       }
       lintContainer.innerHTML = warningsHtml;
     });

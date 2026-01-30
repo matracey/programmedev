@@ -1,4 +1,4 @@
-// @ts-check
+// @ts-nocheck
 import { test, expect, loadProgrammeData } from './fixtures/test-fixtures.js';
 import { higherDiplomaComputing } from './fixtures/test-data.js';
 

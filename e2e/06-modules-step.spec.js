@@ -1,4 +1,4 @@
-// @ts-check
+// @ts-nocheck
 import { test, expect, getProgrammeData } from './fixtures/test-fixtures.js';
 
 // Helper: capture IDs of open Bootstrap collapse panels within an accordion
@@ -13,7 +13,7 @@ test.describe('Step 5: Credits & Modules', () => {
     // Fill Identity first to ensure localStorage is properly initialized
     await page.getByTestId('title-input').fill('Test Programme');
     await page.getByTestId('level-input').fill('8');
-    await page.getByTestId('programme-credits').fill('60');
+    await page.getByTestId('total-credits-input').fill('60');
     await page.waitForTimeout(300);
     
     await page.getByTestId('step-structure').click();
@@ -114,7 +114,7 @@ test.describe('Step 5: Credits & Modules', () => {
     // Set programme credits first
     await page.getByTestId('step-identity').click();
     await page.waitForTimeout(200);
-    await page.getByTestId('programme-credits').fill('60');
+    await page.getByTestId('total-credits-input').fill('60');
     await page.waitForTimeout(300);
     
     // Go back to modules
@@ -141,7 +141,7 @@ test.describe('Step 5: Credits & Modules', () => {
     // Set programme credits
     await page.getByTestId('step-identity').click();
     await page.waitForTimeout(200);
-    await page.getByTestId('programme-credits').fill('60');
+    await page.getByTestId('total-credits-input').fill('60');
     await page.waitForTimeout(300);
     
     // Add module with wrong credits

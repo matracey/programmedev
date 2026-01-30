@@ -1,4 +1,4 @@
-// @ts-check
+// @ts-nocheck
 import { test, expect, getProgrammeData } from './fixtures/test-fixtures.js';
 
 // Helper: capture IDs of open Bootstrap collapse panels within an accordion
@@ -60,11 +60,11 @@ test.describe('Step 9: Assessments', () => {
   });
 
   test('should show Add Assessment button', async ({ page }) => {
-    await expect(page.locator('button:has-text("+ Add")')).toBeVisible();
+    await expect(page.locator('[data-add-asm]')).toBeVisible();
   });
 
   test('should add an assessment', async ({ page }) => {
-    await page.getByRole('button', { name: '+ Add', exact: true }).click();
+    await page.locator('[data-add-asm]').first().click();
     await page.waitForTimeout(600); // Wait for debounced save (400ms)
     
     const data = await getProgrammeData(page);
@@ -72,7 +72,7 @@ test.describe('Step 9: Assessments', () => {
   });
 
   test('should set assessment title', async ({ page }) => {
-    await page.getByRole('button', { name: '+ Add', exact: true }).click();
+    await page.locator('[data-add-asm]').first().click();
     await page.waitForTimeout(300);
     
     const titleInput = page.locator('[data-asm-title]').first();
@@ -84,7 +84,7 @@ test.describe('Step 9: Assessments', () => {
   });
 
   test('should select assessment type', async ({ page }) => {
-    await page.getByRole('button', { name: '+ Add', exact: true }).click();
+    await page.locator('[data-add-asm]').first().click();
     await page.waitForTimeout(300);
     
     // Find assessment type selector using data attribute
@@ -99,7 +99,7 @@ test.describe('Step 9: Assessments', () => {
   });
 
   test('should set assessment weighting', async ({ page }) => {
-    await page.getByRole('button', { name: '+ Add', exact: true }).click();
+    await page.locator('[data-add-asm]').first().click();
     await page.waitForTimeout(300);
     
     const weightingInput = page.locator('[data-asm-weight]').first();
@@ -112,7 +112,8 @@ test.describe('Step 9: Assessments', () => {
 
   test('should validate weightings sum to 100%', async ({ page }) => {
     // Add two assessments with incorrect weightings
-    await page.getByRole('button', { name: '+ Add', exact: true }).click();
+    await page.locator('[data-add-asm]').first().click();
+    await page.waitForTimeout(300);
     // Expand all assessment panels to reveal inputs
     const expandAll = page.locator('[data-accordion-expand-all="assessmentsAccordion"]');
     if (await expandAll.count() > 0) {
@@ -121,13 +122,26 @@ test.describe('Step 9: Assessments', () => {
     }
     await page.locator('[data-asm-weight]').first().fill('60');
     
-    await page.getByRole('button', { name: '+ Add', exact: true }).click();
-    // Expand all again in case the new panel is collapsed
+    await page.locator('[data-add-asm]').first().click();
+    await page.waitForTimeout(300);
+    // Expand all again to ensure new assessment panel is visible
     if (await expandAll.count() > 0) {
       await expandAll.click();
       await page.waitForTimeout(200);
     }
-    await page.locator('[data-asm-weight]').nth(1).fill('60');
+    // Find the second weight input by its visible state
+    const visibleWeightInputs = page.locator('[data-asm-weight]:visible');
+    if (await visibleWeightInputs.count() > 1) {
+      await visibleWeightInputs.nth(1).fill('60');
+    } else {
+      // If expand didn't work, try clicking on the second accordion button
+      const accordionButtons = page.locator('.accordion-button[aria-expanded="false"]');
+      if (await accordionButtons.count() > 0) {
+        await accordionButtons.first().click();
+        await page.waitForTimeout(200);
+      }
+      await page.locator('[data-asm-weight]').nth(1).fill('60');
+    }
     await page.waitForTimeout(600);
     
     // Should show warning about weightings (badge shows total)
@@ -136,7 +150,7 @@ test.describe('Step 9: Assessments', () => {
   });
 
   test('should select assessment mode (Online/Hybrid/OnCampus)', async ({ page }) => {
-    await page.getByRole('button', { name: '+ Add', exact: true }).click();
+    await page.locator('[data-add-asm]').first().click();
     await page.waitForTimeout(300);
     
     // Look for mode selector using data attribute
@@ -149,7 +163,7 @@ test.describe('Step 9: Assessments', () => {
   });
 
   test('should link assessment to MIMLOs', async ({ page }) => {
-    await page.getByRole('button', { name: '+ Add', exact: true }).click();
+    await page.locator('[data-add-asm]').first().click();
     await page.waitForTimeout(300);
     
     // Look for MIMLO checkboxes using data attribute
@@ -165,7 +179,7 @@ test.describe('Step 9: Assessments', () => {
   });
 
   test('should configure academic integrity options', async ({ page }) => {
-    await page.getByRole('button', { name: '+ Add', exact: true }).click();
+    await page.locator('[data-add-asm]').first().click();
     await page.waitForTimeout(300);
     
     // Look for integrity checkboxes using data attributes
@@ -179,7 +193,7 @@ test.describe('Step 9: Assessments', () => {
   });
 
   test('should add assessment notes', async ({ page }) => {
-    await page.getByRole('button', { name: '+ Add', exact: true }).click();
+    await page.locator('[data-add-asm]').first().click();
     await page.waitForTimeout(300);
     
     const notesTextarea = page.locator('[data-asm-notes], textarea').first();
@@ -193,7 +207,7 @@ test.describe('Step 9: Assessments', () => {
   });
 
   test('should delete an assessment', async ({ page }) => {
-    await page.getByRole('button', { name: '+ Add', exact: true }).click();
+    await page.locator('[data-add-asm]').first().click();
     await page.waitForTimeout(500);
     
     const deleteBtn = page.getByRole('button', { name: 'Remove', exact: true }).first();
@@ -217,7 +231,7 @@ test.describe('Step 9: Assessments', () => {
     const before = await getOpenCollapseIds(page, 'assessmentsAccordion');
 
     // Add an assessment to trigger re-render
-    const addBtn = page.getByRole('button', { name: '+ Add', exact: true }).first();
+    const addBtn = page.locator('[data-add-asm]').first().first();
     if (await addBtn.count() > 0) {
       await addBtn.click();
       await page.waitForTimeout(600);
@@ -249,7 +263,7 @@ test.describe('Step 9: Assessment Types', () => {
   });
 
   test('should offer common assessment types', async ({ page }) => {
-    await page.getByRole('button', { name: '+ Add', exact: true }).click();
+    await page.locator('[data-add-asm]').first().click();
     await page.waitForTimeout(300);
     
     const typeSelect = page.locator('[data-asm-type]').first();

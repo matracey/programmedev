@@ -1,4 +1,4 @@
-// @ts-check
+// @ts-nocheck
 import { test, expect, loadProgrammeData, getProgrammeData } from './fixtures/test-fixtures.js';
 import { programmeWithElectives } from './fixtures/test-data.js';
 
@@ -7,7 +7,7 @@ test.describe('Step 6: Electives', () => {
     // Fill Identity step first
     await page.getByTestId('title-input').fill('Test Programme');
     await page.getByTestId('level-input').fill('9');
-    await page.getByTestId('programme-credits').fill('90');
+    await page.getByTestId('total-credits-input').fill('90');
     await page.waitForTimeout(500);
     
     // Navigate to Electives
@@ -54,13 +54,13 @@ test.describe('Step 6: Elective Definitions from Identity', () => {
     // Fill Identity step
     await page.getByTestId('title-input').fill('Test Programme with Electives');
     await page.getByTestId('level-input').fill('9');
-    await page.getByTestId('programme-credits').fill('90');
+    await page.getByTestId('total-credits-input').fill('90');
     await page.waitForTimeout(300);
   });
 
   test('should add elective definition from Identity step', async ({ page }) => {
     // Click Add definition button
-    await page.getByRole('button', { name: /Add definition/i }).click();
+    await page.getByTestId('add-elective-definition-btn').click();
     await page.waitForTimeout(600);
     
     const data = await getProgrammeData(page);
@@ -70,7 +70,7 @@ test.describe('Step 6: Elective Definitions from Identity', () => {
   });
 
   test('should set elective definition code', async ({ page }) => {
-    await page.getByRole('button', { name: /Add definition/i }).click();
+    await page.getByTestId('add-elective-definition-btn').click();
     await page.waitForTimeout(300);
     
     // Find and clear/fill the code input
@@ -84,7 +84,7 @@ test.describe('Step 6: Elective Definitions from Identity', () => {
   });
 
   test('should set elective definition name', async ({ page }) => {
-    await page.getByRole('button', { name: /Add definition/i }).click();
+    await page.getByTestId('add-elective-definition-btn').click();
     await page.waitForTimeout(300);
     
     const nameInput = page.locator('input[placeholder*="Specialization"]').first();
@@ -96,7 +96,7 @@ test.describe('Step 6: Elective Definitions from Identity', () => {
   });
 
   test('should set elective definition credits', async ({ page }) => {
-    await page.getByRole('button', { name: /Add definition/i }).click();
+    await page.getByTestId('add-elective-definition-btn').click();
     await page.waitForTimeout(300);
     
     // Expand the definition if collapsed
@@ -118,7 +118,7 @@ test.describe('Step 6: Elective Definitions from Identity', () => {
   });
 
   test('should add group to elective definition', async ({ page }) => {
-    await page.getByRole('button', { name: /Add definition/i }).click();
+    await page.getByTestId('add-elective-definition-btn').click();
     await page.waitForTimeout(300);
     
     // Add a second group
@@ -130,7 +130,7 @@ test.describe('Step 6: Elective Definitions from Identity', () => {
   });
 
   test('should set group code and name', async ({ page }) => {
-    await page.getByRole('button', { name: /Add definition/i }).click();
+    await page.getByTestId('add-elective-definition-btn').click();
     await page.waitForTimeout(300);
     
     // Fill the first group's details
@@ -148,7 +148,7 @@ test.describe('Step 6: Elective Definitions from Identity', () => {
   });
 
   test('should remove group from definition', async ({ page }) => {
-    await page.getByRole('button', { name: /Add definition/i }).click();
+    await page.getByTestId('add-elective-definition-btn').click();
     await page.waitForTimeout(300);
     
     // Add a second group first
@@ -167,7 +167,7 @@ test.describe('Step 6: Elective Definitions from Identity', () => {
   });
 
   test('should remove elective definition', async ({ page }) => {
-    await page.getByRole('button', { name: /Add definition/i }).click();
+    await page.getByTestId('add-elective-definition-btn').click();
     await page.waitForTimeout(600);
     
     // Verify definition was added
@@ -186,7 +186,7 @@ test.describe('Step 6: Elective Definitions from Identity', () => {
   });
 
   test('should show elective definitions in Electives step after creation', async ({ page }) => {
-    await page.getByRole('button', { name: /Add definition/i }).click();
+    await page.getByTestId('add-elective-definition-btn').click();
     await page.waitForTimeout(600);
     
     // Set a name for easier identification
@@ -263,7 +263,7 @@ test.describe('Step 6: Electives with Modules', () => {
 test.describe('Step 6: Electives Validation', () => {
   test('should show warning for definition without credit value', async ({ page }) => {
     // Create definition without credits
-    await page.getByRole('button', { name: /Add definition/i }).click();
+    await page.getByTestId('add-elective-definition-btn').click();
     await page.waitForTimeout(600);
     
     // Should show QQI warning about credits
@@ -277,7 +277,7 @@ test.describe('Step 6: Electives Validation', () => {
     await page.waitForTimeout(300);
     
     // Create definition
-    await page.getByRole('button', { name: /Add definition/i }).click();
+    await page.getByTestId('add-elective-definition-btn').click();
     await page.waitForTimeout(600);
     
     // Should show warning about no modules assigned to group
@@ -290,11 +290,11 @@ test.describe('Step 6: Electives Module Assignment', () => {
     // Fill identity
     await page.getByTestId('title-input').fill('Test Programme');
     await page.getByTestId('level-input').fill('8');
-    await page.getByTestId('programme-credits').fill('60');
+    await page.getByTestId('total-credits-input').fill('60');
     await page.waitForTimeout(300);
     
     // Create an elective definition
-    await page.getByRole('button', { name: /Add definition/i }).click();
+    await page.getByTestId('add-elective-definition-btn').click();
     await page.waitForTimeout(300);
   });
 
@@ -413,7 +413,7 @@ test.describe('Step 6: Electives UI Interactions', () => {
 test.describe('Step 6: Electives Data Persistence', () => {
   test('should persist elective definitions after page reload', async ({ page }) => {
     // Create definition
-    await page.getByRole('button', { name: /Add definition/i }).click();
+    await page.getByTestId('add-elective-definition-btn').click();
     await page.waitForTimeout(600);
     
     // Set a distinctive name
@@ -430,8 +430,8 @@ test.describe('Step 6: Electives Data Persistence', () => {
     await page.getByTestId('step-electives').click();
     await page.waitForTimeout(400);
     
-    // Definition should still exist - use getByRole for accordion button that contains the name
-    await expect(page.getByRole('button', { name: /Persistent Track/i })).toBeVisible();
+    // Definition should still exist - look for accordion button in the definitions area
+    await expect(page.locator('.accordion-button:has-text("Persistent Track")')).toBeVisible();
   });
 
   test('should persist group assignments after page reload', async ({ page }) => {

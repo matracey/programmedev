@@ -10,7 +10,7 @@ test.describe('Import/Export Functionality', () => {
     // Click Export JSON in header
     const downloadPromise = page.waitForEvent('download', { timeout: 5000 }).catch(() => null);
     
-    await page.getByRole('button', { name: 'Export JSON' }).click();
+    await page.getByTestId('export-btn').click();
     
     const download = await downloadPromise;
     if (download) {

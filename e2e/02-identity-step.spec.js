@@ -3,11 +3,12 @@ import { test, expect, getProgrammeData } from './fixtures/test-fixtures.js';
 
 test.describe('Step 1: Identity', () => {
   test('should display all identity form fields', async ({ page }) => {
-    await expect(page.getByLabel('Programme title')).toBeVisible();
-    await expect(page.getByLabel('Award type')).toBeVisible();
-    await expect(page.getByLabel('NFQ level')).toBeVisible();
-    await expect(page.getByLabel('Total credits (ECTS)')).toBeVisible();
-    await expect(page.getByLabel('School / Discipline')).toBeVisible();
+    // Use data-testid selectors to avoid conflicts with flag aria-labels
+    await expect(page.getByTestId('title-input')).toBeVisible();
+    await expect(page.getByTestId('award-select')).toBeVisible();
+    await expect(page.getByTestId('level-input')).toBeVisible();
+    await expect(page.getByTestId('total-credits-input')).toBeVisible();
+    await expect(page.getByTestId('school-select')).toBeVisible();
   });
 
   test('should enter programme title', async ({ page }) => {

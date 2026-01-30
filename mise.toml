@@ -1,0 +1,10 @@
+[tools]
+node = "lts"
+npm = "latest"
+"npm:@playwright/test" = "latest"
+"npm:rolldown-vite" = "latest"
+
+[tasks]
+build = "vite build"
+dev = "vite"
+test = "playwright test --reporter=json"

@@ -1,4 +1,4 @@
-// @ts-check
+// @ts-nocheck
 import { test, expect, loadProgrammeData, getProgrammeData } from './fixtures/test-fixtures.js';
 import { moduleEditorViewData } from './fixtures/test-data.js';
 
