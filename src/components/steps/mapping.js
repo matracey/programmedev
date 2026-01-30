@@ -47,8 +47,8 @@ export function renderMappingStep() {
     content.innerHTML = devModeToggleHtml + `
       <div class="card shadow-sm">
         <div class="card-body">
-          <h5 class="card-title">Mapping</h5>
-          <div class="small text-secondary">Add PLOs and modules first.</div>
+          <h5 class="card-title"><i class="ph ph-graph me-2" aria-hidden="true"></i>Mapping</h5>
+          <div class="alert alert-info mb-0"><i class="ph ph-info me-2" aria-hidden="true"></i>Add PLOs and modules first.</div>
         </div>
       </div>
     `;
@@ -138,8 +138,8 @@ export function renderMappingStep() {
   content.innerHTML = devModeToggleHtml + `
     <div class="card shadow-sm">
       <div class="card-body">
-        <h5 class="card-title mb-3">Map PLOs to modules (QQI-critical)</h5>
-        <p class="text-muted small mb-3">For each PLO, select the modules where this outcome is addressed. This mapping is required for QQI validation and the traceability matrix.</p>
+        <h5 class="card-title mb-3"><i class="ph ph-graph me-2" aria-hidden="true"></i>Map PLOs to modules (QQI-critical)</h5>
+        <p class="text-muted small mb-3"><i class="ph ph-lightbulb me-1" aria-hidden="true"></i>For each PLO, select the modules where this outcome is addressed. This mapping is required for QQI validation and the traceability matrix.</p>
         ${modeNote}
         ${summaryHtml}
         ${accordionControlsHtml('mappingAccordion')}

@@ -156,14 +156,14 @@ export function renderSnapshotStep() {
   content.innerHTML = devModeToggleHtml + `
     <div class="card shadow-sm">
       <div class="card-body">
-        <h5 class="card-title mb-3">QQI Snapshot (copy/paste-ready)</h5>
+        <h5 class="card-title mb-3"><i class="ph ph-file-doc me-2" aria-hidden="true"></i>QQI Snapshot (copy/paste-ready)</h5>
 
         ${isComplete100 
           ? `<div class="d-flex gap-2 mb-3">
               <button id="exportWordBtn" class="btn btn-success btn-sm" aria-label="Export programme descriptor as Word document" data-testid="snapshot-export-word"><i class="ph ph-file-doc" aria-hidden="true"></i> Export Programme Descriptor (Word)</button>
               <span class="small text-secondary align-self-center">Generates a .docx using the template in assets.</span>
             </div>` 
-          : `<div class="small text-secondary mb-3">Complete all sections to enable Word export (100%).</div>`}
+          : `<div class="alert alert-info mb-3"><i class="ph ph-info me-2" aria-hidden="true"></i>Complete all sections to enable Word export (100%).</div>`}
 
         <div class="mt-3 p-3 bg-light border rounded-4">
           <div class="fw-semibold mb-2">Programme summary</div>

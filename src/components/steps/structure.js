@@ -94,7 +94,7 @@ export function renderStructureStep() {
     <div class="card shadow-sm">
       <div class="card-body">
         <div class="d-flex justify-content-between align-items-center mb-3">
-          <h5 class="card-title mb-0" id="modules-heading">Credits & modules (QQI-critical)</h5>
+          <h5 class="card-title mb-0" id="modules-heading"><i class="ph ph-cube me-2" aria-hidden="true"></i>Credits & modules (QQI-critical)</h5>
           <button class="btn btn-dark btn-sm" id="addModuleBtn" data-testid="add-module-btn" aria-label="Add new module"><i class="ph ph-plus" aria-hidden="true"></i> Add module</button>
         </div>
 
@@ -115,13 +115,13 @@ export function renderStructureStep() {
         </div>
 
         <div class="small text-muted mb-3" role="note">
-          <strong>Tip:</strong> Mark modules as <span class="badge text-bg-primary">M</span> Mandatory or <span class="badge text-bg-info">E</span> Elective. 
+          <i class="ph ph-lightbulb me-1" aria-hidden="true"></i><strong>Tip:</strong> Mark modules as <span class="badge text-bg-primary">M</span> Mandatory or <span class="badge text-bg-info">E</span> Elective. 
           Elective modules are assigned to groups in the "Electives" step.
         </div>
 
         ${accordionControlsHtml('modulesAccordion')}
         <div class="accordion" id="modulesAccordion" aria-labelledby="modules-heading" data-testid="modules-accordion">
-          ${moduleRows || `<div class="alert alert-info mb-0" role="status">No modules added yet.</div>`}
+          ${moduleRows || `<div class="alert alert-info mb-0" role="status"><i class="ph ph-info me-2" aria-hidden="true"></i>No modules added yet.</div>`}
         </div>
       </div>
     </div>

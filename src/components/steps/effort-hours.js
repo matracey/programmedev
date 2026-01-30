@@ -234,15 +234,15 @@ export function renderEffortHoursStep() {
   content.innerHTML = devModeToggleHtml + `
     <div class="card shadow-sm">
       <div class="card-body">
-        <h5 class="card-title mb-3">Effort Hours by Version / Modality</h5>
+        <h5 class="card-title mb-3"><i class="ph ph-clock me-2" aria-hidden="true"></i>Effort Hours by Version / Modality</h5>
         <p class="small text-secondary mb-3">
-          Define how student learning effort is distributed across different activity types for each programme version and delivery modality.
+          <i class="ph ph-lightbulb me-1" aria-hidden="true"></i>Define how student learning effort is distributed across different activity types for each programme version and delivery modality.
           This helps demonstrate the workload balance and staffing requirements (teacher/learner ratios).
         </p>
         ${modulePicker}
         ${accordionControlsHtml('effortHoursAccordion')}
         <div class="accordion" id="effortHoursAccordion">
-          ${modulesForEdit.length ? blocks : `<div class="alert alert-info mb-0">Add modules first (Credits & Modules step).</div>`}
+          ${modulesForEdit.length ? blocks : `<div class="alert alert-info mb-0"><i class="ph ph-info me-2" aria-hidden="true"></i>Add modules first (Credits & Modules step).</div>`}
         </div>
       </div>
     </div>

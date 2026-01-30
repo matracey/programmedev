@@ -96,12 +96,12 @@ export function renderMimlosStep() {
   content.innerHTML = devModeToggleHtml + `
     <div class="card shadow-sm">
       <div class="card-body">
-        <h5 class="card-title mb-3" id="mimlos-heading">MIMLOs (Minimum Intended Module Learning Outcomes)</h5>
+        <h5 class="card-title mb-3" id="mimlos-heading"><i class="ph ph-graduation-cap me-2" aria-hidden="true"></i>MIMLOs (Minimum Intended Module Learning Outcomes)</h5>
         ${bloomsGuidanceHtml(p.nfqLevel, "MIMLOs")}
         ${modulePicker}
         ${accordionControlsHtml('mimloAccordion')}
         <div class="accordion" id="mimloAccordion" aria-labelledby="mimlos-heading" data-testid="mimlo-accordion">
-          ${modulesForEdit.length ? blocks : `<div class="small text-secondary">Add modules first (Credits & Modules step).</div>`}
+          ${modulesForEdit.length ? blocks : `<div class="alert alert-info mb-0" role="status"><i class="ph ph-info me-2" aria-hidden="true"></i>Add modules first (Credits & Modules step).</div>`}
         </div>
       </div>
     </div>

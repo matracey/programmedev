@@ -168,10 +168,10 @@ export function renderElectivesStep() {
   content.innerHTML = devModeToggleHtml + `
     <div class="card shadow-sm mb-3">
       <div class="card-body">
-        <h5 class="card-title mb-3" id="electives-heading">Electives</h5>
+        <h5 class="card-title mb-3" id="electives-heading"><i class="ph ph-path me-2" aria-hidden="true"></i>Electives</h5>
         
         <div class="alert alert-light" role="note">
-          <strong>How elective definitions & groups work:</strong>
+          <i class="ph ph-lightbulb me-1" aria-hidden="true"></i><strong>How elective definitions & groups work:</strong>
           <ul class="mb-0 mt-2">
             <li>Students complete <strong>every</strong> elective definition in the programme</li>
             <li>For each definition, students choose <strong>one group</strong> to complete</li>
@@ -220,14 +220,14 @@ export function renderElectivesStep() {
 
     <div class="card shadow-sm">
       <div class="card-body">
-        <h6 class="card-title mb-3" id="elective-defs-groups-heading">Elective Definitions & Groups</h6>
+        <h6 class="card-title mb-3" id="elective-defs-groups-heading"><i class="ph ph-folders me-2" aria-hidden="true"></i>Elective Definitions & Groups</h6>
         <div aria-labelledby="elective-defs-groups-heading" data-testid="elective-definitions-container">
           ${definitionsHtml}
         </div>
         
         ${electiveDefinitions.length > 0 && electiveModules.length === 0 
           ? `<div class="alert alert-warning mt-3 mb-0" role="alert">
-              No elective modules available. 
+              <i class="ph ph-warning me-2" aria-hidden="true"></i>No elective modules available. 
               <a href="#" data-goto-step="structure" class="alert-link">Go to Credits & Modules</a> to mark some modules as Elective (E).
              </div>`
           : ''}

@@ -71,8 +71,8 @@ export async function renderTraceabilityStep() {
   content.innerHTML = devModeToggleHtml + `
     <div class="card shadow-sm">
       <div class="card-body">
-        <h5 class="card-title mb-3">Traceability Matrix</h5>
-        <p class="small text-secondary mb-3">This shows the full alignment chain from QQI Award Standards → PLOs → Modules → MIMLOs → Assessments. Use the tabs to switch between table and diagram views.</p>
+        <h5 class="card-title mb-3"><i class="ph ph-flow-arrow me-2" aria-hidden="true"></i>Traceability Matrix</h5>
+        <p class="small text-secondary mb-3"><i class="ph ph-lightbulb me-1" aria-hidden="true"></i>This shows the full alignment chain from QQI Award Standards → PLOs → Modules → MIMLOs → Assessments. Use the tabs to switch between table and diagram views.</p>
         
         ${standardsCoverageHtml}
         

@@ -145,12 +145,12 @@ export function renderReadingListsStep() {
   content.innerHTML = devModeToggleHtml + `
     <div class="card shadow-sm">
       <div class="card-body">
-        <h5 class="card-title mb-3">Reading Lists</h5>
-        <div class="small text-secondary mb-3">Define core and recommended reading for each module. Items published more than 5 years ago will be flagged for review.</div>
+        <h5 class="card-title mb-3"><i class="ph ph-books me-2" aria-hidden="true"></i>Reading Lists</h5>
+        <div class="small text-secondary mb-3"><i class="ph ph-lightbulb me-1" aria-hidden="true"></i>Define core and recommended reading for each module. Items published more than 5 years ago will be flagged for review.</div>
         ${modulePicker}
         ${accordionControlsHtml('readingAccordion')}
         <div class="accordion" id="readingAccordion">
-          ${modulesForEdit.length ? blocks : '<div class="small text-secondary">No modules available.</div>'}
+          ${modulesForEdit.length ? blocks : '<div class="alert alert-info mb-0"><i class="ph ph-info me-2" aria-hidden="true"></i>No modules available.</div>'}
         </div>
       </div>
     </div>

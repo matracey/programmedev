@@ -141,7 +141,7 @@ export function renderOutcomesStep() {
                     <label class="form-label small mb-1" for="plo-thread-${o.id}">Thread</label>
                     <select class="form-select form-select-sm" id="plo-thread-${o.id}" data-plo-map-thread="${o.id}" data-testid="plo-thread-${o.id}"></select>
                   </div>
-                  <button type="button" class="btn btn-outline-primary btn-sm" data-add-plo-map="${o.id}" aria-label="Add mapping for PLO ${idx + 1}" data-testid="add-mapping-${o.id}">Add mapping</button>
+                  <button type="button" class="btn btn-outline-primary btn-sm" data-add-plo-map="${o.id}" aria-label="Add mapping for PLO ${idx + 1}" data-testid="add-mapping-${o.id}"><i class="ph ph-link me-1" aria-hidden="true"></i>Add mapping</button>
                 </div>
                 <div class="small text-secondary mt-2" data-plo-map-desc="${o.id}" aria-live="polite"></div>
                 <div class="mt-2" data-plo-map-list="${o.id}" role="list" aria-label="Current mappings for PLO ${idx + 1}">
@@ -159,17 +159,17 @@ export function renderOutcomesStep() {
     <div class="card shadow-sm">
       <div class="card-body">
         <div class="d-flex justify-content-between align-items-center mb-3">
-          <h5 class="card-title mb-0" id="plos-heading">Programme Learning Outcomes (PLOs) (QQI-critical)</h5>
+          <h5 class="card-title mb-0" id="plos-heading"><i class="ph ph-list-checks me-2" aria-hidden="true"></i>Programme Learning Outcomes (PLOs) (QQI-critical)</h5>
           <button class="btn btn-dark btn-sm" id="addPloBtn" data-testid="add-plo-btn" aria-label="Add new PLO"><i class="ph ph-plus" aria-hidden="true"></i> Add PLO</button>
         </div>
         ${bloomsGuidanceHtml(p.nfqLevel, "Programme Learning Outcomes")}
-        <div class="small-muted mb-3" role="note">Aim for ~6–12 clear, assessable outcomes. Keep them measurable and assessable.</div>
+        <div class="small text-muted mb-3" role="note"><i class="ph ph-lightbulb me-1" aria-hidden="true"></i>Aim for ~6–12 clear, assessable outcomes. Keep them measurable and assessable.</div>
         ${accordionControlsHtml('ploAccordion')}
         <div class="accordion" id="ploAccordion" aria-labelledby="plos-heading" data-testid="plo-accordion">
-          ${rows || `<div class="alert alert-info mb-0" role="status">No PLOs added yet.</div>`}
+          ${rows || `<div class="alert alert-info mb-0" role="status"><i class="ph ph-info me-2" aria-hidden="true"></i>No PLOs added yet.</div>`}
         </div>
         <hr class="my-4"/>
-        <h6 class="mb-2" id="plo-snapshot-heading">PLO ↔ Award Standard Mapping Snapshot</h6>
+        <h6 class="mb-2" id="plo-snapshot-heading"><i class="ph ph-graph me-2" aria-hidden="true"></i>PLO ↔ Award Standard Mapping Snapshot</h6>
         <div id="ploMappingSnapshot" class="small" aria-labelledby="plo-snapshot-heading" data-testid="plo-mapping-snapshot"></div>
       </div>
     </div>

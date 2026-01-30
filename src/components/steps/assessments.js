@@ -421,8 +421,8 @@ export function renderAssessmentsStep() {
             </select>
           </div>
           <div class="col-md-4 d-flex gap-2">
-            <button class="btn btn-outline-primary w-50" id="runReportInlineBtn" type="button" data-testid="run-report-inline">Show below</button>
-            <button class="btn btn-outline-secondary w-50" id="runReportNewTabBtn" type="button" data-testid="run-report-newtab">Open in new tab</button>
+            <button class="btn btn-outline-primary w-50" id="runReportInlineBtn" type="button" data-testid="run-report-inline"><i class="ph ph-chart-bar me-1" aria-hidden="true"></i>Show below</button>
+            <button class="btn btn-outline-secondary w-50" id="runReportNewTabBtn" type="button" data-testid="run-report-newtab"><i class="ph ph-arrow-square-out me-1" aria-hidden="true"></i>New tab</button>
           </div>
         </fieldset>
         <div class="mt-3" id="reportOutput" role="region" aria-live="polite" style="display:none;"></div>
@@ -433,8 +433,8 @@ export function renderAssessmentsStep() {
   content.innerHTML = devModeToggleHtml + `
     <div class="d-flex align-items-center justify-content-between mb-3">
       <div>
-        <div class="h5 mb-0" id="assessments-heading">Assessments</div>
-        <div class="text-muted small">Create assessments per module, set weightings, and map to MIMLOs.</div>
+        <div class="h5 mb-0" id="assessments-heading"><i class="ph ph-exam me-2" aria-hidden="true"></i>Assessments</div>
+        <div class="text-muted small"><i class="ph ph-lightbulb me-1" aria-hidden="true"></i>Create assessments per module, set weightings, and map to MIMLOs.</div>
       </div>
     </div>
 
@@ -442,7 +442,7 @@ export function renderAssessmentsStep() {
     ${modulePicker}
     ${accordionControlsHtml('assessmentsAccordion')}
     <div class="accordion" id="assessmentsAccordion" aria-labelledby="assessments-heading" data-testid="assessments-accordion">
-      ${modulesForEdit.length ? cards : `<div class="alert alert-warning" role="alert">No modules available to edit.</div>`}
+      ${modulesForEdit.length ? cards : `<div class="alert alert-warning" role="alert"><i class="ph ph-warning me-2" aria-hidden="true"></i>No modules available to edit.</div>`}
     </div>
   `;
 

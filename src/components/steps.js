@@ -8,6 +8,27 @@
 import { state, activeSteps } from '../state/store.js';
 
 /**
+ * Icon mapping for each step key.
+ * @type {Record<string, string>}
+ */
+const STEP_ICONS = {
+  identity: 'ph-identification-card',
+  outcomes: 'ph-list-checks',
+  versions: 'ph-git-branch',
+  stages: 'ph-stairs',
+  structure: 'ph-cube',
+  electives: 'ph-path',
+  mimlos: 'ph-graduation-cap',
+  'effort-hours': 'ph-clock',
+  assessments: 'ph-exam',
+  'reading-lists': 'ph-books',
+  schedule: 'ph-calendar',
+  mapping: 'ph-graph',
+  traceability: 'ph-flow-arrow',
+  snapshot: 'ph-file-doc',
+};
+
+/**
  * Renders the workflow steps sidebar navigation.
  * Highlights the current step and updates navigation button states.
  *
@@ -26,10 +47,11 @@ export function renderSteps(onStepChange) {
 
   aSteps.forEach((s, idx) => {
     const isActive = idx === state.stepIndex;
+    const iconClass = STEP_ICONS[s.key] ?? 'ph-circle';
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "list-group-item list-group-item-action " + (isActive ? "active" : "");
-    btn.textContent = `${idx + 1}. ${s.title}`;
+    btn.innerHTML = `<i class="ph ${iconClass} me-2" aria-hidden="true"></i>${idx + 1}. ${s.title}`;
     btn.setAttribute("role", "tab");
     btn.setAttribute("aria-selected", isActive ? "true" : "false");
     btn.setAttribute("aria-controls", "content");

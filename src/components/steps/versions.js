@@ -156,14 +156,14 @@ export function renderVersionsStep() {
   content.innerHTML = devModeToggleHtml + `
     <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
       <div>
-        <h4 class="mb-1" id="versions-heading">Programme Versions</h4>
-        <div class="text-secondary">Create versions (e.g., FT/PT/Online). Each version can have different delivery patterns, capacity, intakes and stage structure.</div>
+        <h4 class="mb-1" id="versions-heading"><i class="ph ph-git-branch me-2" aria-hidden="true"></i>Programme Versions</h4>
+        <div class="text-secondary small"><i class="ph ph-lightbulb me-1" aria-hidden="true"></i>Create versions (e.g., FT/PT/Online). Each version can have different delivery patterns, capacity, intakes and stage structure.</div>
       </div>
       <button class="btn btn-dark" id="addVersionBtn" data-testid="add-version-btn" aria-label="Add new version"><i class="ph ph-plus" aria-hidden="true"></i> Add version</button>
     </div>
     ${accordionControlsHtml('versionsAccordion')}
     <div class="mt-2 accordion" id="versionsAccordion" aria-labelledby="versions-heading" data-testid="versions-accordion">
-      ${vCards || `<div class="alert alert-info mb-0" role="status">No versions yet. Add at least one version to continue.</div>`}
+      ${vCards || `<div class="alert alert-info mb-0" role="status"><i class="ph ph-info me-2" aria-hidden="true"></i>No versions yet. Add at least one version to continue.</div>`}
     </div>
   `;
 

@@ -123,8 +123,8 @@ export function renderStagesStep() {
   content.innerHTML = devModeToggleHtml + `
     <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
       <div>
-        <h4 class="mb-1" id="stages-heading">Stage Structure</h4>
-        <div class="text-secondary">Define stages for the selected programme version and assign modules to each stage.</div>
+        <h4 class="mb-1" id="stages-heading"><i class="ph ph-stairs me-2" aria-hidden="true"></i>Stage Structure</h4>
+        <div class="text-secondary small"><i class="ph ph-lightbulb me-1" aria-hidden="true"></i>Define stages for the selected programme version and assign modules to each stage.</div>
       </div>
       <div class="d-flex gap-2 align-items-center">
         <label class="visually-hidden" for="stageVersionSelect">Select programme version</label>
@@ -137,7 +137,7 @@ export function renderStagesStep() {
 
     ${accordionControlsHtml('stagesAccordion')}
     <div class="mt-2 accordion" id="stagesAccordion" aria-labelledby="stages-heading" data-testid="stages-accordion">
-      ${stageCards || `<div class="alert alert-info mb-0" role="status">No stages yet for this version. Add a stage to begin.</div>`}
+      ${stageCards || `<div class="alert alert-info mb-0" role="status"><i class="ph ph-info me-2" aria-hidden="true"></i>No stages yet for this version. Add a stage to begin.</div>`}
     </div>
   `;
 

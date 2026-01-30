@@ -226,8 +226,8 @@ export function renderScheduleStep() {
       <div class="card-body">
         <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
           <div>
-            <h5 class="card-title mb-1">Programme Schedule</h5>
-            <div class="small text-secondary">QQI-style module schedule showing effort hours and assessment strategy per stage.</div>
+            <h5 class="card-title mb-1"><i class="ph ph-calendar me-2" aria-hidden="true"></i>Programme Schedule</h5>
+            <div class="small text-secondary"><i class="ph ph-lightbulb me-1" aria-hidden="true"></i>QQI-style module schedule showing effort hours and assessment strategy per stage.</div>
           </div>
           <div class="d-flex gap-2 align-items-center">
             <label for="scheduleVersionSelect" class="visually-hidden">Select programme version</label>
@@ -243,7 +243,7 @@ export function renderScheduleStep() {
         ${headerInfo}
         
         ${accordionControlsHtml('scheduleAccordion')}
-        ${(v.stages ?? []).length ? `<div class="accordion" id="scheduleAccordion">${stageItems}</div>` : `<div class="alert alert-info">No stages defined for this version. Go to Stage Structure to add stages and assign modules.</div>`}
+        ${(v.stages ?? []).length ? `<div class="accordion" id="scheduleAccordion">${stageItems}</div>` : `<div class="alert alert-info"><i class="ph ph-info me-2" aria-hidden="true"></i>No stages defined for this version. Go to Stage Structure to add stages and assign modules.</div>`}
         
         <div class="small text-secondary mt-3">
           <strong>Legend:</strong> Status: M = Mandatory, E = Elective | CA = Continuous Assessment | Contact = Classroom + Mentoring + Other Contact Hours

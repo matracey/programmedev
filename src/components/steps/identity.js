@@ -164,7 +164,7 @@ export function renderIdentityStep() {
   content.innerHTML = devModeToggleHtml + `
     <div class="card shadow-sm">
       <div class="card-body">
-        <h5 class="card-title mb-3" id="identity-heading">Identity (QQI-critical)</h5>
+        <h5 class="card-title mb-3" id="identity-heading"><i class="ph ph-identification-card me-2" aria-hidden="true"></i>Identity (QQI-critical)</h5>
         <form class="row g-3" aria-labelledby="identity-heading">
           <div class="col-md-6">
             <label class="form-label fw-semibold" for="titleInput">Programme title</label>
@@ -214,12 +214,12 @@ export function renderIdentityStep() {
     <div class="card shadow-sm mt-3">
       <div class="card-body">
         <div class="d-flex justify-content-between align-items-center mb-3">
-          <h5 class="card-title mb-0" id="elective-defs-heading">Elective Definitions</h5>
+          <h5 class="card-title mb-0" id="elective-defs-heading"><i class="ph ph-path me-2" aria-hidden="true"></i>Elective Definitions</h5>
           <button class="btn btn-dark btn-sm" id="addElectiveDefinitionBtn" data-testid="add-elective-definition-btn" aria-label="Add new elective definition"><i class="ph ph-plus" aria-hidden="true"></i> Add definition</button>
         </div>
         
         <div class="alert alert-light mb-3" role="note">
-          <strong>How elective definitions work:</strong>
+          <i class="ph ph-lightbulb me-1" aria-hidden="true"></i><strong>How elective definitions work:</strong>
           <ul class="mb-0 mt-1 small">
             <li>Students complete <strong>every</strong> elective definition in the programme</li>
             <li>For each definition, students choose <strong>one group</strong> to complete</li>
