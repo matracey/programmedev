@@ -84,7 +84,7 @@ export function renderVersionsStep() {
                 <div class="small text-secondary"><span data-version-code="${v.id}">${escapeHtml(v.code || "No code")}</span> • <span data-version-modality="${v.id}">${escapeHtml(modSummary)}</span> • <span data-version-intakes="${v.id}">${escapeHtml(intakeVal || "No intakes")}</span></div>
               </div>
               <div class="header-actions d-flex align-items-center gap-2 me-2">
-                <span class="btn btn-sm btn-outline-danger" role="button" tabindex="0" id="removeVer_${v.id}" aria-label="Remove version ${idx + 1}" data-testid="remove-version-${v.id}">Remove</span>
+                <span class="btn btn-sm btn-outline-danger" role="button" tabindex="0" id="removeVer_${v.id}" aria-label="Remove version ${idx + 1}" data-testid="remove-version-${v.id}"><i class="ph ph-trash" aria-hidden="true"></i> Remove</span>
               </div>
             </div>
           </button>
@@ -154,7 +154,7 @@ export function renderVersionsStep() {
         <h4 class="mb-1" id="versions-heading">Programme Versions</h4>
         <div class="text-secondary">Create versions (e.g., FT/PT/Online). Each version can have different delivery patterns, capacity, intakes and stage structure.</div>
       </div>
-      <button class="btn btn-dark" id="addVersionBtn" data-testid="add-version-btn" aria-label="Add new version">+ Add version</button>
+      <button class="btn btn-dark" id="addVersionBtn" data-testid="add-version-btn" aria-label="Add new version"><i class="ph ph-plus" aria-hidden="true"></i> Add version</button>
     </div>
     ${accordionControlsHtml('versionsAccordion')}
     <div class="mt-2 accordion" id="versionsAccordion" aria-labelledby="versions-heading" data-testid="versions-accordion">

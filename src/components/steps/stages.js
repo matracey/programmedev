@@ -71,7 +71,7 @@ export function renderStagesStep() {
                 <div class="small text-secondary">Sequence ${Number(s.sequence || 1)} • Target ${Number(s.creditsTarget || 0)}cr • Assigned ${stageCreditSum}cr</div>
               </div>
               <div class="header-actions d-flex align-items-center gap-2 me-2">
-                <span class="btn btn-sm btn-outline-danger" role="button" tabindex="0" id="removeStage_${s.id}" aria-label="Remove stage ${summaryName}" data-testid="remove-stage-${s.id}">Remove stage</span>
+                <span class="btn btn-sm btn-outline-danger" role="button" tabindex="0" id="removeStage_${s.id}" aria-label="Remove stage ${summaryName}" data-testid="remove-stage-${s.id}"><i class="ph ph-trash" aria-hidden="true"></i> Remove stage</span>
               </div>
             </div>
           </button>
@@ -127,7 +127,7 @@ export function renderStagesStep() {
         <select class="form-select" id="stageVersionSelect" data-testid="stage-version-select" style="min-width: 260px;">
           ${vSelect}
         </select>
-        <button class="btn btn-dark" id="addStageBtn" data-testid="add-stage-btn" aria-label="Add new stage">+ Add stage</button>
+        <button class="btn btn-dark" id="addStageBtn" data-testid="add-stage-btn" aria-label="Add new stage"><i class="ph ph-plus" aria-hidden="true"></i> Add stage</button>
       </div>
     </div>
 

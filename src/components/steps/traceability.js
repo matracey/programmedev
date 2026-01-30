@@ -121,7 +121,7 @@ export async function renderTraceabilityStep() {
                 <option value="all">All modules</option>
                 ${moduleOptions}
               </select>
-              <button class="btn btn-outline-secondary btn-sm" id="traceExportCsv" aria-label="Export traceability matrix as CSV" data-testid="traceability-export-csv">Export CSV</button>
+              <button class="btn btn-outline-secondary btn-sm" id="traceExportCsv" aria-label="Export traceability matrix as CSV" data-testid="traceability-export-csv"><i class="ph ph-file-csv" aria-hidden="true"></i> Export CSV</button>
             </div>
 
             ${traceRows.length > 0 ? `

@@ -229,7 +229,7 @@ export function renderScheduleStep() {
               ${vSelect}
             </select>
             <button class="btn btn-outline-secondary btn-sm" id="printScheduleBtn" title="Print schedule" aria-label="Print schedule" data-testid="schedule-print-btn">
-              <i class="bi bi-printer"></i> Print
+              <i class="ph ph-printer" aria-hidden="true"></i> Print
             </button>
           </div>
         </div>

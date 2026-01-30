@@ -51,7 +51,7 @@ export function renderStructureStep() {
                 <div class="small text-secondary">${escapeHtml(titlePreview)} • ${creditsPreview} cr</div>
               </div>
               <div class="header-actions d-flex align-items-center gap-2 me-2">
-                <span class="btn btn-sm btn-outline-danger" role="button" tabindex="0" data-remove-module="${m.id}" aria-label="Remove module ${titlePreview}" data-testid="remove-module-${m.id}">Remove</span>
+                <span class="btn btn-sm btn-outline-danger" role="button" tabindex="0" data-remove-module="${m.id}" aria-label="Remove module ${titlePreview}" data-testid="remove-module-${m.id}"><i class="ph ph-trash" aria-hidden="true"></i> Remove</span>
               </div>
             </div>
           </button>
@@ -91,7 +91,7 @@ export function renderStructureStep() {
       <div class="card-body">
         <div class="d-flex justify-content-between align-items-center mb-3">
           <h5 class="card-title mb-0" id="modules-heading">Credits & modules (QQI-critical)</h5>
-          <button class="btn btn-dark btn-sm" id="addModuleBtn" data-testid="add-module-btn" aria-label="Add new module">+ Add module</button>
+          <button class="btn btn-dark btn-sm" id="addModuleBtn" data-testid="add-module-btn" aria-label="Add new module"><i class="ph ph-plus" aria-hidden="true"></i> Add module</button>
         </div>
 
         <div class="row g-3 mb-3">

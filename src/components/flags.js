@@ -51,7 +51,7 @@ export function renderFlags(flags, goToStep) {
         ${tagHtml(f.type)}
         <div class="flex-grow-1">
           <div class="small">${escapeHtml(f.msg)}</div>
-          ${stepTitle ? `<div class="flag-step-link small text-muted">→ ${escapeHtml(stepTitle)}</div>` : ''}
+          ${stepTitle ? `<div class="flag-step-link small text-muted"><i class="ph ph-arrow-right" aria-hidden="true"></i> ${escapeHtml(stepTitle)}</div>` : ''}
         </div>
       </div>
     `;

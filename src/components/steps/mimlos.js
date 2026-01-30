@@ -53,7 +53,7 @@ export function renderMimlosStep() {
           <div class="input-group d-flex gap-2">
             <label class="visually-hidden" for="mimlo-${m.id}-${i}">MIMLO ${i + 1} for ${escapeHtml(m.title || 'module')}</label>
             <input class="form-control" id="mimlo-${m.id}-${i}" data-mimlo-module="${m.id}" data-mimlo-index="${i}" data-testid="mimlo-input-${m.id}-${i}" value="${escapeHtml(mimloTxt)}">
-            <button type="button" class="btn btn-outline-danger" data-remove-mimlo="${m.id}" data-remove-mimlo-index="${i}" aria-label="Remove MIMLO ${i + 1}" data-testid="remove-mimlo-${m.id}-${i}">Remove</button>
+            <button type="button" class="btn btn-outline-danger" data-remove-mimlo="${m.id}" data-remove-mimlo-index="${i}" aria-label="Remove MIMLO ${i + 1}" data-testid="remove-mimlo-${m.id}-${i}"><i class="ph ph-trash" aria-hidden="true"></i> Remove</button>
           </div>
           <div class="mimlo-lint-warnings mt-1" role="status" aria-live="polite">${lintWarnings}</div>
         </div>
@@ -82,7 +82,7 @@ export function renderMimlosStep() {
           <div class="accordion-body">
             <div class="small-muted mb-3" role="note">Add 3–6 MIMLOs per module to start.</div>
             ${items || `<div class="small text-secondary mb-2">No MIMLOs yet.</div>`}
-            <button type="button" class="btn btn-outline-secondary btn-sm" data-add-mimlo="${m.id}" aria-label="Add MIMLO to ${escapeHtml(m.title || 'module')}" data-testid="add-mimlo-${m.id}">+ Add MIMLO</button>
+            <button type="button" class="btn btn-outline-secondary btn-sm" data-add-mimlo="${m.id}" aria-label="Add MIMLO to ${escapeHtml(m.title || 'module')}" data-testid="add-mimlo-${m.id}"><i class="ph ph-plus" aria-hidden="true"></i> Add MIMLO</button>
           </div>
         </div>
       </div>

@@ -52,9 +52,9 @@ export function bloomsGuidanceHtml(level, contextLabel) {
 export function accordionControlsHtml(accordionId) {
   return `
     <div class="d-flex justify-content-end gap-2 mb-2">
-      <button class="btn btn-link btn-sm p-0 m-0 text-decoration-none" data-accordion-expand-all="${escapeHtml(accordionId)}">Expand all</button>
+      <button class="btn btn-link btn-sm p-0 m-0 text-decoration-none" data-accordion-expand-all="${escapeHtml(accordionId)}"><i class="ph ph-arrows-out-simple" aria-hidden="true"></i> Expand all</button>
       <span class="text-secondary opacity-50">|</span>
-      <button class="btn btn-link btn-sm p-0 m-0 text-decoration-none" data-accordion-collapse-all="${escapeHtml(accordionId)}">Collapse all</button>
+      <button class="btn btn-link btn-sm p-0 m-0 text-decoration-none" data-accordion-collapse-all="${escapeHtml(accordionId)}"><i class="ph ph-arrows-in-simple" aria-hidden="true"></i> Collapse all</button>
     </div>
   `;
 }

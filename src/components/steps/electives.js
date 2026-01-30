@@ -89,7 +89,7 @@ export function renderElectivesStep() {
                                   <strong>${escapeHtml(m.code || '')}</strong> ${escapeHtml(m.title || 'Untitled')}
                                   <span class="text-muted ms-1">(${m.credits || 0} cr)</span>
                                 </div>
-                                <button type="button" class="btn btn-sm btn-outline-secondary py-0" data-unassign-module="${m.id}" data-from-group="${g.id}" aria-label="Remove ${escapeHtml(m.title || 'module')} from group" data-testid="unassign-module-${m.id}-${g.id}">×</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary py-0" data-unassign-module="${m.id}" data-from-group="${g.id}" aria-label="Remove ${escapeHtml(m.title || 'module')} from group" data-testid="unassign-module-${m.id}-${g.id}"><i class="ph ph-x" aria-hidden="true"></i></button>
                               </div>
                             `).join('')}
                            </div>`

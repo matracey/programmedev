@@ -18,7 +18,7 @@ export function escapeHtml(s) {
  * Generate HTML for status tag badges
  */
 export function tagHtml(type) {
-  if (type === "error") return `<span class="tag tag-error">ERROR</span>`;
-  if (type === "warn") return `<span class="tag tag-warn">WARN</span>`;
+  if (type === "error") return `<span class="tag tag-error"><i class="ph ph-warning" aria-hidden="true"></i> ERROR</span>`;
+  if (type === "warn") return `<span class="tag tag-warn"><i class="ph ph-warning" aria-hidden="true"></i> WARN</span>`;
   return `<span class="tag tag-ok">OK</span>`;
 }

@@ -285,7 +285,7 @@ export function renderAssessmentsStep() {
                   <div class="small text-nowrap text-secondary">${escapeHtml(a.type || "")} • ${a.weighting ?? 0}%</div>
                 </div>
                 <div class="header-actions d-flex align-items-center gap-2 me-2">
-                  <span class="btn btn-sm btn-outline-danger" role="button" tabindex="0" data-remove-asm="${m.id}" data-asm-id="${a.id}" aria-label="Remove assessment ${escapeHtml(a.title || '')}" data-testid="remove-asm-${a.id}">Remove</span>
+                  <span class="btn btn-sm btn-outline-danger" role="button" tabindex="0" data-remove-asm="${m.id}" data-asm-id="${a.id}" aria-label="Remove assessment ${escapeHtml(a.title || '')}" data-testid="remove-asm-${a.id}"><i class="ph ph-trash" aria-hidden="true"></i> Remove</span>
                 </div>
               </div>
             </button>
@@ -373,7 +373,7 @@ export function renderAssessmentsStep() {
               </div>
               <div class="header-actions d-flex align-items-center gap-2 me-2">
                 ${totalBadge}
-                <button type="button" class="btn btn-sm btn-outline-primary" data-add-asm="${m.id}" aria-label="Add assessment to ${escapeHtml(m.title || 'module')}" data-testid="add-asm-${m.id}">+ Add</button>
+                <button type="button" class="btn btn-sm btn-outline-primary" data-add-asm="${m.id}" aria-label="Add assessment to ${escapeHtml(m.title || 'module')}" data-testid="add-asm-${m.id}"><i class="ph ph-plus" aria-hidden="true"></i> Add</button>
               </div>
             </div>
           </button>

@@ -149,13 +149,13 @@ function wireGlobalButtons() {
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     const initial = stored || (prefersDark ? 'dark' : 'light');
     html.setAttribute('data-bs-theme', initial);
-    themeIcon.textContent = initial === 'dark' ? '☀️' : '🌙';
+    themeIcon.className = initial === 'dark' ? 'ph ph-sun' : 'ph ph-moon';
     
     themeToggle.addEventListener('click', () => {
       const next = html.getAttribute('data-bs-theme') === 'dark' ? 'light' : 'dark';
       html.setAttribute('data-bs-theme', next);
       localStorage.setItem('nci_pds_theme', next);
-      themeIcon.textContent = next === 'dark' ? '☀️' : '🌙';
+      themeIcon.className = next === 'dark' ? 'ph ph-sun' : 'ph ph-moon';
     });
   }
 }

@@ -149,7 +149,7 @@ export function renderSnapshotStep() {
 
         ${isComplete100 
           ? `<div class="d-flex gap-2 mb-3">
-              <button id="exportWordBtn" class="btn btn-success btn-sm" aria-label="Export programme descriptor as Word document" data-testid="snapshot-export-word">Export Programme Descriptor (Word)</button>
+              <button id="exportWordBtn" class="btn btn-success btn-sm" aria-label="Export programme descriptor as Word document" data-testid="snapshot-export-word"><i class="ph ph-file-doc" aria-hidden="true"></i> Export Programme Descriptor (Word)</button>
               <span class="small text-secondary align-self-center">Generates a .docx using the template in assets.</span>
             </div>` 
           : `<div class="small text-secondary mb-3">Complete all sections to enable Word export (100%).</div>`}
@@ -189,8 +189,8 @@ export function renderSnapshotStep() {
         ${matrixTable}
 
         <div class="mt-4 d-flex flex-wrap gap-2">
-          <button class="btn btn-outline-secondary" id="copyJsonBtn" aria-label="Copy programme JSON to clipboard" data-testid="snapshot-copy-json">Copy JSON to clipboard</button>
-          <button class="btn btn-dark" id="downloadJsonBtn" aria-label="Download programme JSON file" data-testid="snapshot-download-json">Download JSON</button>
+          <button class="btn btn-outline-secondary" id="copyJsonBtn" aria-label="Copy programme JSON to clipboard" data-testid="snapshot-copy-json"><i class="ph ph-copy" aria-hidden="true"></i> Copy JSON to clipboard</button>
+          <button class="btn btn-dark" id="downloadJsonBtn" aria-label="Download programme JSON file" data-testid="snapshot-download-json"><i class="ph ph-download-simple" aria-hidden="true"></i> Download JSON</button>
         </div>
       </div>
     </div>

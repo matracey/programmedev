@@ -48,7 +48,7 @@ export function renderOutcomesStep() {
           const badges = mappingsByStandard[stdId].map(m => `
             <span class="badge text-bg-light border me-2 mb-2">
               ${escapeHtml(m.criteria)} / ${escapeHtml(m.thread)}
-              <button type="button" class="btn btn-sm btn-link text-danger p-0 ms-2" data-remove-plo-map="${o.id}" data-remove-plo-map-index="${m.index}" title="Remove">×</button>
+              <button type="button" class="btn btn-sm btn-link text-danger p-0 ms-2" data-remove-plo-map="${o.id}" data-remove-plo-map-index="${m.index}" title="Remove"><i class="ph ph-x" aria-hidden="true"></i></button>
             </span>
           `).join("");
           return `
@@ -63,7 +63,7 @@ export function renderOutcomesStep() {
       const mappings = (o.standardMappings || []).map((m, i) => `
         <span class="badge text-bg-light border me-2 mb-2">
           ${escapeHtml(m.criteria)} / ${escapeHtml(m.thread)}
-          <button type="button" class="btn btn-sm btn-link text-danger p-0 ms-2" data-remove-plo-map="${o.id}" data-remove-plo-map-index="${i}" title="Remove">×</button>
+          <button type="button" class="btn btn-sm btn-link text-danger p-0 ms-2" data-remove-plo-map="${o.id}" data-remove-plo-map-index="${i}" title="Remove"><i class="ph ph-x" aria-hidden="true"></i></button>
         </span>
       `).join("");
       mappingsHtml = mappings || '<div class="small text-secondary">No mappings yet for this PLO.</div>';
@@ -109,7 +109,7 @@ export function renderOutcomesStep() {
                 <div class="small text-secondary">${escapeHtml(previewShort)}</div>
               </div>
               <div class="header-actions d-flex align-items-center gap-2 me-2">
-                <span class="btn btn-outline-danger btn-sm" role="button" tabindex="0" data-remove-plo="${o.id}" aria-label="Remove PLO ${idx + 1}" data-testid="remove-plo-${o.id}">Remove</span>
+                <span class="btn btn-outline-danger btn-sm" role="button" tabindex="0" data-remove-plo="${o.id}" aria-label="Remove PLO ${idx + 1}" data-testid="remove-plo-${o.id}"><i class="ph ph-trash" aria-hidden="true"></i> Remove</span>
               </div>
             </div>
           </button>
@@ -154,7 +154,7 @@ export function renderOutcomesStep() {
       <div class="card-body">
         <div class="d-flex justify-content-between align-items-center mb-3">
           <h5 class="card-title mb-0" id="plos-heading">Programme Learning Outcomes (PLOs) (QQI-critical)</h5>
-          <button class="btn btn-dark btn-sm" id="addPloBtn" data-testid="add-plo-btn" aria-label="Add new PLO">+ Add PLO</button>
+          <button class="btn btn-dark btn-sm" id="addPloBtn" data-testid="add-plo-btn" aria-label="Add new PLO"><i class="ph ph-plus" aria-hidden="true"></i> Add PLO</button>
         </div>
         ${bloomsGuidanceHtml(p.nfqLevel, "Programme Learning Outcomes")}
         <div class="small-muted mb-3" role="note">Aim for ~6–12 clear, assessable outcomes. Keep them measurable and assessable.</div>

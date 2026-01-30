@@ -69,7 +69,7 @@ export function renderReadingListsStep() {
                 <span class="fw-semibold small">Resource ${i + 1}</span>
                 ${oldWarning}
               </div>
-              <button class="btn btn-outline-danger btn-sm" data-remove-reading="${m.id}" data-reading-index="${i}" aria-label="Remove reading item ${i + 1}" data-testid="reading-remove-${m.id}-${i}">Remove</button>
+              <button class="btn btn-outline-danger btn-sm" data-remove-reading="${m.id}" data-reading-index="${i}" aria-label="Remove reading item ${i + 1}" data-testid="reading-remove-${m.id}-${i}"><i class="ph ph-trash" aria-hidden="true"></i> Remove</button>
             </div>
             <div class="row g-2">
               <div class="col-md-4">
@@ -91,7 +91,7 @@ export function renderReadingListsStep() {
             </div>
             <div class="row g-2 mt-1">
               <div class="col-md-4">
-                <label class="form-label small" for="${isbnInputId}">ISBN <button type="button" class="btn btn-link btn-sm p-0 ms-1" data-lookup-isbn="${m.id}" data-isbn-index="${i}" title="Look up book details by ISBN" aria-label="Look up book details by ISBN for item ${i + 1}" data-testid="reading-isbn-lookup-${m.id}-${i}">🔍 Lookup</button></label>
+                <label class="form-label small" for="${isbnInputId}">ISBN <button type="button" class="btn btn-link btn-sm p-0 ms-1" data-lookup-isbn="${m.id}" data-isbn-index="${i}" title="Look up book details by ISBN" aria-label="Look up book details by ISBN for item ${i + 1}" data-testid="reading-isbn-lookup-${m.id}-${i}"><i class="ph ph-magnifying-glass" aria-hidden="true"></i> Lookup</button></label>
                 <input class="form-control form-control-sm" id="${isbnInputId}" data-reading-field="isbn" data-reading-module="${m.id}" data-reading-index="${i}" value="${escapeHtml(item.isbn || '')}" placeholder="e.g., 978-0-13-468599-1" data-testid="reading-isbn-${m.id}-${i}">
               </div>
               <div class="col-md-4">
@@ -139,7 +139,7 @@ export function renderReadingListsStep() {
           <div class="accordion-body">
             <div class="small text-secondary mb-3">Add core and recommended reading for this module. Resources older than 5 years will be flagged.</div>
             ${items || '<div class="small text-secondary mb-2">No reading list items yet.</div>'}
-            <button class="btn btn-outline-secondary btn-sm" data-add-reading="${m.id}" aria-label="Add reading item to ${escapeHtml(m.title)}" data-testid="reading-add-${m.id}">+ Add reading</button>
+            <button class="btn btn-outline-secondary btn-sm" data-add-reading="${m.id}" aria-label="Add reading item to ${escapeHtml(m.title)}" data-testid="reading-add-${m.id}"><i class="ph ph-plus" aria-hidden="true"></i> Add reading</button>
           </div>
         </div>
       </div>

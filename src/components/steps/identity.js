@@ -48,7 +48,7 @@ function renderElectiveDefinitionsList(p, openCollapseIds) {
               <button class="btn btn-sm btn-outline-danger" 
                 data-remove-elective-group="${grp.id}" 
                 data-definition-id="${def.id}"
-                title="Remove group">&times;</button>
+                title="Remove group"><i class="ph ph-x" aria-hidden="true"></i></button>
             </div>
           </div>
         `).join("");
@@ -69,7 +69,7 @@ function renderElectiveDefinitionsList(p, openCollapseIds) {
                     <div class="small text-secondary">${Number(def.credits || 0)} cr • ${(def.groups || []).length} group(s)</div>
                   </div>
                   <div class="header-actions d-flex align-items-center gap-2 me-2">
-                    <span class="btn btn-sm btn-outline-danger" role="button" tabindex="0" data-remove-elective-definition="${def.id}">Remove</span>
+                    <span class="btn btn-sm btn-outline-danger" role="button" tabindex="0" data-remove-elective-definition="${def.id}"><i class="ph ph-trash" aria-hidden="true"></i> Remove</span>
                   </div>
                 </div>
               </button>
@@ -105,7 +105,7 @@ function renderElectiveDefinitionsList(p, openCollapseIds) {
                 <label class="form-label small mb-1">Groups (students choose one)</label>
                 <div class="small text-muted mb-2">Code &bull; Name</div>
                 ${groupInputs || '<div class="text-muted small mb-2">No groups in this definition yet.</div>'}
-                <button class="btn btn-outline-secondary btn-sm" data-add-group-to-definition="${def.id}">+ Add group</button>
+                <button class="btn btn-outline-secondary btn-sm" data-add-group-to-definition="${def.id}"><i class="ph ph-plus" aria-hidden="true"></i> Add group</button>
               </div>
             </div>
           </div>
@@ -200,7 +200,7 @@ export function renderIdentityStep() {
       <div class="card-body">
         <div class="d-flex justify-content-between align-items-center mb-3">
           <h5 class="card-title mb-0" id="elective-defs-heading">Elective Definitions</h5>
-          <button class="btn btn-dark btn-sm" id="addElectiveDefinitionBtn" data-testid="add-elective-definition-btn" aria-label="Add new elective definition">+ Add definition</button>
+          <button class="btn btn-dark btn-sm" id="addElectiveDefinitionBtn" data-testid="add-elective-definition-btn" aria-label="Add new elective definition"><i class="ph ph-plus" aria-hidden="true"></i> Add definition</button>
         </div>
         
         <div class="alert alert-light mb-3" role="note">

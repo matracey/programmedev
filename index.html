@@ -17,13 +17,13 @@
         <div class="d-flex align-items-center gap-2 flex-wrap" role="toolbar" aria-label="Programme actions">
           <span class="badge text-bg-secondary" id="completionBadge" role="status" aria-live="polite" data-testid="completion-badge">0% complete</span>
           <span class="small text-secondary" id="saveStatus" role="status" aria-live="polite" data-testid="save-status">Not saved yet</span>
-          <button class="btn btn-outline-secondary btn-sm" id="exportBtn" data-testid="export-btn" aria-label="Export programme as JSON">Export JSON</button>
+          <button class="btn btn-outline-secondary btn-sm" id="exportBtn" data-testid="export-btn" aria-label="Export programme as JSON"><i class="ph ph-download-simple" aria-hidden="true"></i> Export</button>
           <label class="btn btn-outline-secondary btn-sm mb-0">
-            Import JSON <input accept="application/json" hidden id="importInput" type="file" data-testid="import-input" aria-label="Import programme from JSON file" />
+            <i class="ph ph-upload-simple" aria-hidden="true"></i> Import <input accept="application/json" hidden id="importInput" type="file" data-testid="import-input" aria-label="Import programme from JSON file" />
           </label>
-          <button class="btn btn-outline-danger btn-sm" id="resetBtn" data-testid="reset-btn" aria-label="Reset programme to defaults">Reset</button>
+          <button class="btn btn-outline-danger btn-sm" id="resetBtn" data-testid="reset-btn" aria-label="Reset programme to defaults"><i class="ph ph-arrow-counter-clockwise" aria-hidden="true"></i> Reset</button>
           <button class="btn btn-outline-secondary btn-sm" id="themeToggle" data-testid="theme-toggle" aria-label="Toggle dark/light mode" aria-pressed="false">
-            <span id="themeIcon" aria-hidden="true">🌙</span>
+            <i class="ph ph-moon" id="themeIcon" aria-hidden="true"></i>
           </button>
         </div>
       </div>
@@ -41,8 +41,8 @@
                 <div class="list-group" id="stepList" role="tablist" aria-label="Programme design steps"></div>
               </nav>
               <div class="d-flex justify-content-between mt-3" role="group" aria-label="Step navigation">
-                <button class="btn btn-outline-secondary btn-sm" id="backBtn" data-testid="back-btn" aria-label="Go to previous step">Back</button>
-                <button class="btn btn-dark btn-sm" id="nextBtn" data-testid="next-btn" aria-label="Go to next step">Next</button>
+                <button class="btn btn-outline-secondary btn-sm" id="backBtn" data-testid="back-btn" aria-label="Go to previous step"><i class="ph ph-caret-left" aria-hidden="true"></i> Back</button>
+                <button class="btn btn-dark btn-sm" id="nextBtn" data-testid="next-btn" aria-label="Go to next step">Next <i class="ph ph-caret-right" aria-hidden="true"></i></button>
               </div>
             </div>
           </div>
