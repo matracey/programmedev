@@ -388,7 +388,7 @@ export function renderAssessmentsStep() {
               </div>
               <div class="header-actions d-flex align-items-center gap-2 me-2">
                 ${totalBadge}
-                <button type="button" class="btn btn-sm btn-outline-primary" data-add-asm="${m.id}" aria-label="Add assessment to ${escapeHtml(m.title || 'module')}" data-testid="add-asm-${m.id}"><i class="ph ph-plus" aria-hidden="true"></i> Add</button>
+                <span class="btn btn-sm btn-outline-primary" role="button" tabindex="0" data-add-asm="${m.id}" aria-label="Add assessment to ${escapeHtml(m.title || 'module')}" data-testid="add-asm-${m.id}"><i class="ph ph-plus" aria-hidden="true"></i> Add</span>
               </div>
             </div>
           </button>
@@ -523,7 +523,7 @@ function wireAssessmentsStep() {
 
   // Add assessment
   document.querySelectorAll("[data-add-asm]").forEach(btn => {
-    /** @type {HTMLElement} */ (btn).onclick = (/** @type {any} */ e) => {
+    const handler = (/** @type {any} */ e) => {
       e.stopPropagation();
       const mid = btn.getAttribute("data-add-asm");
       if (!p.modules) return;
@@ -543,6 +543,13 @@ function wireAssessmentsStep() {
       });
       saveDebounced();
       window.render?.();
+    };
+    /** @type {HTMLElement} */ (btn).onclick = handler;
+    /** @type {HTMLElement} */ (btn).onkeydown = (/** @type {KeyboardEvent} */ e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        handler(e);
+      }
     };
   });
 

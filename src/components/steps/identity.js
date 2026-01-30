@@ -11,6 +11,9 @@ import { escapeHtml } from '../../utils/dom.js';
 import { getDevModeToggleHtml, wireDevModeToggle } from '../dev-mode.js';
 import { uid } from '../../utils/uid.js';
 import { accordionControlsHtml, wireAccordionControls, captureOpenCollapseIds } from './shared.js';
+import { renderFlags } from '../flags.js';
+import { validateProgramme } from '../../utils/validation.js';
+import { renderHeader } from '../header.js';
 
 // Cache award standards for quick selector rendering
 /** @type {AwardStandard[]} */
@@ -243,6 +246,17 @@ export function renderIdentityStep() {
  */
 export function wireIdentityStep(onUpdate) {
   const p = state.programme;
+  
+  // Helper to update flags and header without full re-render
+  const updateFlagsAndHeader = () => {
+    const flags = validateProgramme(p);
+    renderFlags(flags, () => {
+      // Navigate to step when flag is clicked
+      /** @type {Window & { render?: () => void | Promise<void> }} */ (window).render?.();
+    });
+    renderHeader();
+  };
+  
   // For select/checkbox changes - re-render to update UI state
   const doUpdateWithRender = () => {
     /** @type {Window & { render?: () => void | Promise<void> }} */ (window).render?.();
@@ -250,9 +264,10 @@ export function wireIdentityStep(onUpdate) {
       onUpdate?.();
     });
   };
-  // For text inputs - save only, don't re-render (preserves focus)
+  // For text inputs - save only, don't re-render (preserves focus), but update flags
   const doSaveOnly = () => {
     saveDebounced(() => {
+      updateFlagsAndHeader();
       onUpdate?.();
     });
   };
@@ -262,6 +277,11 @@ export function wireIdentityStep(onUpdate) {
     titleInput.addEventListener("input", (e) => {
       const target = /** @type {HTMLInputElement} */ (e.target);
       p.title = target.value;
+      // Update header title inline (avoid full re-render to preserve focus)
+      const titleNav = document.getElementById("programmeTitleNav");
+      if (titleNav) {
+        titleNav.textContent = target.value.trim() ? target.value : "New Programme (Draft)";
+      }
       doSaveOnly();
     });
   }
