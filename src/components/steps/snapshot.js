@@ -1,7 +1,8 @@
 // @ts-check
 /**
- * Snapshot step component (QQI export view with Word export)
- * Full QQI-compatible snapshot with programme summary, versions, PLO matrix
+ * QQI Snapshot step component.
+ * Generates a comprehensive QQI-compatible programme summary with Word export.
+ * @module components/steps/snapshot
  */
 
 import { state } from '../../state/store.js';
@@ -13,7 +14,11 @@ import { exportProgrammeToWord } from '../../export/word.js';
 import { completionPercent } from '../../utils/validation.js';
 
 /**
- * Default delivery pattern for a modality
+ * Returns the default delivery pattern percentages for a modality.
+ *
+ * @param {string} mod - The delivery modality: "F2F", "ONLINE", or "BLENDED"
+ * @returns {{syncOnlinePct: number, asyncDirectedPct: number, onCampusPct: number}} Default percentages
+ * @private
  */
 function defaultPatternFor(mod) {
   if (mod === "F2F") return { syncOnlinePct: 0, asyncDirectedPct: 0, onCampusPct: 100 };
@@ -22,13 +27,18 @@ function defaultPatternFor(mod) {
 }
 
 /**
- * Sum credits for a stage's modules
+ * Calculates total credits for modules assigned to a stage.
+ *
+ * @param {Module[]} allModules - All programme modules
+ * @param {Array<{moduleId: string}>} stageModules - Module references in the stage
+ * @returns {number} Sum of credits
+ * @private
  */
 function sumStageCredits(allModules, stageModules) {
-  const moduleIds = (stageModules || []).map(x => x.moduleId);
+  const moduleIds = (stageModules ?? []).map(x => x.moduleId);
   return allModules
     .filter(m => moduleIds.includes(m.id))
-    .reduce((sum, m) => sum + Number(m.credits || 0), 0);
+    .reduce((sum, m) => sum + Number(m.credits ?? 0), 0);
 }
 
 /**
@@ -45,10 +55,10 @@ export function renderSnapshotStep() {
   const openCollapseIds = captureOpenCollapseIds('snapshotAccordion');
 
   // Build module labels for matrix
-  const moduleLabels = (p.modules || []).map((m, i) => {
+  const moduleLabels = (p.modules ?? []).map((m, i) => {
     const label = (m.code && m.code.trim()) ? m.code.trim() : `M${i + 1}`;
     const full = (m.code && m.code.trim()) ? `${m.code.trim()} — ${m.title}` : m.title;
-    return { id: m.id, label, full, credits: Number(m.credits || 0) };
+    return { id: m.id, label, full, credits: Number(m.credits ?? 0) };
   });
 
   // PLO ↔ Module Matrix
@@ -56,8 +66,8 @@ export function renderSnapshotStep() {
     `<th class="text-center" title="${escapeHtml(m.full)}">${escapeHtml(m.label)}</th>`
   ).join("");
   
-  const matrixRows = (p.plos || []).map((o, i) => {
-    const selected = p.ploToModules?.[o.id] || [];
+  const matrixRows = (p.plos ?? []).map((o, i) => {
+    const selected = p.ploToModules?.[o.id] ?? [];
     const cells = moduleLabels.map(m => {
       const on = selected.includes(m.id);
       return `<td class="text-center">${on ? "✓" : ""}</td>`;
@@ -80,25 +90,25 @@ export function renderSnapshotStep() {
   // Build version cards
   const versionItems = versions.map((v, idx) => {
     const mods = Array.isArray(v.deliveryModalities) ? v.deliveryModalities : (v.deliveryModality ? [v.deliveryModality] : []);
-    const patterns = v.deliveryPatterns || {};
+    const patterns = v.deliveryPatterns ?? {};
     const modLines = mods.map(mod => {
-      const pat = patterns[mod] || defaultPatternFor(mod);
-      return `<div class="small"><span class="fw-semibold">${escapeHtml(mod)}</span>: ${Number(pat.syncOnlinePct || 0)}% sync online, ${Number(pat.asyncDirectedPct || 0)}% async directed, ${Number(pat.onCampusPct || 0)}% on-campus</div>`;
+      const pat = patterns[mod] ?? defaultPatternFor(mod);
+      return `<div class="small"><span class="fw-semibold">${escapeHtml(mod)}</span>: ${Number(pat.syncOnlinePct ?? 0)}% sync online, ${Number(pat.asyncDirectedPct ?? 0)}% async directed, ${Number(pat.onCampusPct ?? 0)}% on-campus</div>`;
     }).join("");
 
-    const stages = (v.stages || []).slice().sort((a, b) => Number(a.sequence || 0) - Number(b.sequence || 0));
+    const stages = (v.stages ?? []).slice().sort((a, b) => Number(a.sequence ?? 0) - Number(b.sequence ?? 0));
     const stageLines = stages.map(s => {
-      const stageMods = (s.modules || []).map(x => x.moduleId);
-      const modNames = (p.modules || []).filter(m => stageMods.includes(m.id)).map(m => (m.code && m.code.trim()) ? m.code.trim() : m.title).join(", ");
-      const creditsSum = sumStageCredits(p.modules || [], s.modules || []);
-      const exitTxt = (s.exitAward && s.exitAward.enabled) ? ` • Exit award: ${escapeHtml(s.exitAward.awardTitle || "")}` : "";
-      return `<li class="small"><span class="fw-semibold">${escapeHtml(s.name || "Stage")}</span> — target ${Number(s.creditsTarget || 0)}cr (assigned ${creditsSum}cr)${exitTxt}<br><span class="text-secondary">${escapeHtml(modNames || "No modules assigned")}</span></li>`;
+      const stageMods = (s.modules ?? []).map(x => x.moduleId);
+      const modNames = (p.modules ?? []).filter(m => stageMods.includes(m.id)).map(m => (m.code && m.code.trim()) ? m.code.trim() : m.title).join(", ");
+      const creditsSum = sumStageCredits(p.modules ?? [], s.modules ?? []);
+      const exitTxt = (s.exitAward && s.exitAward.enabled) ? ` • Exit award: ${escapeHtml(s.exitAward.awardTitle ?? "")}` : "";
+      return `<li class="small"><span class="fw-semibold">${escapeHtml(s.name ?? "Stage")}</span> — target ${Number(s.creditsTarget ?? 0)}cr (assigned ${creditsSum}cr)${exitTxt}<br><span class="text-secondary">${escapeHtml(modNames || "No modules assigned")}</span></li>`;
     }).join("");
 
     const headingId = `snap_${v.id}_heading`;
     const collapseId = `snap_${v.id}_collapse`;
     const isActive = openCollapseIds.has(collapseId) ? true : (openCollapseIds.size === 0 && idx === 0);
-    const summary = `${escapeHtml(v.label || v.code || "Version")} • ${escapeHtml(v.duration || "—")} • Intakes: ${escapeHtml((v.intakes || []).join(", ") || "—")}`;
+    const summary = `${escapeHtml(v.label ?? v.code ?? "Version")} • ${escapeHtml(v.duration ?? "—")} • Intakes: ${escapeHtml((v.intakes ?? []).join(", ") || "—")}`;
     return `
       <div class="accordion-item bg-body">
         <h2 class="accordion-header" id="${headingId}">
@@ -113,10 +123,10 @@ export function renderSnapshotStep() {
           <div class="accordion-body">
             <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
               <div>
-                <div class="small"><span class="fw-semibold">Cohort:</span> ${Number(v.targetCohortSize || 0) || "—"} • <span class="fw-semibold">Groups:</span> ${Number(v.numberOfGroups || 0) || "—"}</div>
+                <div class="small"><span class="fw-semibold">Cohort:</span> ${Number(v.targetCohortSize ?? 0) || "—"} • <span class="fw-semibold">Groups:</span> ${Number(v.numberOfGroups ?? 0) || "—"}</div>
               </div>
               <div class="small">
-                <span class="fw-semibold">Online proctored exams:</span> ${escapeHtml(v.onlineProctoredExams || "TBC")}
+                <span class="fw-semibold">Online proctored exams:</span> ${escapeHtml(v.onlineProctoredExams ?? "TBC")}
               </div>
             </div>
 
@@ -130,12 +140,12 @@ export function renderSnapshotStep() {
               ${stageLines ? `<ul class="mb-0 ps-3">${stageLines}</ul>` : `<div class="small text-secondary">—</div>`}
             </div>
 
-            ${(v.onlineProctoredExams || "TBC") === "YES" && (v.onlineProctoredExamsNotes || "").trim()
-              ? `<div class="mt-2 small"><span class="fw-semibold">Proctoring notes:</span> ${escapeHtml(v.onlineProctoredExamsNotes)}</div>`
+            ${(v.onlineProctoredExams ?? "TBC") === "YES" && (v.onlineProctoredExamsNotes ?? "").trim()
+              ? `<div class="mt-2 small"><span class="fw-semibold">Proctoring notes:</span> ${escapeHtml(v.onlineProctoredExamsNotes ?? "")}</div>`
               : ""}
 
-            ${(v.deliveryNotes || "").trim()
-              ? `<div class="mt-2 small"><span class="fw-semibold">Delivery notes:</span> ${escapeHtml(v.deliveryNotes)}</div>`
+            ${(v.deliveryNotes ?? "").trim()
+              ? `<div class="mt-2 small"><span class="fw-semibold">Delivery notes:</span> ${escapeHtml(v.deliveryNotes ?? "")}</div>`
               : ""}
           </div>
         </div>
@@ -157,16 +167,16 @@ export function renderSnapshotStep() {
 
         <div class="mt-3 p-3 bg-light border rounded-4">
           <div class="fw-semibold mb-2">Programme summary</div>
-          <div class="small"><span class="fw-semibold">Title:</span> ${escapeHtml(p.title || "—")}</div>
-          <div class="small"><span class="fw-semibold">Award:</span> ${escapeHtml(p.awardType || "—")}</div>
-          <div class="small"><span class="fw-semibold">NFQ level:</span> ${escapeHtml(p.nfqLevel ?? "—")}</div>
-          <div class="small"><span class="fw-semibold">School:</span> ${escapeHtml(p.school || "—")}</div>
+          <div class="small"><span class="fw-semibold">Title:</span> ${escapeHtml(p.title ?? "—")}</div>
+          <div class="small"><span class="fw-semibold">Award:</span> ${escapeHtml(p.awardType ?? "—")}</div>
+          <div class="small"><span class="fw-semibold">NFQ level:</span> ${escapeHtml(String(p.nfqLevel ?? "—"))}</div>
+          <div class="small"><span class="fw-semibold">School:</span> ${escapeHtml(p.school ?? "—")}</div>
 
           <div class="mt-3">
             <div class="fw-semibold mb-2">Modules</div>
-            ${(p.modules || []).length ? `
+            ${(p.modules ?? []).length ? `
               <ul class="small mb-0 ps-3">
-                ${(p.modules || []).map(m => `<li>${escapeHtml(m.code ? `${m.code} — ` : "")}${escapeHtml(m.title)} (${Number(m.credits || 0)} cr)</li>`).join("")}
+                ${(p.modules ?? []).map(m => `<li>${escapeHtml(m.code ? `${m.code} — ` : "")}${escapeHtml(m.title)} (${Number(m.credits ?? 0)} cr)</li>`).join("")}
               </ul>
             ` : `<div class="small text-secondary">—</div>`}
           </div>
@@ -174,9 +184,9 @@ export function renderSnapshotStep() {
 
         <div class="mt-3 p-3 bg-light border rounded-4">
           <div class="fw-semibold mb-2">Programme Learning Outcomes (PLOs)</div>
-          ${(p.plos || []).length ? `
+          ${(p.plos ?? []).length ? `
             <ol class="small mb-0 ps-3">
-              ${(p.plos || []).map(o => `<li>${escapeHtml(o.text || "—")}</li>`).join("")}
+              ${(p.plos ?? []).map(o => `<li>${escapeHtml(o.text ?? "—")}</li>`).join("")}
             </ol>
           ` : `<div class="small text-secondary">—</div>`}
         </div>
@@ -233,7 +243,7 @@ function wireSnapshotStep() {
   const downloadJsonBtn = document.getElementById("downloadJsonBtn");
   if (downloadJsonBtn) {
     downloadJsonBtn.onclick = () => {
-      const filename = (state.programme.title || "programme").replace(/[^a-z0-9]/gi, "_") + "-design.json";
+      const filename = (state.programme.title ?? "programme").replace(/[^a-z0-9]/gi, "_") + "-design.json";
       const blob = new Blob([JSON.stringify(state.programme, null, 2)], { type: "application/json" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -252,7 +262,7 @@ function wireSnapshotStep() {
         await exportProgrammeToWord(state.programme);
       } catch (err) {
         console.error("Word export error:", err);
-        alert(err?.message || String(err));
+        alert(/** @type {any} */ (err)?.message || String(err));
       }
     };
   }

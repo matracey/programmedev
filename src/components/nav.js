@@ -1,13 +1,17 @@
 // @ts-check
 /**
- * Navigation buttons component
+ * Navigation buttons component.
+ * Handles back/next button wiring for step navigation.
+ * @module components/nav
  */
 
 import { state, activeSteps } from '../state/store.js';
 
 /**
- * Initialize navigation button handlers (back/next only)
- * @param {Function} onRender - Callback to trigger re-render
+ * Initializes event handlers for navigation buttons (back/next).
+ * Includes navigation gate requiring award standard selection before leaving identity step.
+ *
+ * @param {Function} onRender - Callback to trigger UI re-render after navigation
  */
 export function initNavButtons(onRender) {
   const backBtn = document.getElementById("backBtn");

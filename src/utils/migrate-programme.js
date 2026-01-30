@@ -1,13 +1,16 @@
 // @ts-check
 /**
- * Programme data migration utilities
- * Handles automatic migration of old programme exports to current schema version
+ * Programme data migration utilities.
+ * Handles automatic migration of old programme exports to current schema version.
+ * @module utils/migrate-programme
  */
 
 /**
- * Migrates programme data from older schema versions to the current version
- * @param {Object} data - The programme data to migrate
- * @returns {Object} The migrated programme data
+ * Migrates programme data from older schema versions to the current version.
+ * Applies sequential migrations (v1→v2→v3) as needed.
+ *
+ * @param {any} data - The programme data to migrate
+ * @returns {any} The migrated programme data at current schema version
  */
 export function migrateProgramme(data) {
   const currentVersion = 3;
@@ -32,12 +35,12 @@ export function migrateProgramme(data) {
 }
 
 /**
- * Migrate from schema v1 to v2
- * Main changes:
- * - standards.json structure changed from flat levels/index to hierarchical nfqLevels/indicatorGroups
- * - Award standard singular fields converted to arrays
- * - deliveryModalities array converted to single deliveryModality
- * The programme data standardMapping objects remain compatible (criteria/thread/standardId)
+ * Migrates programme data from schema v1 to v2.
+ * Converts singular award standard fields to arrays and normalizes delivery modality.
+ *
+ * @param {any} data - The v1 programme data
+ * @returns {any} The migrated v2 programme data
+ * @private
  */
 function migrateV1toV2(data) {
   console.log('Migrating programme from schema v1 to v2');
@@ -49,8 +52,8 @@ function migrateV1toV2(data) {
   
   // Migration: convert old single award standard to array format
   if (typeof migrated.awardStandardId === 'string') {
-    const oldId = migrated.awardStandardId || '';
-    const oldName = migrated.awardStandardName || '';
+    const oldId = migrated.awardStandardId ?? '';
+    const oldName = migrated.awardStandardName ?? '';
     migrated.awardStandardIds = oldId ? [oldId] : [];
     migrated.awardStandardNames = oldName ? [oldName] : [];
     delete migrated.awardStandardId;
@@ -71,7 +74,7 @@ function migrateV1toV2(data) {
   }
   
   // Migration: convert old deliveryModalities array to single deliveryModality in versions
-  migrated.versions.forEach(v => {
+  migrated.versions.forEach((/** @type {any} */ v) => {
     if (Array.isArray(v.deliveryModalities) && !v.deliveryModality) {
       v.deliveryModality = v.deliveryModalities[0] || 'F2F';
       delete v.deliveryModalities;
@@ -98,12 +101,12 @@ function migrateV1toV2(data) {
 }
 
 /**
- * Migrate from schema v2 to v3
- * Main changes:
- * - Migrate old standard IDs to new standard IDs
- * - Migrate old thread names (e.g., "Competence-Context" → "Context")
- * - Fix criteria case mismatch ("Know-how & Skill" → "Know-How & Skill")
- * - Add missing standardId to PLO mappings
+ * Migrates programme data from schema v2 to v3.
+ * Updates standard IDs, thread names, and criteria casing to match new standards format.
+ *
+ * @param {any} data - The v2 programme data
+ * @returns {any} The migrated v3 programme data
+ * @private
  */
 function migrateV2toV3(data) {
   console.log('Migrating programme from schema v2 to v3');
@@ -139,27 +142,27 @@ function migrateV2toV3(data) {
   
   // Migrate programme-level award standard IDs
   if (Array.isArray(migrated.awardStandardIds)) {
-    migrated.awardStandardIds = migrated.awardStandardIds.map(id => 
-      standardIdMap[id] || id
+    migrated.awardStandardIds = migrated.awardStandardIds.map((/** @type {string} */ id) => 
+      /** @type {Record<string, string>} */ (standardIdMap)[id] || id
     );
   }
   
   // Get default standard ID for mappings missing one (use first migrated ID)
-  const defaultStandardId = migrated.awardStandardIds?.[0] || null;
+  const defaultStandardId = migrated.awardStandardIds?.[0] ?? null;
   
   // Migrate PLO standard mappings
   if (Array.isArray(migrated.plos)) {
-    migrated.plos = migrated.plos.map(plo => {
+    migrated.plos = migrated.plos.map((/** @type {any} */ plo) => {
       if (!plo.standardMappings || !Array.isArray(plo.standardMappings)) {
         return plo;
       }
       
-      const migratedMappings = plo.standardMappings.map(mapping => {
+      const migratedMappings = plo.standardMappings.map((/** @type {any} */ mapping) => {
         const newMapping = { ...mapping };
         
         // Migrate old standard ID to new
-        if (newMapping.standardId && standardIdMap[newMapping.standardId]) {
-          newMapping.standardId = standardIdMap[newMapping.standardId];
+        if (newMapping.standardId && /** @type {Record<string, string>} */ (standardIdMap)[newMapping.standardId]) {
+          newMapping.standardId = /** @type {Record<string, string>} */ (standardIdMap)[newMapping.standardId];
         }
         
         // Add missing standardId
@@ -168,13 +171,13 @@ function migrateV2toV3(data) {
         }
         
         // Fix criteria case
-        if (newMapping.criteria && criteriaNameMap[newMapping.criteria]) {
-          newMapping.criteria = criteriaNameMap[newMapping.criteria];
+        if (newMapping.criteria && /** @type {Record<string, string>} */ (criteriaNameMap)[newMapping.criteria]) {
+          newMapping.criteria = /** @type {Record<string, string>} */ (criteriaNameMap)[newMapping.criteria];
         }
         
         // Migrate old thread names
-        if (newMapping.thread && threadNameMap[newMapping.thread]) {
-          newMapping.thread = threadNameMap[newMapping.thread];
+        if (newMapping.thread && /** @type {Record<string, string>} */ (threadNameMap)[newMapping.thread]) {
+          newMapping.thread = /** @type {Record<string, string>} */ (threadNameMap)[newMapping.thread];
         }
         
         return newMapping;
@@ -190,25 +193,28 @@ function migrateV2toV3(data) {
 }
 
 /**
- * Validates that standard mappings are still valid against loaded standards
- * @param {Object} programme - The programme data
- * @param {Array} standards - Array of award standard objects
- * @returns {Object} Validation result with { errors, warnings, isValid }
+ * Validates that PLO standard mappings reference valid criteria and threads.
+ *
+ * @param {any} programme - The programme data to validate
+ * @param {any[]} standards - Array of award standard objects to validate against
+ * @returns {{errors: any[], warnings: any[], isValid: boolean}} Validation result with errors, warnings, and validity flag
  */
 export function validateStandardMappings(programme, standards) {
+  /** @type {any[]} */
   const errors = [];
+  /** @type {any[]} */
   const warnings = [];
   
   if (!programme.plos || !Array.isArray(programme.plos)) {
     return { errors: [], warnings: [], isValid: true };
   }
   
-  programme.plos.forEach((plo, ploIdx) => {
+  programme.plos.forEach((/** @type {any} */ plo, /** @type {number} */ ploIdx) => {
     if (!plo.standardMappings || !Array.isArray(plo.standardMappings)) {
       return;
     }
     
-    plo.standardMappings.forEach((mapping, mappingIdx) => {
+    plo.standardMappings.forEach((/** @type {any} */ mapping, /** @type {number} */ mappingIdx) => {
       const { criteria, thread, standardId } = mapping;
       
       // Find the standard
@@ -235,7 +241,7 @@ export function validateStandardMappings(programme, standards) {
         return;
       }
       
-      const levelData = standard.nfqLevels?.find(l => l.level === nfqLevel);
+      const levelData = standard.nfqLevels?.find((/** @type {any} */ l) => l.level === nfqLevel);
       if (!levelData) {
         warnings.push({
           ploId: plo.id,
@@ -247,7 +253,7 @@ export function validateStandardMappings(programme, standards) {
       }
       
       // Find the indicator group (criteria)
-      const group = levelData.indicatorGroups?.find(g => g.name === criteria);
+      const group = levelData.indicatorGroups?.find((/** @type {any} */ g) => g.name === criteria);
       if (!group) {
         errors.push({
           ploId: plo.id,
@@ -259,7 +265,7 @@ export function validateStandardMappings(programme, standards) {
       }
       
       // Find the indicator (thread)
-      const indicator = group.indicators?.find(i => i.name === thread);
+      const indicator = group.indicators?.find((/** @type {any} */ i) => i.name === thread);
       if (!indicator) {
         errors.push({
           ploId: plo.id,
@@ -279,21 +285,21 @@ export function validateStandardMappings(programme, standards) {
 }
 
 /**
- * Helper to extract standard indicators in a flat structure from new standards format
- * This provides backward compatibility with code expecting the old structure
- * 
- * @param {Object} standard - Award standard object (new format)
- * @param {number} nfqLevel - NFQ level to extract
- * @returns {Array} Array of { criteria, thread, descriptor, id } objects
+ * Extracts standard indicators as a flat array for a specific NFQ level.
+ * Provides backward compatibility with code expecting the old standards structure.
+ *
+ * @param {any} standard - Award standard object (new hierarchical format)
+ * @param {number} nfqLevel - NFQ level to extract (6-9)
+ * @returns {Array<{criteria: string, thread: string, descriptor: string, descriptorText: string, id: string, awardStandardId: string}>} Flat array of indicator objects
  */
 export function getStandardIndicators(standard, nfqLevel) {
   if (!standard) return [];
   
-  const levelData = standard.nfqLevels?.find(l => l.level === Number(nfqLevel));
+  const levelData = standard.nfqLevels?.find((/** @type {any} */ l) => l.level === Number(nfqLevel));
   if (!levelData) return [];
   
-  return levelData.indicatorGroups.flatMap(group => 
-    group.indicators.map(indicator => ({
+  return levelData.indicatorGroups.flatMap((/** @type {any} */ group) => 
+    group.indicators.map((/** @type {any} */ indicator) => ({
       criteria: group.name,
       thread: indicator.name,
       descriptor: indicator.descriptor,
@@ -305,56 +311,59 @@ export function getStandardIndicators(standard, nfqLevel) {
 }
 
 /**
- * Helper to get criteria list for a standard at a specific NFQ level
- * @param {Object} standard - Award standard object (new format)
- * @param {number} nfqLevel - NFQ level
- * @returns {Array<string>} Array of criteria names
+ * Returns the list of criteria names for a standard at a specific NFQ level.
+ *
+ * @param {any} standard - Award standard object (new hierarchical format)
+ * @param {number} nfqLevel - NFQ level (6-9)
+ * @returns {Array<string>} Array of criteria names (e.g., ["Knowledge", "Know-How & Skill", "Competence"])
  */
 export function getCriteriaList(standard, nfqLevel) {
   if (!standard) return [];
   
-  const levelData = standard.nfqLevels?.find(l => l.level === Number(nfqLevel));
+  const levelData = standard.nfqLevels?.find((/** @type {any} */ l) => l.level === Number(nfqLevel));
   if (!levelData) return [];
   
-  return levelData.indicatorGroups.map(g => g.name);
+  return levelData.indicatorGroups.map((/** @type {any} */ g) => g.name);
 }
 
 /**
- * Helper to get thread list for a specific criteria
- * @param {Object} standard - Award standard object (new format)
- * @param {number} nfqLevel - NFQ level
- * @param {string} criteria - Criteria name
- * @returns {Array<string>} Array of thread names
+ * Returns the list of thread names for a specific criteria at an NFQ level.
+ *
+ * @param {any} standard - Award standard object (new hierarchical format)
+ * @param {number} nfqLevel - NFQ level (6-9)
+ * @param {string} criteria - Criteria name to get threads for
+ * @returns {Array<string>} Array of thread names (e.g., ["Breadth", "Kind"])
  */
 export function getThreadList(standard, nfqLevel, criteria) {
   if (!standard || !criteria) return [];
   
-  const levelData = standard.nfqLevels?.find(l => l.level === Number(nfqLevel));
+  const levelData = standard.nfqLevels?.find((/** @type {any} */ l) => l.level === Number(nfqLevel));
   if (!levelData) return [];
   
-  const group = levelData.indicatorGroups.find(g => g.name === criteria);
+  const group = levelData.indicatorGroups.find((/** @type {any} */ g) => g.name === criteria);
   if (!group) return [];
   
-  return group.indicators.map(i => i.name);
+  return group.indicators.map((/** @type {any} */ i) => i.name);
 }
 
 /**
- * Helper to get descriptor for a specific criteria/thread combination
- * @param {Object} standard - Award standard object (new format)
- * @param {number} nfqLevel - NFQ level
+ * Returns the descriptor text for a specific criteria/thread combination.
+ *
+ * @param {any} standard - Award standard object (new hierarchical format)
+ * @param {number} nfqLevel - NFQ level (6-9)
  * @param {string} criteria - Criteria name
  * @param {string} thread - Thread name
- * @returns {string} Descriptor text or empty string if not found
+ * @returns {string} Descriptor text, or empty string if not found
  */
 export function getDescriptor(standard, nfqLevel, criteria, thread) {
   if (!standard || !criteria || !thread) return '';
   
-  const levelData = standard.nfqLevels?.find(l => l.level === Number(nfqLevel));
+  const levelData = standard.nfqLevels?.find((/** @type {any} */ l) => l.level === Number(nfqLevel));
   if (!levelData) return '';
   
-  const group = levelData.indicatorGroups.find(g => g.name === criteria);
+  const group = levelData.indicatorGroups.find((/** @type {any} */ g) => g.name === criteria);
   if (!group) return '';
   
-  const indicator = group.indicators.find(i => i.name === thread);
+  const indicator = group.indicators.find((/** @type {any} */ i) => i.name === thread);
   return indicator?.descriptor || '';
 }

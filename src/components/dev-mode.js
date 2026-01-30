@@ -1,12 +1,18 @@
 // @ts-check
 /**
- * Dev mode toggle component
+ * Developer mode toggle component.
+ * Provides UI for switching between Programme Owner and Module Editor modes.
+ * Only visible when ?dev=true query parameter is present.
+ * @module components/dev-mode
  */
 
 import { state, setMode } from '../state/store.js';
 
 /**
- * Check if dev mode UI should be shown
+ * Checks if developer mode UI should be displayed.
+ * Returns true when the URL contains ?dev=true parameter.
+ *
+ * @returns {boolean} True if dev mode UI should be shown
  */
 export function isDevModeUI() {
   try {
@@ -17,7 +23,10 @@ export function isDevModeUI() {
 }
 
 /**
- * Get HTML for dev mode toggle (empty string if not in dev mode)
+ * Generates HTML for the dev mode toggle switch.
+ * Returns empty string when not in dev mode.
+ *
+ * @returns {string} HTML string for the toggle, or empty if dev mode disabled
  */
 export function getDevModeToggleHtml() {
   if (!isDevModeUI()) return "";
@@ -35,11 +44,12 @@ export function getDevModeToggleHtml() {
 }
 
 /**
- * Wire dev mode toggle events
- * @param {Function} onModeChange - Callback when mode changes
+ * Wires up event handlers for the dev mode toggle switch.
+ *
+ * @param {Function} onModeChange - Callback invoked when mode changes
  */
 export function wireDevModeToggle(onModeChange) {
-  const toggle = document.getElementById("devModeToggle");
+  const toggle = /** @type {HTMLInputElement | null} */ (document.getElementById("devModeToggle"));
   if (!toggle) return;
   
   toggle.onchange = () => {

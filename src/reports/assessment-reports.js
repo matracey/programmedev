@@ -1,12 +1,15 @@
 // @ts-check
 /**
- * Assessment reports module
+ * Assessment reports module.
+ * Generates HTML reports analyzing assessment distribution across modules and stages.
+ * @module reports/assessment-reports
  */
 
 import { escapeHtml } from '../utils/dom.js';
 import { formatPct } from '../utils/helpers.js';
 import { ensureMimloObjects } from '../utils/helpers.js';
 
+/** Available assessment report types */
 export const ASSESSMENT_REPORT_TYPES = [
   { id: "byStageType", label: "By stage: assessment types + weighting" },
   { id: "byModule", label: "By module: assessment types + weighting" },
@@ -14,31 +17,42 @@ export const ASSESSMENT_REPORT_TYPES = [
 ];
 
 /**
- * Get version by ID from programme
+ * Finds a programme version by ID.
+ *
+ * @param {Programme} p - The programme data
+ * @param {string} versionId - The version ID to find
+ * @returns {ProgrammeVersion|null} The matching version or first version
+ * @private
  */
 function getVersionById(p, versionId) {
-  return (p.versions || []).find(v => v.id === versionId) || (p.versions || [])[0] || null;
+  return (p.versions ?? []).find((/** @type {ProgrammeVersion} */ v) => v.id === versionId) ?? (p.versions ?? [])[0] ?? null;
 }
 
 /**
- * Report: By stage and assessment type
+ * Generates a report showing assessment distribution by stage and type.
+ *
+ * @param {Programme} p - The programme data
+ * @param {string} versionId - The version ID to report on
+ * @returns {string} HTML string containing the report table
  */
 export function reportByStageType(p, versionId) {
   const v = getVersionById(p, versionId);
   if (!v) return `<div class="alert alert-warning mb-0">No versions found.</div>`;
 
-  const modMap = new Map((p.modules || []).map(m => [m.id, m]));
+  const modMap = new Map((p.modules ?? []).map((/** @type {Module} */ m) => [m.id, m]));
 
+  /** @type {string[]} */
   const stageAgg = [];
-  (v.stages || []).forEach(stg => {
+  (v.stages ?? []).forEach((/** @type {Stage} */ stg) => {
+    /** @type {Map<string, {weight: number, count: number}>} */
     const typeMap = new Map();
-    (stg.modules || []).forEach(ref => {
+    (stg.modules ?? []).forEach((/** @type {any} */ ref) => {
       const m = modMap.get(ref.moduleId);
       if (!m) return;
-      (m.assessments || []).forEach(a => {
+      (m.assessments ?? []).forEach((/** @type {ModuleAssessment} */ a) => {
         const t = a.type || "Unspecified";
-        const rec = typeMap.get(t) || { weight: 0, count: 0 };
-        rec.weight += Number(a.weighting || 0);
+        const rec = typeMap.get(t) ?? { weight: 0, count: 0 };
+        rec.weight += Number(a.weighting ?? 0);
         rec.count += 1;
         typeMap.set(t, rec);
       });
@@ -80,14 +94,17 @@ export function reportByStageType(p, versionId) {
 
 /**
  * Report: By module
+ * @param {Programme} p - The programme data
+ * @returns {string} HTML string containing the report
  */
 export function reportByModule(p) {
-  const rows = (p.modules || []).map(m => {
+  const rows = (p.modules ?? []).map((/** @type {Module} */ m) => {
+    /** @type {Map<string, {weight: number, count: number}>} */
     const typeMap = new Map();
-    (m.assessments || []).forEach(a => {
+    (m.assessments ?? []).forEach((/** @type {ModuleAssessment} */ a) => {
       const t = a.type || "Unspecified";
-      const rec = typeMap.get(t) || { weight: 0, count: 0 };
-      rec.weight += Number(a.weighting || 0);
+      const rec = typeMap.get(t) ?? { weight: 0, count: 0 };
+      rec.weight += Number(a.weighting ?? 0);
       rec.count += 1;
       typeMap.set(t, rec);
     });
@@ -129,15 +146,18 @@ export function reportByModule(p) {
 
 /**
  * Report: MIMLO coverage (unassessed outcomes)
+ * @param {Programme} p - The programme data
+ * @returns {string} HTML string containing the report
  */
 export function reportCoverage(p) {
-  const items = (p.modules || []).map(m => {
+  const items = (p.modules ?? []).map((/** @type {Module} */ m) => {
     ensureMimloObjects(m);
-    const mimlos = m.mimlos || [];
+    const mimlos = m.mimlos ?? [];
+    /** @type {Set<string>} */
     const assessed = new Set();
-    (m.assessments || []).forEach(a => (a.mimloIds || []).forEach(id => assessed.add(id)));
+    (m.assessments ?? []).forEach((/** @type {ModuleAssessment} */ a) => (a.mimloIds ?? []).forEach((/** @type {string} */ id) => assessed.add(id)));
 
-    const unassessed = mimlos.filter(mi => !assessed.has(mi.id));
+    const unassessed = mimlos.filter((/** @type {any} */ mi) => !assessed.has(mi.id));
     if (!unassessed.length) {
       return `
         <div class="card border-0 bg-white shadow-sm mb-2">
@@ -154,7 +174,7 @@ export function reportCoverage(p) {
           <div class="fw-semibold">${escapeHtml(m.code || "")} — ${escapeHtml(m.title || "")}</div>
           <div class="small text-warning mb-2">Unassessed MIMLOs (${unassessed.length}):</div>
           <ul class="small mb-0">
-            ${unassessed.map(mi => `<li>${escapeHtml(mi.text || "")}</li>`).join("")}
+            ${unassessed.map((/** @type {any} */ mi) => `<li>${escapeHtml(mi.text || "")}</li>`).join("")}
           </ul>
         </div>
       </div>
@@ -166,6 +186,10 @@ export function reportCoverage(p) {
 
 /**
  * Build report HTML based on type
+ * @param {Programme} p - The programme data
+ * @param {string} reportId - The report type ID
+ * @param {string} versionId - The version ID
+ * @returns {string} HTML string containing the report
  */
 export function buildAssessmentReportHtml(p, reportId, versionId) {
   switch (reportId) {
@@ -178,6 +202,8 @@ export function buildAssessmentReportHtml(p, reportId, versionId) {
 
 /**
  * Open report in new tab
+ * @param {string} html - The HTML content to display
+ * @param {string} [title="Report"] - The window title
  */
 export function openReportInNewTab(html, title = "Report") {
   const w = window.open("", "_blank");

@@ -1,7 +1,8 @@
 // @ts-check
 /**
- * Mapping step component (PLO to Module mapping - QQI-critical)
- * Maps Programme Learning Outcomes to Modules using ploToModules structure
+ * PLO to Module Mapping step component (QQI-critical).
+ * Maps Programme Learning Outcomes to modules using ploToModules structure.
+ * @module components/steps/mapping
  */
 
 import { state, saveDebounced } from '../../state/store.js';
@@ -11,17 +12,22 @@ import { getDevModeToggleHtml, wireDevModeToggle } from '../dev-mode.js';
 import { accordionControlsHtml, wireAccordionControls, captureOpenCollapseIds } from './shared.js';
 
 /**
- * Get editable module IDs for module editor mode
+ * Returns module IDs that can be edited in MODULE_EDITOR mode.
+ *
+ * @returns {string[]} Array of editable module IDs
+ * @private
  */
 function editableModuleIds() {
   const p = state.programme;
-  if (p.mode !== 'MODULE_EDITOR') return p.modules.map(m => m.id);
-  const editable = p.editableModuleIds || [];
+  if (p.mode !== 'MODULE_EDITOR') return (p.modules ?? []).map(m => m.id);
+  /** @type {string[]} */
+  const editable = /** @type {any} */ (p).editableModuleIds ?? [];
   return editable;
 }
 
 /**
- * Render the Mapping step
+ * Renders the PLO-Module Mapping step UI.
+ * Displays a matrix for mapping PLOs to modules with checkboxes.
  */
 export function renderMappingStep() {
   const p = state.programme;
@@ -29,12 +35,13 @@ export function renderMappingStep() {
   if (!content) return;
 
   const devModeToggleHtml = getDevModeToggleHtml();
-  const plos = p.plos || [];
-  const modules = p.modules || [];
+  const plos = p.plos ?? [];
+  const modules = p.modules ?? [];
   const openCollapseIds = captureOpenCollapseIds('mappingAccordion');
 
   // Ensure ploToModules exists
   if (!p.ploToModules) p.ploToModules = {};
+  const ploToModules = p.ploToModules;
 
   if (!plos.length || !modules.length) {
     content.innerHTML = devModeToggleHtml + `
@@ -54,7 +61,7 @@ export function renderMappingStep() {
 
   // Build PLO blocks with module checkboxes
   const blocks = plos.map((o, idx) => {
-    const selected = p.ploToModules[o.id] || [];
+    const selected = ploToModules[o.id] ?? [];
     
     // Build checkbox list for each module
     const checks = modules.map(m => {
@@ -74,7 +81,7 @@ export function renderMappingStep() {
       return `
         <label class="list-group-item d-flex gap-2 align-items-center ${disabledClass}">
           <input class="form-check-input m-0" type="checkbox" data-map-plo="${o.id}" data-map-module="${m.id}" ${isChecked ? "checked" : ""} ${disabledAttr} aria-label="Map PLO ${idx + 1} to ${escapeHtml(m.title)}" data-testid="mapping-checkbox-${o.id}-${m.id}">
-          <span class="small">${escapeHtml((m.code ? m.code + " — " : "") + m.title)} <span class="text-secondary">(${Number(m.credits || 0)} cr)</span>${disabledNote}</span>
+          <span class="small">${escapeHtml((m.code ? m.code + " — " : "") + m.title)} <span class="text-secondary">(${Number(m.credits ?? 0)} cr)</span>${disabledNote}</span>
         </label>
       `;
     }).filter(Boolean).join("");
@@ -110,11 +117,11 @@ export function renderMappingStep() {
 
   // Summary stats
   const unmappedPlos = plos.filter(plo => 
-    !(p.ploToModules[plo.id] || []).length
+    !(ploToModules[plo.id] ?? []).length
   ).length;
 
   const modulesWithNoMapping = modules.filter(m => 
-    !plos.some(plo => (p.ploToModules[plo.id] || []).includes(m.id))
+    !plos.some(plo => (ploToModules[plo.id] ?? []).includes(m.id))
   ).length;
 
   const summaryHtml = (unmappedPlos || modulesWithNoMapping) ? `
@@ -158,18 +165,19 @@ function wireMappingStep() {
   if (!p.ploToModules) p.ploToModules = {};
 
   document.querySelectorAll("[data-map-plo]").forEach(chk => {
-    chk.onchange = () => {
+    /** @type {HTMLInputElement} */ (chk).onchange = () => {
       const ploId = chk.getAttribute("data-map-plo");
       const moduleId = chk.getAttribute("data-map-module");
+      if (!ploId || !moduleId || !p.ploToModules) return;
       
       if (!p.ploToModules[ploId]) p.ploToModules[ploId] = [];
       
-      if (chk.checked) {
+      if (/** @type {HTMLInputElement} */ (chk).checked) {
         if (!p.ploToModules[ploId].includes(moduleId)) {
           p.ploToModules[ploId].push(moduleId);
         }
       } else {
-        p.ploToModules[ploId] = p.ploToModules[ploId].filter(id => id !== moduleId);
+        p.ploToModules[ploId] = p.ploToModules[ploId].filter((/** @type {string} */ id) => id !== moduleId);
       }
       
       saveDebounced();

@@ -1,14 +1,8 @@
 // @ts-check
 /**
- * Reading Lists step component
- * 
- * Fields: author, title, publisher, year, isbn, type (core/recommended/supplementary), notes
- * Features:
- * - Outdated warning: Resources older than 5 years show "⚠ X years old" badge
- * - ISBN lookup with Open Library API and Google Books fallback
- * - Type options: "Core / Essential", "Recommended", "Supplementary"
- * - Module-level summary showing outdated count and total item count
- * - Module picker for MODULE_EDITOR mode
+ * Reading Lists step component.
+ * Manages module reading resources with ISBN lookup, outdated warnings, and resource types.
+ * @module components/steps/reading-lists
  */
 
 import { state, saveDebounced, editableModuleIds, getSelectedModuleId } from '../../state/store.js';
@@ -17,7 +11,8 @@ import { getDevModeToggleHtml, wireDevModeToggle } from '../dev-mode.js';
 import { accordionControlsHtml, wireAccordionControls, captureOpenCollapseIds } from './shared.js';
 
 /**
- * Render the Reading Lists step
+ * Renders the Reading Lists step UI.
+ * Displays reading resources per module with ISBN lookup and age warnings.
  */
 export function renderReadingListsStep() {
   const p = state.programme;
@@ -32,7 +27,7 @@ export function renderReadingListsStep() {
   const selectedId = getSelectedModuleId();
   const isModuleEditor = p.mode === "MODULE_EDITOR";
   const canPickModule = (isModuleEditor && editableIds.length > 1);
-  const modulesForEdit = (p.modules || []).filter(m => editableIds.includes(m.id));
+  const modulesForEdit = (p.modules ?? []).filter(m => editableIds.includes(m.id));
 
   const modulePicker = canPickModule ? `
     <div class="row g-3 mb-3">
@@ -46,11 +41,11 @@ export function renderReadingListsStep() {
   ` : "";
 
   const blocks = modulesForEdit.map((m, idx) => {
-    m.readingList = m.readingList || [];
+    m.readingList ??= [];
     const isHidden = (isModuleEditor && editableIds.length > 1 && m.id !== selectedId);
 
     const items = m.readingList.map((item, i) => {
-      const yearNum = Number(item.year) || 0;
+      const yearNum = Number(item.year) ?? 0;
       const isOld = yearNum > 0 && (currentYear - yearNum) > 5;
       const oldWarning = isOld ? `<span class="badge text-bg-warning ms-2" title="This resource is more than 5 years old">⚠ ${currentYear - yearNum} years old</span>` : '';
       
@@ -115,7 +110,7 @@ export function renderReadingListsStep() {
 
     // Count warnings for this module
     const oldCount = m.readingList.filter(item => {
-      const yearNum = Number(item.year) || 0;
+      const yearNum = Number(item.year) ?? 0;
       return yearNum > 0 && (currentYear - yearNum) > 5;
     }).length;
     const warningBadge = oldCount > 0 ? `<span class="badge text-bg-warning">${oldCount} outdated</span>` : '';
@@ -171,9 +166,10 @@ export function renderReadingListsStep() {
  */
 function wireReadingListsStep() {
   const p = state.programme;
+  if (!p.modules) p.modules = [];
 
   // Module picker
-  const picker = document.getElementById("readingListModulePicker");
+  const picker = /** @type {HTMLSelectElement | null} */ (document.getElementById("readingListModulePicker"));
   if (picker) {
     picker.onchange = () => {
       state.selectedModuleId = picker.value;
@@ -183,11 +179,12 @@ function wireReadingListsStep() {
 
   // Add reading
   document.querySelectorAll("[data-add-reading]").forEach(btn => {
-    btn.onclick = () => {
+    /** @type {HTMLElement} */ (btn).onclick = () => {
       const mid = btn.getAttribute("data-add-reading");
+      if (!p.modules) return;
       const m = p.modules.find(x => x.id === mid);
       if (!m) return;
-      m.readingList = m.readingList || [];
+      m.readingList ??= [];
       m.readingList.push({
         id: 'reading_' + crypto.randomUUID(),
         author: '',
@@ -205,12 +202,13 @@ function wireReadingListsStep() {
 
   // Remove reading
   document.querySelectorAll("[data-remove-reading]").forEach(btn => {
-    btn.onclick = () => {
+    /** @type {HTMLElement} */ (btn).onclick = () => {
       const mid = btn.getAttribute("data-remove-reading");
       const idx = Number(btn.getAttribute("data-reading-index"));
+      if (!p.modules) return;
       const m = p.modules.find(x => x.id === mid);
       if (!m) return;
-      m.readingList = (m.readingList || []).filter((_, i) => i !== idx);
+      m.readingList = (m.readingList ?? []).filter((_, i) => i !== idx);
       saveDebounced();
       window.render?.();
     };
@@ -218,15 +216,16 @@ function wireReadingListsStep() {
 
   // Reading fields (author, title, publisher, year, isbn, notes)
   document.querySelectorAll("[data-reading-field]").forEach(inp => {
-    inp.addEventListener("input", (e) => {
+    inp.addEventListener("input", (/** @type {any} */ e) => {
       const mid = inp.getAttribute("data-reading-module");
       const idx = Number(inp.getAttribute("data-reading-index"));
       const field = inp.getAttribute("data-reading-field");
+      if (!p.modules) return;
       const m = p.modules.find(x => x.id === mid);
-      if (!m) return;
-      m.readingList = m.readingList || [];
+      if (!m || !field) return;
+      m.readingList ??= [];
       if (!m.readingList[idx]) return;
-      m.readingList[idx][field] = (field === 'year') ? (e.target.value || '') : e.target.value;
+      /** @type {any} */ (m.readingList[idx])[field] = (field === 'year') ? (e.target?.value ?? '') : e.target?.value;
       saveDebounced();
       // Re-render if year changed to update warning badges
       if (field === 'year') window.render?.();
@@ -235,23 +234,25 @@ function wireReadingListsStep() {
 
   // Reading type (select change handler)
   document.querySelectorAll("[data-reading-field][data-reading-field='type']").forEach(sel => {
-    sel.addEventListener("change", (e) => {
+    sel.addEventListener("change", (/** @type {any} */ e) => {
       const mid = sel.getAttribute("data-reading-module");
       const idx = Number(sel.getAttribute("data-reading-index"));
+      if (!p.modules) return;
       const m = p.modules.find(x => x.id === mid);
       if (!m) return;
-      m.readingList = m.readingList || [];
+      m.readingList ??= [];
       if (!m.readingList[idx]) return;
-      m.readingList[idx].type = e.target.value;
+      m.readingList[idx].type = e.target?.value;
       saveDebounced();
     });
   });
 
   // ISBN Lookup using Open Library API with Google Books fallback
   document.querySelectorAll("[data-lookup-isbn]").forEach(btn => {
-    btn.onclick = async () => {
+    /** @type {HTMLButtonElement} */ (btn).onclick = async () => {
       const mid = btn.getAttribute("data-lookup-isbn");
       const idx = Number(btn.getAttribute("data-isbn-index"));
+      if (!p.modules) return;
       const m = p.modules.find(x => x.id === mid);
       if (!m || !m.readingList || !m.readingList[idx]) return;
 
@@ -272,8 +273,8 @@ function wireReadingListsStep() {
         return;
       }
 
-      btn.disabled = true;
-      btn.textContent = '⏳ Looking up...';
+      /** @type {HTMLButtonElement} */ (btn).disabled = true;
+      /** @type {HTMLButtonElement} */ (btn).textContent = '⏳ Looking up...';
 
       try {
         // Try Open Library API first
@@ -285,7 +286,7 @@ function wireReadingListsStep() {
           // Extract authors - check authors array first, then fall back to by_statement
           let authors = '';
           if (bookData.authors && bookData.authors.length > 0) {
-            authors = bookData.authors.map(a => typeof a === 'string' ? a : a.name).join(' & ');
+            authors = bookData.authors.map((/** @type {any} */ a) => typeof a === 'string' ? a : a.name).join(' & ');
           } else if (bookData.by_statement) {
             authors = bookData.by_statement;
           }
@@ -332,15 +333,15 @@ function wireReadingListsStep() {
             window.render?.();
           } else {
             alert('Book not found. Please check the ISBN or enter details manually.');
-            btn.disabled = false;
-            btn.textContent = '🔍 Lookup';
+            /** @type {HTMLButtonElement} */ (btn).disabled = false;
+            /** @type {HTMLButtonElement} */ (btn).textContent = '🔍 Lookup';
           }
         }
       } catch (err) {
         console.error('ISBN lookup error:', err);
         alert('Failed to look up ISBN. Please check your connection or enter details manually.');
-        btn.disabled = false;
-        btn.textContent = '🔍 Lookup';
+        /** @type {HTMLButtonElement} */ (btn).disabled = false;
+        /** @type {HTMLButtonElement} */ (btn).textContent = '🔍 Lookup';
       }
     };
   });

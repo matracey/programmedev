@@ -1,15 +1,19 @@
 // @ts-check
 /**
- * QQI Flags component
+ * Validation flags component.
+ * Displays programme validation errors and warnings with navigation links.
+ * @module components/flags
  */
 
 import { state, activeSteps } from '../state/store.js';
 import { escapeHtml, tagHtml } from '../utils/dom.js';
 
 /**
- * Render the QQI validation flags panel
- * @param {Array} flags - Array of validation flags
- * @param {Function} goToStep - Callback when a flag is clicked (receives step key)
+ * Renders the validation flags panel showing errors and warnings.
+ * Clicking a flag navigates to the associated step.
+ *
+ * @param {Array<{type: string, msg: string, step: string}>} flags - Validation flags to display
+ * @param {Function} goToStep - Callback invoked with step key when a flag is clicked
  */
 export function renderFlags(flags, goToStep) {
   const box = document.getElementById("flagsBox");

@@ -1,6 +1,8 @@
 // @ts-check
 /**
- * Schedule step component (QQI-style timetable view)
+ * Programme Schedule step component.
+ * Displays a QQI-style timetable view showing module placement across stages.
+ * @module components/steps/schedule
  */
 
 import { state } from '../../state/store.js';
@@ -9,7 +11,8 @@ import { getDevModeToggleHtml, wireDevModeToggle } from '../dev-mode.js';
 import { accordionControlsHtml, wireAccordionControls, captureOpenCollapseIds } from './shared.js';
 
 /**
- * Render the Schedule step (QQI-style)
+ * Renders the Schedule step UI.
+ * Displays a timetable grid showing modules by stage and semester.
  */
 export function renderScheduleStep() {
   const p = state.programme;
@@ -39,41 +42,43 @@ export function renderScheduleStep() {
     </option>
   `).join("");
 
+  /** @type {Record<string, string>} */
   const modalityLabels = { F2F: "Face-to-face", BLENDED: "Blended", ONLINE: "Fully online" };
   const modalityKey = v.deliveryModality ? `${v.id}_${v.deliveryModality}` : null;
 
   // Build module lookup
-  const moduleMap = new Map((p.modules || []).map(m => [m.id, m]));
+  const moduleMap = new Map((p.modules ?? []).map(m => [m.id, m]));
 
   // Build stage accordion items
-  const stageItems = (v.stages || [])
-    .sort((a, b) => Number(a.sequence || 0) - Number(b.sequence || 0))
+  const stageItems = (v.stages ?? [])
+    .sort((a, b) => Number(a.sequence ?? 0) - Number(b.sequence ?? 0))
     .map((stg, stgIdx) => {
       const isFirst = stgIdx === 0;
-      const stageModules = (stg.modules || []).map(sm => {
+      /** @type {Array<{module: Module, semester: string, status: string, credits: number, totalHours: number, contactHours: number, directedElearn: number, independent: number, workBased: number, caPercent: number, projectPercent: number, practicalPercent: number, examPercent: number}>} */
+      const stageModules = (stg.modules ?? []).map(sm => {
         const m = moduleMap.get(sm.moduleId);
         if (!m) return null;
 
         // Get effort hours for this version/modality
-        const effort = modalityKey && m.effortHours ? (m.effortHours[modalityKey] || {}) : {};
-        const classroomHrs = Number(effort.classroomHours || 0);
-        const mentoringHrs = Number(effort.mentoringHours || 0);
-        const otherContactHrs = Number(effort.otherContactHours || 0);
+        const effort = modalityKey && m.effortHours ? (m.effortHours[modalityKey] ?? {}) : {};
+        const classroomHrs = Number(effort.classroomHours ?? 0);
+        const mentoringHrs = Number(effort.mentoringHours ?? 0);
+        const otherContactHrs = Number(effort.otherContactHours ?? 0);
         const contactTotal = classroomHrs + mentoringHrs + otherContactHrs;
-        const directedElearn = Number(effort.directedElearningHours || 0);
-        const independent = Number(effort.independentLearningHours || 0);
-        const workBased = Number(effort.workBasedHours || 0);
-        const otherHrs = Number(effort.otherHours || 0);
+        const directedElearn = Number(effort.directedElearningHours ?? 0);
+        const independent = Number(effort.independentLearningHours ?? 0);
+        const workBased = Number(effort.workBasedHours ?? 0);
+        const otherHrs = Number(effort.otherHours ?? 0);
         const totalHours = contactTotal + directedElearn + independent + workBased + otherHrs;
 
         // Get assessment breakdown
-        const assessments = m.assessments || [];
+        const assessments = m.assessments ?? [];
         
         // Categorize assessments for QQI breakdown
         let caPercent = 0, projectPercent = 0, practicalPercent = 0, examPercent = 0;
         assessments.forEach(a => {
-          const w = Number(a.weighting || 0);
-          const t = (a.type || "").toLowerCase();
+          const w = Number(a.weighting ?? 0);
+          const t = (a.type ?? "").toLowerCase();
           if (t.includes("exam")) {
             examPercent += w;
           } else if (t.includes("project")) {
@@ -89,7 +94,7 @@ export function renderScheduleStep() {
           module: m,
           semester: sm.semester || "",
           status: "M", // M = Mandatory (default)
-          credits: Number(m.credits || 0),
+          credits: Number(m.credits ?? 0),
           totalHours,
           contactHours: contactTotal,
           directedElearn,
@@ -100,7 +105,7 @@ export function renderScheduleStep() {
           practicalPercent,
           examPercent
         };
-      }).filter(Boolean);
+      }).filter(/** @type {(x: any) => x is NonNullable<typeof x>} */ (x => x !== null));
 
       const stageCredits = stageModules.reduce((sum, sm) => sum + sm.credits, 0);
       const stageTotalHours = stageModules.reduce((sum, sm) => sum + sm.totalHours, 0);
@@ -207,7 +212,7 @@ export function renderScheduleStep() {
             <table class="table table-sm table-borderless mb-0">
               <tr><th class="small text-secondary" style="width:140px">NFQ Level:</th><td class="small">${p.nfqLevel || "—"}</td></tr>
               <tr><th class="small text-secondary">Total Credits:</th><td class="small">${p.totalCredits || "—"} ECTS</td></tr>
-              <tr><th class="small text-secondary">Delivery Mode:</th><td class="small">${modalityLabels[v.deliveryModality] || v.deliveryModality || "—"}</td></tr>
+              <tr><th class="small text-secondary">Delivery Mode:</th><td class="small">${v.deliveryModality ? (modalityLabels[v.deliveryModality] || v.deliveryModality) : "—"}</td></tr>
               <tr><th class="small text-secondary">Duration:</th><td class="small">${escapeHtml(v.duration || "—")}</td></tr>
             </table>
           </div>
@@ -238,7 +243,7 @@ export function renderScheduleStep() {
         ${headerInfo}
         
         ${accordionControlsHtml('scheduleAccordion')}
-        ${(v.stages || []).length ? `<div class="accordion" id="scheduleAccordion">${stageItems}</div>` : `<div class="alert alert-info">No stages defined for this version. Go to Stage Structure to add stages and assign modules.</div>`}
+        ${(v.stages ?? []).length ? `<div class="accordion" id="scheduleAccordion">${stageItems}</div>` : `<div class="alert alert-info">No stages defined for this version. Go to Stage Structure to add stages and assign modules.</div>`}
         
         <div class="small text-secondary mt-3">
           <strong>Legend:</strong> Status: M = Mandatory, E = Elective | CA = Continuous Assessment | Contact = Classroom + Mentoring + Other Contact Hours
@@ -257,7 +262,7 @@ export function renderScheduleStep() {
  */
 function wireScheduleStep() {
   // Version selector
-  const versionSelect = document.getElementById("scheduleVersionSelect");
+  const versionSelect = /** @type {HTMLSelectElement | null} */ (document.getElementById("scheduleVersionSelect"));
   if (versionSelect) {
     versionSelect.onchange = () => {
       state.selectedVersionId = versionSelect.value;

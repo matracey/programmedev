@@ -1,18 +1,32 @@
 // @ts-check
 /**
- * Learning Outcome (LO) language detection + wording lint.
- * ES2022 module version.
+ * Learning Outcome (LO) linting and language detection.
+ * Provides quality checks for learning outcome text including vague verb detection.
+ * @module lib/lo-lint
  */
 
-// ---------- helpers ----------
+/**
+ * Normalizes text by collapsing whitespace and trimming.
+ *
+ * @param {string} text - Text to normalize
+ * @returns {string} Normalized text
+ * @private
+ */
 function normalise(text) {
-  return (text || "")
+  return (text ?? "")
     .toString()
     .normalize("NFKC")
     .replace(/\s+/g, " ")
     .trim();
 }
 
+/**
+ * Tokenizes text into lowercase words for analysis.
+ *
+ * @param {string} text - Text to tokenize
+ * @returns {string[]} Array of lowercase tokens
+ * @private
+ */
 function tokenize(text) {
   return normalise(text)
     .toLowerCase()
@@ -21,6 +35,14 @@ function tokenize(text) {
     .filter(Boolean);
 }
 
+/**
+ * Counts how many tokens match a set of stopwords.
+ *
+ * @param {string[]} tokens - Tokens to check
+ * @param {Set<string>} stopwordsSet - Set of stopwords to match against
+ * @returns {number} Count of matching tokens
+ * @private
+ */
 function countMatches(tokens, stopwordsSet) {
   let score = 0;
   for (const t of tokens) {
@@ -30,6 +52,7 @@ function countMatches(tokens, stopwordsSet) {
 }
 
 // ---------- language detection (heuristic) ----------
+/** Stopwords by language for heuristic language detection */
 export const LANGUAGE_STOPWORDS = {
   en: new Set([
     "the", "and", "to", "of", "in", "for", "with", "on", "by", "as", "from", "that", "this", "these", "those",
@@ -49,12 +72,21 @@ export const LANGUAGE_STOPWORDS = {
   ])
 };
 
+/**
+ * Detects the language of text using stopword frequency heuristics.
+ *
+ * @param {string} text - Text to analyze
+ * @param {Object} [options] - Detection options
+ * @param {number} [options.minTokens=6] - Minimum tokens required for detection
+ * @returns {{lang: string, confidence: number, scores: Object}} Detection result
+ */
 export function detectLanguage(text, { minTokens = 6 } = {}) {
   const tokens = tokenize(text);
   if (tokens.length < minTokens) {
     return { lang: "unknown", confidence: 0, scores: {} };
   }
 
+  /** @type {Record<string, number>} */
   const scores = {};
   for (const [lang, sw] of Object.entries(LANGUAGE_STOPWORDS)) {
     scores[lang] = countMatches(tokens, sw);
@@ -74,6 +106,7 @@ export function detectLanguage(text, { minTokens = 6 } = {}) {
 }
 
 // ---------- LO wording lint ----------
+/** Lint rules for detecting vague or non-measurable language in learning outcomes */
 export const LO_LINT_RULES = [
   {
     id: "vague_understand",
@@ -105,8 +138,20 @@ export const LO_LINT_RULES = [
   }
 ];
 
+/**
+ * Lints a single learning outcome for quality issues.
+ * Checks for vague verbs, language consistency, and measurability.
+ *
+ * @param {string} text - Learning outcome text to lint
+ * @param {Object} [opts] - Linting options
+ * @param {string} [opts.expectedLanguage="en"] - Expected language code
+ * @param {boolean} [opts.allowUnknownLanguage=true] - Allow unknown language without warning
+ * @param {Object} [opts.language] - Language detection options
+ * @returns {{issues: any[], language: Object}} Lint result with issues and language detection
+ */
 export function lintLearningOutcome(text, opts = {}) {
   const t = normalise(text);
+  /** @type {any[]} */
   const issues = [];
 
   if (!t) {
@@ -153,7 +198,7 @@ export function lintLearningOutcome(text, opts = {}) {
         end: m.index + m[0].length,
         match: m[0],
         message: rule.message,
-        suggestions: rule.suggestions || []
+        suggestions: rule.suggestions ?? []
       });
       if (m.index === rule.pattern.lastIndex) rule.pattern.lastIndex++;
     }
@@ -162,8 +207,15 @@ export function lintLearningOutcome(text, opts = {}) {
   return { issues, language };
 }
 
+/**
+ * Lints multiple learning outcomes.
+ *
+ * @param {string[]} outcomes - Array of learning outcome texts
+ * @param {Object} [opts] - Linting options (passed to lintLearningOutcome)
+ * @returns {Array<{index: number, text: string, issues: any[], language: Object}>} Array of lint results
+ */
 export function lintLearningOutcomes(outcomes, opts = {}) {
-  return (outcomes || []).map((loText, idx) => ({
+  return (outcomes ?? []).map((loText, idx) => ({
     index: idx,
     text: loText,
     ...lintLearningOutcome(loText, opts)

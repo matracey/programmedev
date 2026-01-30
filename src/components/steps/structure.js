@@ -1,6 +1,8 @@
 // @ts-check
 /**
- * Structure (Credits & Modules) step component
+ * Credits & Modules step component.
+ * Manages the programme's module list including mandatory and elective modules.
+ * @module components/steps/structure
  */
 
 import { state, saveDebounced } from '../../state/store.js';
@@ -10,7 +12,8 @@ import { getDevModeToggleHtml, wireDevModeToggle } from '../dev-mode.js';
 import { accordionControlsHtml, wireAccordionControls, captureOpenCollapseIds, updateAccordionHeader } from './shared.js';
 
 /**
- * Render the Structure step
+ * Renders the Credits & Modules step UI.
+ * Displays module list with credit summaries and mandatory/elective classification.
  */
 export function renderStructureStep() {
   const p = state.programme;
@@ -21,21 +24,21 @@ export function renderStructureStep() {
   const openCollapseIds = captureOpenCollapseIds('modulesAccordion');
 
   // Calculate credit summaries
-  const mandatoryModules = (p.modules || []).filter(m => !m.isElective);
-  const electiveModules = (p.modules || []).filter(m => m.isElective === true);
-  const mandatoryCredits = mandatoryModules.reduce((acc, m) => acc + (Number(m.credits) || 0), 0);
-  const electiveCredits = electiveModules.reduce((acc, m) => acc + (Number(m.credits) || 0), 0);
+  const mandatoryModules = (p.modules ?? []).filter(m => !m.isElective);
+  const electiveModules = (p.modules ?? []).filter(m => m.isElective === true);
+  const mandatoryCredits = mandatoryModules.reduce((acc, m) => acc + (Number(m.credits) ?? 0), 0);
+  const electiveCredits = electiveModules.reduce((acc, m) => acc + (Number(m.credits) ?? 0), 0);
   const totalModuleCredits = mandatoryCredits + electiveCredits;
   // Sum credits across all definitions (each definition has its own credit value)
-  const electiveDefinitionsCredits = (p.electiveDefinitions || []).reduce((acc, def) => acc + (Number(def.credits) || 0), 0);
-  const numDefinitions = (p.electiveDefinitions || []).length;
+  const electiveDefinitionsCredits = (p.electiveDefinitions ?? []).reduce((acc, def) => acc + (Number(def.credits) ?? 0), 0);
+  const numDefinitions = (p.electiveDefinitions ?? []).length;
 
-  const moduleRows = (p.modules || []).map((m, idx) => {
+  const moduleRows = (p.modules ?? []).map((m, idx) => {
     const headingId = `module_${m.id}_heading`;
     const collapseId = `module_${m.id}_collapse`;
-    const titlePreview = (m.title || "").trim() || "Module";
-    const codePreview = (m.code || "").trim();
-    const creditsPreview = Number(m.credits || 0);
+    const titlePreview = (m.title ?? "").trim() || "Module";
+    const codePreview = (m.code ?? "").trim();
+    const creditsPreview = Number(m.credits ?? 0);
     const isElective = m.isElective === true;
     const typeBadge = isElective 
       ? `<span class="badge text-bg-info me-2" title="Elective" aria-label="Elective module">E</span>`
@@ -70,15 +73,15 @@ export function renderStructureStep() {
               </div>
               <div class="col-md-2">
                 <label class="form-label fw-semibold" for="module-code-${m.id}">Code (opt.)</label>
-                <input class="form-control" id="module-code-${m.id}" data-module-field="code" data-module-id="${m.id}" data-testid="module-code-${m.id}" value="${escapeHtml(m.code || "")}">
+                <input class="form-control" id="module-code-${m.id}" data-module-field="code" data-module-id="${m.id}" data-testid="module-code-${m.id}" value="${escapeHtml(m.code ?? "")}">
               </div>
               <div class="col-md-5">
                 <label class="form-label fw-semibold" for="module-title-${m.id}">Title</label>
-                <input class="form-control" id="module-title-${m.id}" data-module-field="title" data-module-id="${m.id}" data-testid="module-title-${m.id}" value="${escapeHtml(m.title || "")}" aria-required="true">
+                <input class="form-control" id="module-title-${m.id}" data-module-field="title" data-module-id="${m.id}" data-testid="module-title-${m.id}" value="${escapeHtml(m.title ?? "")}" aria-required="true">
               </div>
               <div class="col-md-3">
                 <label class="form-label fw-semibold" for="module-credits-${m.id}">Credits</label>
-                <input type="number" class="form-control" id="module-credits-${m.id}" data-module-field="credits" data-module-id="${m.id}" data-testid="module-credits-${m.id}" value="${Number(m.credits || 0)}" aria-required="true">
+                <input type="number" class="form-control" id="module-credits-${m.id}" data-module-field="credits" data-module-id="${m.id}" data-testid="module-credits-${m.id}" value="${Number(m.credits ?? 0)}" aria-required="true">
               </div>
             </fieldset>
           </div>
@@ -98,7 +101,7 @@ export function renderStructureStep() {
         <div class="row g-3 mb-3">
           <div class="col-md-3">
             <label class="form-label fw-semibold">Total programme credits</label>
-            <input type="number" class="form-control" id="totalCredits" value="${Number(p.totalCredits || 0)}" disabled>
+            <input type="number" class="form-control" id="totalCredits" value="${Number(p.totalCredits ?? 0)}" disabled>
           </div>
           <div class="col-md-9">
             <label class="form-label fw-semibold">Credit summary</label>
@@ -106,7 +109,7 @@ export function renderStructureStep() {
               <span class="badge text-bg-primary fs-6"><span class="badge text-bg-light text-primary me-1">M</span> ${mandatoryCredits} cr (${mandatoryModules.length} modules)</span>
               <span class="badge text-bg-info fs-6"><span class="badge text-bg-light text-info me-1">E</span> ${electiveCredits} cr (${electiveModules.length} modules)</span>
               ${numDefinitions > 0 ? `<span class="badge text-bg-secondary fs-6">${numDefinitions} elective def(s) = ${electiveDefinitionsCredits} cr</span>` : ''}
-              <span class="badge ${totalModuleCredits === (p.totalCredits || 0) ? 'text-bg-success' : 'text-bg-warning'} fs-6">Sum: ${totalModuleCredits} / ${p.totalCredits || 0}</span>
+              <span class="badge ${totalModuleCredits === (p.totalCredits ?? 0) ? 'text-bg-success' : 'text-bg-warning'} fs-6">Sum: ${totalModuleCredits} / ${p.totalCredits ?? 0}</span>
             </div>
           </div>
         </div>
@@ -130,16 +133,20 @@ export function renderStructureStep() {
 }
 
 /**
- * Update module accordion header in-place without full re-render (preserves input focus)
+ * Updates a module accordion header in-place without re-rendering.
+ *
+ * @param {Module} m - The module object
+ * @param {number} idx - The module's index in the list
+ * @private
  */
 function updateModuleAccordionHeader(m, idx) {
   const isElective = m.isElective === true;
   const typeBadge = isElective 
     ? `<span class="badge text-bg-info me-2" title="Elective">E</span>`
     : `<span class="badge text-bg-primary me-2" title="Mandatory">M</span>`;
-  const codePreview = (m.code || "").trim();
-  const titlePreview = (m.title || "").trim() || "Module";
-  const creditsPreview = Number(m.credits || 0);
+  const codePreview = (m.code ?? "").trim();
+  const titlePreview = (m.title ?? "").trim() || "Module";
+  const creditsPreview = Number(m.credits ?? 0);
 
   updateAccordionHeader(`module_${m.id}_heading`, {
     title: `${typeBadge}Module ${idx + 1}${codePreview ? `: ${escapeHtml(codePreview)}` : ""}`,
@@ -148,30 +155,40 @@ function updateModuleAccordionHeader(m, idx) {
 }
 
 /**
- * Wire Structure step event handlers
+ * Wires up event handlers for the Structure step.
+ * Handles module CRUD, type changes, and field updates.
+ *
+ * @private
  */
 function wireStructureStep() {
   const p = state.programme;
-  p.mode = p.mode || 'PROGRAMME_OWNER';
+  p.mode ??= 'PROGRAMME_OWNER';
+  p.modules ??= [];
+  p.ploToModules ??= {};
+  const modules = p.modules;
+  const ploToModules = p.ploToModules;
 
-  document.getElementById("addModuleBtn").onclick = () => {
-    p.modules.push({ id: uid("mod"), code: "", title: "New module", credits: 0, isElective: false, mimlos: [], assessments: [] });
-    saveDebounced();
-    window.render?.();
-  };
+  const addBtn = document.getElementById("addModuleBtn");
+  if (addBtn) {
+    addBtn.onclick = () => {
+      modules.push({ id: uid("mod"), code: "", title: "New module", credits: 0, isElective: false, mimlos: [], assessments: [] });
+      saveDebounced();
+      window.render?.();
+    };
+  }
 
   document.querySelectorAll("[data-remove-module]").forEach(btn => {
-    btn.onclick = () => {
+    /** @type {HTMLElement} */ (btn).onclick = () => {
       const id = btn.getAttribute("data-remove-module");
-      p.modules = p.modules.filter(m => m.id !== id);
+      p.modules = modules.filter(m => m.id !== id);
       // remove from mappings too
-      for (const ploId of Object.keys(p.ploToModules || {})) {
-        p.ploToModules[ploId] = (p.ploToModules[ploId] || []).filter(mid => mid !== id);
+      for (const ploId of Object.keys(ploToModules)) {
+        ploToModules[ploId] = (ploToModules[ploId] ?? []).filter(mid => mid !== id);
       }
       // remove from elective groups (nested in definitions)
-      (p.electiveDefinitions || []).forEach(def => {
-        (def.groups || []).forEach(g => {
-          g.moduleIds = (g.moduleIds || []).filter(mid => mid !== id);
+      (p.electiveDefinitions ?? []).forEach(def => {
+        (def.groups ?? []).forEach(g => {
+          g.moduleIds = (g.moduleIds ?? []).filter(mid => mid !== id);
         });
       });
       saveDebounced();
@@ -180,21 +197,22 @@ function wireStructureStep() {
   });
 
   document.querySelectorAll("[data-module-field]").forEach(inp => {
+    /** @param {any} e */
     const handler = (e) => {
       const id = inp.getAttribute("data-module-id");
       const field = inp.getAttribute("data-module-field");
-      const m = p.modules.find(x => x.id === id);
-      if (!m) return;
+      const m = modules.find(x => x.id === id);
+      if (!m || !field) return;
       if (field === "credits") {
-        m[field] = Number(e.target.value || 0);
+        /** @type {any} */ (m)[field] = Number(e.target.value ?? 0);
       } else if (field === "isElective") {
-        m[field] = e.target.value === "true";
+        /** @type {any} */ (m)[field] = e.target.value === "true";
       } else {
-        m[field] = e.target.value;
+        /** @type {any} */ (m)[field] = e.target.value;
       }
       saveDebounced();
       // Update accordion header in-place instead of full re-render to preserve input focus
-      updateModuleAccordionHeader(m, p.modules.indexOf(m));
+      updateModuleAccordionHeader(m, modules.indexOf(m));
     };
     if (inp.tagName === "SELECT") {
       inp.addEventListener("change", handler);

@@ -1,6 +1,9 @@
 // @ts-check
 /**
- * Traceability step component (Full alignment chain with Sankey visualization)
+ * Traceability step component.
+ * Displays the full alignment chain from award standards through PLOs to MIMLOs
+ * with interactive Sankey diagram visualization.
+ * @module components/steps/traceability
  */
 
 import { state, getAwardStandard, getStandardIndicators } from '../../state/store.js';
@@ -13,14 +16,17 @@ import Plotly from 'plotly.js-dist-min'
 let standardsDataCache = new Map();
 
 /**
- * Render the Traceability step
+ * Renders the Traceability step UI.
+ * Displays alignment tables and Sankey diagram showing standards → PLOs → MIMLOs flow.
+ *
+ * @returns {Promise<void>}
  */
 export async function renderTraceabilityStep() {
   const p = state.programme;
   const content = document.getElementById("content");
   if (!content) return;
 
-  const standardsIds = p.awardStandardIds || [];
+  const standardsIds = p.awardStandardIds ?? [];
   
   // Load all selected award standards in parallel
   const standardsDataArray = await Promise.all(
@@ -45,8 +51,8 @@ export async function renderTraceabilityStep() {
   });
 
   const devModeToggleHtml = getDevModeToggleHtml();
-  const plos = p.plos || [];
-  const modules = p.modules || [];
+  const plos = p.plos ?? [];
+  const modules = p.modules ?? [];
 
   // Build trace rows for the table and Sankey
   const { traceRows, stats, standardsCoverageHtml } = buildTraceRows(p, standardsDataArray);
@@ -191,19 +197,23 @@ export async function renderTraceabilityStep() {
 
 /**
  * Build trace rows from programme data with multi-standard support
+ * @param {Programme} p
+ * @param {Array<{id: string, data: any}>} standardsDataArray
  */
 function buildTraceRows(p, standardsDataArray) {
+  /** @type {any[]} */
   const traceRows = [];
-  const moduleMap = new Map((p.modules || []).map(m => [m.id, m]));
+  const moduleMap = new Map((p.modules ?? []).map((/** @type {Module} */ m) => [m.id, m]));
 
   // Get all award standards for the programme's NFQ level from all selected standards
-  const nfqLevel = String(p.nfqLevel || '');
+  const nfqLevel = Number(p.nfqLevel ?? 0);
   const hasMultipleStandards = standardsDataArray.length > 1;
   
   // Build a combined list of level standards with their award standard ID
   // Use new helper to flatten indicators from hierarchical structure
+  /** @type {any[]} */
   const allLevelStandards = [];
-  standardsDataArray.forEach(({ id, data }) => {
+  standardsDataArray.forEach((/** @type {{id: string, data: any}} */ { id, data }) => {
     const indicators = getStandardIndicators(data, nfqLevel);
     indicators.forEach(ind => {
       allLevelStandards.push({
@@ -217,21 +227,21 @@ function buildTraceRows(p, standardsDataArray) {
 
   // Track which standards are covered by PLOs, grouped by award standard
   const coveredStandardsByAward = new Map();
-  standardsDataArray.forEach(({ id }) => {
+  standardsDataArray.forEach((/** @type {{id: string}} */ { id }) => {
     coveredStandardsByAward.set(id, new Set());
   });
 
-  (p.plos || []).forEach((plo, ploIdx) => {
-    const standardMappings = plo.standardMappings || [];
-    const mappedModuleIds = p.ploToModules?.[plo.id] || [];
+  (p.plos ?? []).forEach((/** @type {PLO} */ plo, /** @type {number} */ ploIdx) => {
+    const standardMappings = plo.standardMappings ?? [];
+    const mappedModuleIds = p.ploToModules?.[plo.id] ?? [];
 
     // If no standard mappings, still show the PLO
     const standards = standardMappings.length > 0
       ? standardMappings
       : [{ criteria: '(Not mapped)', thread: '', standardId: null }];
 
-    standards.forEach(std => {
-      const awardStandardId = std.standardId || (p.awardStandardIds || [])[0] || null;
+    standards.forEach((/** @type {any} */ std) => {
+      const awardStandardId = std.standardId ?? (p.awardStandardIds ?? [])[0] ?? null;
       const standardLabel = std.thread ? `${std.criteria} — ${std.thread}` : std.criteria;
 
       // Mark this standard as covered by a PLO
@@ -257,12 +267,12 @@ function buildTraceRows(p, standardsDataArray) {
           statusLabel: 'PLO Gap'
         });
       } else {
-        mappedModuleIds.forEach(modId => {
+        mappedModuleIds.forEach((/** @type {string} */ modId) => {
           const mod = moduleMap.get(modId);
           if (!mod) return;
 
-          const mimlos = mod.mimlos || [];
-          const assessments = mod.assessments || [];
+          const mimlos = mod.mimlos ?? [];
+          const assessments = mod.assessments ?? [];
 
           if (mimlos.length === 0) {
             // Module has no MIMLOs
@@ -282,11 +292,11 @@ function buildTraceRows(p, standardsDataArray) {
               statusLabel: 'MIMLO Gap'
             });
           } else {
-            mimlos.forEach((mimlo, mimloIdx) => {
+            mimlos.forEach((/** @type {MIMLO} */ mimlo, /** @type {number} */ mimloIdx) => {
               const mimloId = mimlo.id || `mimlo_${mimloIdx}`;
               // Find assessments that cover this MIMLO
-              const coveringAssessments = assessments.filter(a =>
-                (a.mimloIds || a.mappedMimlos || []).includes(mimloId)
+              const coveringAssessments = assessments.filter((/** @type {any} */ a) =>
+                (a.mimloIds ?? a.mappedMimlos ?? []).includes(mimloId)
               );
 
               if (coveringAssessments.length === 0) {
@@ -307,7 +317,7 @@ function buildTraceRows(p, standardsDataArray) {
                   statusLabel: 'Assessment Gap'
                 });
               } else {
-                coveringAssessments.forEach(asm => {
+                coveringAssessments.forEach((/** @type {any} */ asm) => {
                   traceRows.push({
                     awardStandardId,
                     standard: standardLabel,
@@ -334,10 +344,10 @@ function buildTraceRows(p, standardsDataArray) {
 
   // Find uncovered award standards and add them as critical gaps, grouped by award
   const uncoveredByAward = new Map();
-  standardsDataArray.forEach(({ id, data }) => {
-    const levelStandards = (data?.levels?.[nfqLevel]) || [];
-    const covered = coveredStandardsByAward.get(id) || new Set();
-    const uncovered = levelStandards.filter(std => !covered.has(std.thread));
+  standardsDataArray.forEach((/** @type {{id: string, data: any}} */ { id, data }) => {
+    const levelStandards = (data?.levels?.[nfqLevel]) ?? [];
+    const covered = coveredStandardsByAward.get(id) ?? new Set();
+    const uncovered = levelStandards.filter((/** @type {any} */ std) => !covered.has(std.thread));
     if (uncovered.length > 0) {
       uncoveredByAward.set(id, uncovered);
     }
@@ -345,7 +355,7 @@ function buildTraceRows(p, standardsDataArray) {
 
   // Add uncovered standards to trace rows
   uncoveredByAward.forEach((uncoveredStandards, awardId) => {
-    uncoveredStandards.forEach(std => {
+    uncoveredStandards.forEach((/** @type {any} */ std) => {
       const standardLabel = std.thread ? `${std.criteria} — ${std.thread}` : std.criteria;
       traceRows.unshift({
         awardStandardId: awardId,
@@ -375,11 +385,11 @@ function buildTraceRows(p, standardsDataArray) {
   let standardsCoverageHtml = '';
   if (standardsDataArray.length > 0 && nfqLevel) {
     const coverageCards = standardsDataArray.map(({ id, data }) => {
-      const levelStandards = (data?.levels?.[nfqLevel]) || [];
-      const covered = coveredStandardsByAward.get(id) || new Set();
-      const uncoveredList = uncoveredByAward.get(id) || [];
-      const stdIdx = (p.awardStandardIds || []).indexOf(id);
-      const stdName = (p.awardStandardNames || [])[stdIdx] || id;
+      const levelStandards = (data?.levels?.[nfqLevel]) ?? [];
+      const covered = coveredStandardsByAward.get(id) ?? new Set();
+      const uncoveredList = uncoveredByAward.get(id) ?? [];
+      const stdIdx = (p.awardStandardIds ?? []).indexOf(id);
+      const stdName = (p.awardStandardNames ?? [])[stdIdx] ?? id;
       const isFullyCovered = uncoveredList.length === 0;
       
       return `
@@ -406,8 +416,14 @@ function buildTraceRows(p, standardsDataArray) {
 
 /**
  * Build table rows HTML with optional award standard section headers
+ * @param {any[]} traceRows
+ * @param {boolean} hasMultipleStandards
  */
 function buildTableRowsHtml(traceRows, hasMultipleStandards) {
+  /**
+   * @param {string} status
+   * @param {string} label
+   */
   const statusBadge = (status, label) => {
     if (status === 'ok') return `<span class="badge text-bg-success">${escapeHtml(label)}</span>`;
     if (status === 'warning') return `<span class="badge text-bg-warning">${escapeHtml(label)}</span>`;
@@ -419,7 +435,7 @@ function buildTableRowsHtml(traceRows, hasMultipleStandards) {
   if (hasMultipleStandards) {
     const p = state.programme;
     const groupedRows = new Map();
-    traceRows.forEach(r => {
+    traceRows.forEach((/** @type {any} */ r) => {
       const awardId = r.awardStandardId || 'unknown';
       if (!groupedRows.has(awardId)) {
         groupedRows.set(awardId, []);
@@ -429,13 +445,13 @@ function buildTableRowsHtml(traceRows, hasMultipleStandards) {
 
     let html = '';
     groupedRows.forEach((rows, awardId) => {
-      const stdIdx = (p.awardStandardIds || []).indexOf(awardId);
-      const stdName = (p.awardStandardNames || [])[stdIdx] || awardId;
+      const stdIdx = (p.awardStandardIds ?? []).indexOf(awardId);
+      const stdName = (p.awardStandardNames ?? [])[stdIdx] ?? awardId;
       
       // Add section header
       html += `<tr class="table-secondary"><td colspan="11" class="fw-semibold">${escapeHtml(stdName)}</td></tr>`;
       
-      rows.forEach(r => {
+      rows.forEach((/** @type {any} */ r) => {
         html += `
           <tr data-status="${r.status}" data-award-standard="${escapeHtml(awardId)}">
             <td class="small ${r.status === 'uncovered' ? 'fw-bold' : ''}">${escapeHtml(r.standard)}</td>
@@ -457,7 +473,7 @@ function buildTableRowsHtml(traceRows, hasMultipleStandards) {
   }
 
   // Single standard - no grouping needed
-  return traceRows.map(r => `
+  return traceRows.map((/** @type {any} */ r) => `
     <tr data-status="${r.status}">
       <td class="small ${r.status === 'uncovered' ? 'fw-bold' : ''}">${escapeHtml(r.standard)}</td>
       <td class="small text-nowrap">${r.ploNum !== '—' ? 'PLO ' + r.ploNum : '—'}</td>
@@ -478,8 +494,8 @@ function buildTableRowsHtml(traceRows, hasMultipleStandards) {
  * Wire traceability filters and export
  */
 function wireTraceability() {
-  const filterStatus = document.getElementById('traceFilterStatus');
-  const filterModule = document.getElementById('traceFilterModule');
+  const filterStatus = /** @type {HTMLSelectElement | null} */ (document.getElementById('traceFilterStatus'));
+  const filterModule = /** @type {HTMLSelectElement | null} */ (document.getElementById('traceFilterModule'));
   const exportBtn = document.getElementById('traceExportCsv');
   const table = document.getElementById('traceabilityTable');
 
@@ -491,7 +507,7 @@ function wireTraceability() {
     table.querySelectorAll('tbody tr').forEach(row => {
       // Skip section header rows
       if (row.classList.contains('table-secondary')) {
-        row.style.display = '';
+        /** @type {HTMLElement} */ (row).style.display = '';
         return;
       }
       
@@ -502,7 +518,7 @@ function wireTraceability() {
       if (statusVal !== 'all' && rowStatus !== statusVal) show = false;
       if (moduleVal !== 'all' && rowModule !== moduleVal) show = false;
 
-      row.style.display = show ? '' : 'none';
+      /** @type {HTMLElement} */ (row).style.display = show ? '' : 'none';
     });
   }
 
@@ -511,17 +527,20 @@ function wireTraceability() {
 
   if (exportBtn && table) {
     exportBtn.onclick = () => {
+      /** @type {string[]} */
       const rows = [];
+      /** @type {string[]} */
       const headers = [];
-      table.querySelectorAll('thead th').forEach(th => headers.push(th.textContent.trim()));
+      table.querySelectorAll('thead th').forEach(th => headers.push(th.textContent?.trim() || ''));
       rows.push(headers.join(','));
 
       table.querySelectorAll('tbody tr').forEach(tr => {
-        if (tr.style.display === 'none') return;
+        if (/** @type {HTMLElement} */ (tr).style.display === 'none') return;
         if (tr.classList.contains('table-secondary')) return; // Skip section headers
+        /** @type {string[]} */
         const cells = [];
         tr.querySelectorAll('td').forEach(td => {
-          let val = td.textContent.trim();
+          let val = td.textContent?.trim() || '';
           // Escape quotes and wrap in quotes if contains comma
           if (val.includes(',') || val.includes('"') || val.includes('\n')) {
             val = '"' + val.replace(/"/g, '""') + '"';
@@ -547,14 +566,20 @@ function wireTraceability() {
  * Build Sankey diagram data from trace rows
  * Creates nodes for: Standards, PLOs, Modules, MIMLOs, Assessments
  * Creates links between them based on alignments
+ * @param {any[]} traceRows
+ * @param {boolean} hasMultipleStandards
  */
 function buildSankeyData(traceRows, hasMultipleStandards) {
   // Node categories and their prefixes
+  /** @type {string[]} */
   const nodeLabels = [];
+  /** @type {string[]} */
   const nodeColors = [];
+  /** @type {Map<string, number>} */
   const nodeMap = new Map(); // label -> index
 
   // Color palette for categories
+  /** @type {Record<string, string>} */
   const categoryColors = {
     standard: 'rgba(102, 16, 242, 0.8)',   // Purple for standards
     plo: 'rgba(13, 110, 253, 0.8)',        // Blue for PLOs
@@ -565,6 +590,7 @@ function buildSankeyData(traceRows, hasMultipleStandards) {
   };
 
   // Status colors for links
+  /** @type {Record<string, string>} */
   const statusColors = {
     ok: 'rgba(25, 135, 84, 0.4)',       // Green
     warning: 'rgba(255, 193, 7, 0.4)',  // Yellow
@@ -572,24 +598,35 @@ function buildSankeyData(traceRows, hasMultipleStandards) {
     uncovered: 'rgba(33, 37, 41, 0.4)'  // Dark
   };
 
+  /**
+   * @param {string} label
+   * @param {string} category
+   */
   function addNode(label, category) {
     if (!nodeMap.has(label)) {
       nodeMap.set(label, nodeLabels.length);
       nodeLabels.push(label);
-      nodeColors.push(categoryColors[category]);
+      nodeColors.push(categoryColors[category] || categoryColors.gap);
     }
     return nodeMap.get(label);
   }
 
+  /** @type {Array<{source: number, target: number, value: number, color: string}>} */
   const links = [];
+  /** @type {Map<string, number>} */
   const linkMap = new Map(); // "source-target" -> link index
 
+  /**
+   * @param {number} sourceIdx
+   * @param {number} targetIdx
+   * @param {string} status
+   */
   function addLink(sourceIdx, targetIdx, status) {
     const key = `${sourceIdx}-${targetIdx}`;
     if (linkMap.has(key)) {
       // Increment existing link value
       const idx = linkMap.get(key);
-      links[idx].value += 1;
+      if (idx !== undefined) links[idx].value += 1;
     } else {
       linkMap.set(key, links.length);
       links.push({
@@ -602,7 +639,7 @@ function buildSankeyData(traceRows, hasMultipleStandards) {
   }
 
   // Process trace rows to build nodes and links
-  traceRows.forEach(row => {
+  traceRows.forEach((/** @type {any} */ row) => {
     // Add award standard prefix for visual grouping when multiple standards
     const standardPrefix = hasMultipleStandards && row.awardStandardId 
       ? `[${row.awardStandardId}] ` 
@@ -612,7 +649,7 @@ function buildSankeyData(traceRows, hasMultipleStandards) {
     if (row.status === 'uncovered') {
       const standardNode = addNode(`📋 ${standardPrefix}${row.standard}`, 'standard');
       const gapNode = addNode(`⚠️ NO PLO COVERAGE`, 'gap');
-      addLink(standardNode, gapNode, 'uncovered');
+      if (standardNode !== undefined && gapNode !== undefined) addLink(standardNode, gapNode, 'uncovered');
       return;
     }
 
@@ -622,22 +659,22 @@ function buildSankeyData(traceRows, hasMultipleStandards) {
     if (row.ploNum !== '—') {
       const ploLabel = `🎯 PLO ${row.ploNum}`;
       const ploNode = addNode(ploLabel, 'plo');
-      addLink(standardNode, ploNode, row.status);
+      if (standardNode !== undefined && ploNode !== undefined) addLink(standardNode, ploNode, row.status);
 
       if (row.moduleCode && row.moduleCode !== '—') {
         const moduleLabel = `📦 ${row.moduleCode}`;
         const moduleNode = addNode(moduleLabel, 'module');
-        addLink(ploNode, moduleNode, row.status);
+        if (ploNode !== undefined && moduleNode !== undefined) addLink(ploNode, moduleNode, row.status);
 
         if (row.mimloNum !== '—') {
           const mimloLabel = `📝 ${row.moduleCode} MIMLO ${row.mimloNum}`;
           const mimloNode = addNode(mimloLabel, 'mimlo');
-          addLink(moduleNode, mimloNode, row.status);
+          if (moduleNode !== undefined && mimloNode !== undefined) addLink(moduleNode, mimloNode, row.status);
 
           if (row.assessmentTitle && row.status === 'ok') {
             const asmLabel = `✅ ${row.assessmentTitle}`;
             const asmNode = addNode(asmLabel, 'assessment');
-            addLink(mimloNode, asmNode, row.status);
+            if (mimloNode !== undefined && asmNode !== undefined) addLink(mimloNode, asmNode, row.status);
           }
         }
       }
@@ -663,10 +700,11 @@ function buildSankeyData(traceRows, hasMultipleStandards) {
 
 /**
  * Render Sankey diagram using Plotly
+ * @param {any} sankeyData
  */
 function renderSankeyDiagram(sankeyData) {
   const container = document.getElementById('sankeyChart');
-  if (!container || !window.Plotly) return;
+  if (!container || !/** @type {any} */ (window).Plotly) return;
 
   // Check if we have any links to display
   if (sankeyData.links.source.length === 0) {

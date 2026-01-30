@@ -1,6 +1,8 @@
 // @ts-check
 /**
- * Outcomes (PLOs) step component
+ * Programme Learning Outcomes (PLOs) step component.
+ * Allows users to define, edit, and map PLOs to QQI award standards.
+ * @module components/steps/outcomes
  */
 
 import { state, saveDebounced, getAwardStandard, getCriteriaList, getThreadList, getDescriptor } from '../../state/store.js';
@@ -11,10 +13,12 @@ import { lintLearningOutcome } from '../../lib/lo-lint.js';
 import { bloomsGuidanceHtml, accordionControlsHtml, wireAccordionControls, captureOpenCollapseIds } from './shared.js';
 
 // Track selected standard per PLO for multi-standard support
+/** @type {Record<string, string>} */
 const ploSelectedStandards = {};
 
 /**
- * Render the Outcomes step
+ * Renders the Programme Learning Outcomes step UI.
+ * Displays a list of PLOs with text editing, linting, and standard mapping.
  */
 export function renderOutcomesStep() {
   const p = state.programme;
@@ -25,13 +29,14 @@ export function renderOutcomesStep() {
   const openCollapseIds = captureOpenCollapseIds('ploAccordion');
 
   const devModeToggleHtml = getDevModeToggleHtml();
-  const hasMultipleStandards = (p.awardStandardIds || []).length > 1;
+  const hasMultipleStandards = (p.awardStandardIds ?? []).length > 1;
 
-  const rows = (p.plos || []).map((o, idx) => {
+  const rows = (p.plos ?? []).map((o, idx) => {
     // Group mappings by standardId for display when multiple standards
+    /** @type {Record<string, any[]>} */
     const mappingsByStandard = {};
-    (o.standardMappings || []).forEach((m, i) => {
-      const stdId = m.standardId || (p.awardStandardIds || [])[0] || 'default';
+    (o.standardMappings ?? []).forEach((/** @type {any} */ m, /** @type {number} */ i) => {
+      const stdId = m.standardId ?? (p.awardStandardIds ?? [])[0] ?? 'default';
       if (!mappingsByStandard[stdId]) mappingsByStandard[stdId] = [];
       mappingsByStandard[stdId].push({ ...m, index: i });
     });
@@ -44,8 +49,8 @@ export function renderOutcomesStep() {
         mappingsHtml = '<div class="small text-secondary">No mappings yet for this PLO.</div>';
       } else {
         mappingsHtml = stdIds.map(stdId => {
-          const stdIdx = (p.awardStandardIds || []).indexOf(stdId);
-          const stdName = (p.awardStandardNames || [])[stdIdx] || stdId;
+          const stdIdx = (p.awardStandardIds ?? []).indexOf(stdId);
+          const stdName = (p.awardStandardNames ?? [])[stdIdx] ?? stdId;
           const badges = mappingsByStandard[stdId].map(m => `
             <span class="badge text-bg-light border me-2 mb-2">
               ${escapeHtml(m.criteria)} / ${escapeHtml(m.thread)}
@@ -61,7 +66,7 @@ export function renderOutcomesStep() {
         }).join("");
       }
     } else {
-      const mappings = (o.standardMappings || []).map((m, i) => `
+      const mappings = (o.standardMappings ?? []).map((/** @type {any} */ m, /** @type {number} */ i) => `
         <span class="badge text-bg-light border me-2 mb-2">
           ${escapeHtml(m.criteria)} / ${escapeHtml(m.thread)}
           <button type="button" class="btn btn-sm btn-link text-danger p-0 ms-2" data-remove-plo-map="${o.id}" data-remove-plo-map-index="${i}" title="Remove"><i class="ph ph-x" aria-hidden="true"></i></button>
@@ -70,15 +75,15 @@ export function renderOutcomesStep() {
       mappingsHtml = mappings || '<div class="small text-secondary">No mappings yet for this PLO.</div>';
     }
 
-    const lintResult = lintLearningOutcome(o.text || "");
-    const lintWarnings = lintResult.issues.filter(i => i.severity === 'warn').map(issue => `
+    const lintResult = lintLearningOutcome(o.text ?? "");
+    const lintWarnings = lintResult.issues.filter(i => i.severity === 'warn').map((/** @type {any} */ issue) => `
       <div class="alert alert-warning py-1 px-2 mb-1 small">
         <strong>⚠️ "${escapeHtml(issue.match)}"</strong> — ${escapeHtml(issue.message)}
-        ${issue.suggestions.length ? `<br><em>Try: ${issue.suggestions.map(s => escapeHtml(s)).join(", ")}</em>` : ""}
+        ${issue.suggestions.length ? `<br><em>Try: ${issue.suggestions.map((/** @type {string} */ s) => escapeHtml(s)).join(", ")}</em>` : ""}
       </div>
     `).join("");
 
-    const preview = (o.text || "").trim();
+    const preview = (o.text ?? "").trim();
     const previewShort = preview.length > 120 ? `${preview.slice(0, 120)}…` : (preview || "No text yet");
     const headingId = `plo_${o.id}_heading`;
     const collapseId = `plo_${o.id}_collapse`;
@@ -91,9 +96,9 @@ export function renderOutcomesStep() {
       <div class="mb-2">
         <label class="form-label small mb-1" for="plo-standard-${o.id}">Select standard to map to</label>
         <select class="form-select form-select-sm" id="plo-standard-${o.id}" data-plo-standard-selector="${o.id}" data-testid="plo-standard-${o.id}">
-          ${(p.awardStandardIds || []).map((stdId, i) => {
-            const stdName = (p.awardStandardNames || [])[i] || stdId;
-            const selected = (ploSelectedStandards[o.id] || (p.awardStandardIds || [])[0]) === stdId;
+          ${(p.awardStandardIds ?? []).map((/** @type {string} */ stdId, /** @type {number} */ i) => {
+            const stdName = (p.awardStandardNames ?? [])[i] ?? stdId;
+            const selected = (ploSelectedStandards[o.id] ?? (p.awardStandardIds ?? [])[0]) === stdId;
             return `<option value="${escapeHtml(stdId)}" ${selected ? 'selected' : ''}>${escapeHtml(stdName)}</option>`;
           }).join("")}
         </select>
@@ -118,7 +123,7 @@ export function renderOutcomesStep() {
         <div id="${collapseId}" class="accordion-collapse collapse ${isActive ? "show" : ""}" aria-labelledby="${headingId}">
           <div class="accordion-body">
             <label class="visually-hidden" for="plo-text-${o.id}">PLO ${idx + 1} text</label>
-            <textarea class="form-control" id="plo-text-${o.id}" data-plo-id="${o.id}" data-testid="plo-textarea-${o.id}" rows="3" placeholder="e.g., Analyse… / Design and implement…" aria-describedby="plo-lint-${o.id}">${escapeHtml(o.text || "")}</textarea>
+            <textarea class="form-control" id="plo-text-${o.id}" data-plo-id="${o.id}" data-testid="plo-textarea-${o.id}" rows="3" placeholder="e.g., Analyse… / Design and implement…" aria-describedby="plo-lint-${o.id}">${escapeHtml(o.text ?? "")}</textarea>
             <div class="plo-lint-warnings mt-2" id="plo-lint-${o.id}" role="status" aria-live="polite">${lintWarnings}</div>
 
             <div class="mt-3">
@@ -176,32 +181,42 @@ export function renderOutcomesStep() {
 }
 
 /**
- * Populate PLO mapping controls for a specific PLO based on selected standard
+ * Populates the criteria and thread dropdowns for PLO mapping.
+ * Fetches data from the selected award standard and NFQ level.
+ *
+ * @param {string} ploId - The PLO ID to populate controls for
+ * @returns {Promise<void>}
+ * @private
  */
 async function populatePloMappingControls(ploId) {
   const p = state.programme;
-  const selectedStandardId = ploSelectedStandards[ploId] || (p.awardStandardIds || [])[0];
+  const selectedStandardId = ploSelectedStandards[ploId] ?? (p.awardStandardIds ?? [])[0];
   if (!selectedStandardId) return;
 
-  const critSel = document.querySelector(`[data-plo-map-criteria="${ploId}"]`);
-  const threadSel = document.querySelector(`[data-plo-map-thread="${ploId}"]`);
+  const critSel = /** @type {HTMLSelectElement | null} */ (document.querySelector(`[data-plo-map-criteria="${ploId}"]`));
+  const threadSel = /** @type {HTMLSelectElement | null} */ (document.querySelector(`[data-plo-map-thread="${ploId}"]`));
   const descEl = document.querySelector(`[data-plo-map-desc="${ploId}"]`);
   if (!critSel || !threadSel) return;
 
   try {
     const std = await getAwardStandard(selectedStandardId);
-    const level = Number(p.nfqLevel || 8);
+    const level = Number(p.nfqLevel ?? 8);
     
     // Use new helper functions to get criteria and threads
     const criteriaList = getCriteriaList(std, level).sort((a, b) => a.localeCompare(b));
 
+    /**
+     * @param {HTMLSelectElement} el
+     * @param {string[]} opts
+     * @param {string} [placeholder]
+     */
     function setOptions(el, opts, placeholder = "Select...") {
       el.innerHTML = "";
       const ph = document.createElement("option");
       ph.value = "";
       ph.textContent = placeholder;
       el.appendChild(ph);
-      opts.forEach(o => {
+      opts.forEach((/** @type {string} */ o) => {
         const opt = document.createElement("option");
         opt.value = o;
         opt.textContent = o;
@@ -210,6 +225,7 @@ async function populatePloMappingControls(ploId) {
     }
 
     function updateDesc() {
+      if (!critSel || !threadSel) return;
       const c = critSel.value;
       const t = threadSel.value;
       const d = getDescriptor(std, level, c, t);
@@ -220,11 +236,11 @@ async function populatePloMappingControls(ploId) {
     setOptions(threadSel, [], "Select thread...");
 
     // Remove old listeners by cloning
-    const newCritSel = critSel.cloneNode(true);
-    critSel.parentNode.replaceChild(newCritSel, critSel);
+    const newCritSel = /** @type {HTMLSelectElement} */ (critSel.cloneNode(true));
+    if (critSel.parentNode) critSel.parentNode.replaceChild(newCritSel, critSel);
     
-    const newThreadSel = threadSel.cloneNode(true);
-    threadSel.parentNode.replaceChild(newThreadSel, threadSel);
+    const newThreadSel = /** @type {HTMLSelectElement} */ (threadSel.cloneNode(true));
+    if (threadSel.parentNode) threadSel.parentNode.replaceChild(newThreadSel, threadSel);
 
     newCritSel.addEventListener("change", () => {
       const threads = getThreadList(std, level, newCritSel.value).sort((a, b) => a.localeCompare(b));
@@ -239,28 +255,37 @@ async function populatePloMappingControls(ploId) {
 }
 
 /**
- * Wire Outcomes step event handlers
+ * Wires up event handlers for the Outcomes step.
+ * Handles PLO add/remove, text editing, linting, and standard mappings.
+ *
+ * @private
  */
 function wireOutcomesStep() {
   const p = state.programme;
-  p.mode = p.mode || 'PROGRAMME_OWNER';
+  p.mode ??= 'PROGRAMME_OWNER';
+  p.plos ??= [];
+  p.ploToModules ??= {};
 
   // Ensure each PLO has a mapping array
-  p.plos = (p.plos || []).map(o => ({ ...o, standardMappings: Array.isArray(o.standardMappings) ? o.standardMappings : [] }));
+  p.plos = (p.plos ?? []).map(o => ({ ...o, standardMappings: Array.isArray(o.standardMappings) ? o.standardMappings : [] }));
 
-  document.getElementById("addPloBtn").onclick = () => {
-    const newId = uid("plo");
-    p.plos.push({ id: newId, text: "", standardMappings: [] });
-    saveDebounced();
-    window.render?.();
-  };
+  const addBtn = document.getElementById("addPloBtn");
+  if (addBtn) {
+    addBtn.onclick = () => {
+      p.plos ??= [];
+      p.plos.push({ id: uid("plo"), text: "", standardMappings: [] });
+      saveDebounced();
+      window.render?.();
+    };
+  }
 
   document.querySelectorAll("[data-remove-plo]").forEach(btn => {
-    btn.onclick = (e) => {
+    /** @type {HTMLElement} */ (btn).onclick = (/** @type {any} */ e) => {
       e.stopPropagation();
       const id = btn.getAttribute("data-remove-plo");
+      if (!id || !p.plos) return;
       p.plos = p.plos.filter(o => o.id !== id);
-      delete p.ploToModules[id];
+      delete /** @type {Record<string, string[]>} */ (p.ploToModules)[id];
       delete ploSelectedStandards[id];
       saveDebounced();
       window.render?.();
@@ -268,23 +293,26 @@ function wireOutcomesStep() {
   });
 
   document.querySelectorAll("[data-plo-id]").forEach(area => {
-    area.addEventListener("input", (e) => {
+    area.addEventListener("input", (/** @type {any} */ e) => {
       const id = area.getAttribute("data-plo-id");
+      if (!p.plos) return;
       const o = p.plos.find(x => x.id === id);
       if (!o) return;
-      o.text = e.target.value;
+      o.text = e.target?.value ?? "";
       saveDebounced();
 
       // Update lint warnings dynamically
-      const lintResult = lintLearningOutcome(e.target.value);
-      const warningsHtml = lintResult.issues.filter(i => i.severity === 'warn').map(issue => `
+      const lintResult = lintLearningOutcome(e.target?.value ?? "");
+      const warningsHtml = lintResult.issues.filter(i => i.severity === 'warn').map((/** @type {any} */ issue) => `
         <div class="alert alert-warning py-1 px-2 mb-1 small">
           <strong>⚠️ "${escapeHtml(issue.match)}"</strong> — ${escapeHtml(issue.message)}
-          ${issue.suggestions.length ? `<br><em>Try: ${issue.suggestions.map(s => escapeHtml(s)).join(", ")}</em>` : ""}
+          ${issue.suggestions.length ? `<br><em>Try: ${issue.suggestions.map((/** @type {string} */ s) => escapeHtml(s)).join(", ")}</em>` : ""}
         </div>
       `).join("");
 
-      let lintContainer = area.parentElement.querySelector('.plo-lint-warnings');
+      const parent = /** @type {HTMLElement} */ (area).parentElement;
+      if (!parent) return;
+      let lintContainer = parent.querySelector('.plo-lint-warnings');
       if (!lintContainer) {
         lintContainer = document.createElement('div');
         lintContainer.className = 'plo-lint-warnings mt-2';
@@ -297,20 +325,21 @@ function wireOutcomesStep() {
   // Standard selector for multi-standard support
   document.querySelectorAll("[data-plo-standard-selector]").forEach(sel => {
     const ploId = sel.getAttribute("data-plo-standard-selector");
-    ploSelectedStandards[ploId] = sel.value || (p.awardStandardIds || [])[0];
+    if (!ploId) return;
+    /** @type {Record<string, string>} */ (ploSelectedStandards)[ploId] = /** @type {HTMLSelectElement} */ (sel).value ?? (p.awardStandardIds ?? [])[0];
     
     sel.addEventListener("change", () => {
-      ploSelectedStandards[ploId] = sel.value;
+      /** @type {Record<string, string>} */ (ploSelectedStandards)[ploId] = /** @type {HTMLSelectElement} */ (sel).value;
       populatePloMappingControls(ploId);
     });
   });
 
   // Standards mapping UI
-  const selectedStandardId = (p.awardStandardIds || [])[0];
+  const selectedStandardId = (p.awardStandardIds ?? [])[0];
   if (!selectedStandardId) return;
 
   // Initialize mapping controls for each PLO
-  (p.plos || []).forEach(o => {
+  (p.plos ?? []).forEach(o => {
     populatePloMappingControls(o.id);
   });
 
@@ -319,26 +348,27 @@ function wireOutcomesStep() {
 
   // Wire add mapping buttons
   document.querySelectorAll("[data-add-plo-map]").forEach(btn => {
-    btn.onclick = () => {
+    /** @type {HTMLElement} */ (btn).onclick = () => {
       const ploId = btn.getAttribute("data-add-plo-map");
-      const critSel = document.querySelector(`[data-plo-map-criteria="${ploId}"]`);
-      const threadSel = document.querySelector(`[data-plo-map-thread="${ploId}"]`);
-      const c = critSel?.value || "";
-      const t = threadSel?.value || "";
+      if (!ploId || !p.plos) return;
+      const critSel = /** @type {HTMLSelectElement | null} */ (document.querySelector(`[data-plo-map-criteria="${ploId}"]`));
+      const threadSel = /** @type {HTMLSelectElement | null} */ (document.querySelector(`[data-plo-map-thread="${ploId}"]`));
+      const c = critSel?.value ?? "";
+      const t = threadSel?.value ?? "";
       if (!c || !t) return alert("Select both Criteria and Thread first.");
 
       const o = p.plos.find(x => x.id === ploId);
       if (!o) return;
 
       // Get selected standard for this PLO (for multi-standard support)
-      const standardId = ploSelectedStandards[ploId] || (p.awardStandardIds || [])[0];
+      const standardId = ploSelectedStandards[ploId] ?? (p.awardStandardIds ?? [])[0];
 
       // Check for duplicates including standardId
-      const exists = (o.standardMappings || []).some(x => 
-        x.criteria === c && x.thread === t && (x.standardId || (p.awardStandardIds || [])[0]) === standardId
+      const exists = (o.standardMappings ?? []).some((/** @type {any} */ x) => 
+        x.criteria === c && x.thread === t && (x.standardId ?? (p.awardStandardIds ?? [])[0]) === standardId
       );
       if (!exists) {
-        o.standardMappings.push({ criteria: c, thread: t, standardId });
+        /** @type {any} */ (o.standardMappings).push({ criteria: c, thread: t, standardId });
         saveDebounced();
         window.render?.();
       } else {
@@ -348,12 +378,13 @@ function wireOutcomesStep() {
   });
 
   document.querySelectorAll("[data-remove-plo-map]").forEach(btn => {
-    btn.onclick = () => {
+    /** @type {HTMLElement} */ (btn).onclick = () => {
       const ploId = btn.getAttribute("data-remove-plo-map");
       const i = Number(btn.getAttribute("data-remove-plo-map-index"));
+      if (!p.plos) return;
       const o = p.plos.find(x => x.id === ploId);
       if (!o) return;
-      o.standardMappings = (o.standardMappings || []).filter((_, idx) => idx !== i);
+      o.standardMappings = (o.standardMappings ?? []).filter((/** @type {any} */ _, /** @type {number} */ idx) => idx !== i);
       saveDebounced();
       window.render?.();
     };
@@ -361,13 +392,18 @@ function wireOutcomesStep() {
 }
 
 /**
- * Build the PLO ↔ Standard mapping snapshot table
+ * Builds and renders the PLO ↔ Standard mapping snapshot table.
+ * Shows all PLOs with their mapped criteria/threads and descriptors.
+ *
+ * @param {Programme} p - The programme data
+ * @returns {Promise<void>}
+ * @private
  */
 async function buildMappingSnapshot(p) {
   const snap = document.getElementById("ploMappingSnapshot");
   if (!snap) return;
 
-  const plos = p.plos || [];
+  const plos = p.plos ?? [];
   if (!plos.length) {
     snap.innerHTML = `<div class="text-secondary">Add PLOs to see a mapping snapshot.</div>`;
     return;
@@ -375,7 +411,7 @@ async function buildMappingSnapshot(p) {
 
   // Load all standards
   const standardsMap = new Map();
-  for (const stdId of (p.awardStandardIds || [])) {
+  for (const stdId of (p.awardStandardIds ?? [])) {
     try {
       const std = await getAwardStandard(stdId);
       standardsMap.set(stdId, std);
@@ -384,20 +420,21 @@ async function buildMappingSnapshot(p) {
     }
   }
 
-  const level = Number(p.nfqLevel || 8);
-  const hasMultipleStandards = (p.awardStandardIds || []).length > 1;
+  const level = Number(p.nfqLevel ?? 8);
+  const hasMultipleStandards = (p.awardStandardIds ?? []).length > 1;
 
   const rowsHtml = plos.map((o, i) => {
-    const maps = (o.standardMappings || []).map(m => {
-      const stdId = m.standardId || (p.awardStandardIds || [])[0];
+    const maps = (o.standardMappings ?? []).map((/** @type {any} */ m) => {
+      const stdId = m.standardId ?? (p.awardStandardIds ?? [])[0];
       const std = standardsMap.get(stdId);
       const desc = std ? getDescriptor(std, level, m.criteria, m.thread) : "";
       const shortDesc = desc.length > 180 ? (desc.slice(0, 180) + "…") : desc;
-      const stdName = hasMultipleStandards ? `<span class="badge text-bg-info me-1">${escapeHtml((p.awardStandardNames || [])[(p.awardStandardIds || []).indexOf(stdId)] || stdId)}</span>` : '';
+      const stdIdx = (p.awardStandardIds ?? []).indexOf(stdId);
+      const stdName = hasMultipleStandards ? `<span class="badge text-bg-info me-1">${escapeHtml((p.awardStandardNames ?? [])[stdIdx] ?? stdId)}</span>` : '';
       return `<li>${stdName}<span class="fw-semibold">${escapeHtml(m.criteria)} / ${escapeHtml(m.thread)}</span><div class="text-secondary">${escapeHtml(shortDesc)}</div></li>`;
     }).join("");
     const mapsBlock = maps ? `<ul class="mb-0 ps-3">${maps}</ul>` : `<span class="text-secondary">No mappings yet</span>`;
-    return `<tr><td class="text-nowrap">PLO ${i + 1}</td><td>${escapeHtml(o.text || "")}</td><td>${mapsBlock}</td></tr>`;
+    return `<tr><td class="text-nowrap">PLO ${i + 1}</td><td>${escapeHtml(o.text ?? "")}</td><td>${mapsBlock}</td></tr>`;
   }).join("");
 
   snap.innerHTML = `
@@ -407,7 +444,7 @@ async function buildMappingSnapshot(p) {
           <tr>
             <th style="width:90px;">PLO</th>
             <th>PLO Text</th>
-            <th>Mapped Standards (at NFQ Level ${escapeHtml(level || "")})</th>
+            <th>Mapped Standards (at NFQ Level ${escapeHtml(String(level ?? ""))})</th>
           </tr>
         </thead>
         <tbody>${rowsHtml}</tbody>

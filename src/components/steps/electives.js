@@ -1,7 +1,8 @@
 // @ts-check
 /**
- * Electives step component
- * Allows assigning elective modules to elective groups within definitions
+ * Electives step component.
+ * Allows assigning elective modules to groups within elective definitions.
+ * @module components/steps/electives
  */
 
 import { state, saveDebounced, steps } from '../../state/store.js';
@@ -10,7 +11,8 @@ import { getDevModeToggleHtml, wireDevModeToggle } from '../dev-mode.js';
 import { accordionControlsHtml, wireAccordionControls, captureOpenCollapseIds } from './shared.js';
 
 /**
- * Render the Electives step
+ * Renders the Electives step UI.
+ * Displays elective definitions with groups and module assignment checkboxes.
  */
 export function renderElectivesStep() {
   const p = state.programme;
@@ -21,15 +23,15 @@ export function renderElectivesStep() {
   const openCollapseIds = captureOpenCollapseIds('electiveDefinitionsAccordion');
 
   // Get elective modules
-  const electiveModules = (p.modules || []).filter(m => m.isElective === true);
-  const mandatoryModules = (p.modules || []).filter(m => !m.isElective);
-  const electiveDefinitions = p.electiveDefinitions || [];
+  const electiveModules = (p.modules ?? []).filter(m => m.isElective === true);
+  const mandatoryModules = (p.modules ?? []).filter(m => !m.isElective);
+  const electiveDefinitions = p.electiveDefinitions ?? [];
 
   // Calculate which modules are assigned to which groups
   const assignedModuleIds = new Set();
   electiveDefinitions.forEach(def => {
-    (def.groups || []).forEach(g => {
-      (g.moduleIds || []).forEach(id => assignedModuleIds.add(id));
+    (def.groups ?? []).forEach(g => {
+      (g.moduleIds ?? []).forEach(id => assignedModuleIds.add(id));
     });
   });
 
@@ -37,8 +39,8 @@ export function renderElectivesStep() {
   const unassignedElectives = electiveModules.filter(m => !assignedModuleIds.has(m.id));
 
   // Credit calculations from programme definition (not dynamically from modules)
-  const totalCredits = p.totalCredits || 0;
-  const electiveCredits = electiveDefinitions.reduce((sum, d) => sum + (d.credits || 0), 0);
+  const totalCredits = p.totalCredits ?? 0;
+  const electiveCredits = electiveDefinitions.reduce((sum, d) => sum + (d.credits ?? 0), 0);
   const mandatoryCredits = totalCredits - electiveCredits;
 
   // Build HTML for definitions with their groups
@@ -50,8 +52,8 @@ export function renderElectivesStep() {
     : `${accordionControlsHtml('electiveDefinitionsAccordion')}
        <div class="accordion" id="electiveDefinitionsAccordion">
         ${electiveDefinitions.map((def, defIdx) => {
-          const defCredits = def.credits || 0;
-          const groups = def.groups || [];
+          const defCredits = def.credits ?? 0;
+          const groups = def.groups ?? [];
           const collapseId = `collapse_${def.id}`;
           const headingId = `heading_${def.id}`;
           const isActive = openCollapseIds.has(collapseId) ? true : (openCollapseIds.size === 0 && defIdx === 0);
@@ -60,8 +62,8 @@ export function renderElectivesStep() {
           const groupsHtml = groups.length === 0
             ? `<p class="text-muted">No groups in this definition. <a href="#" data-goto-step="identity" class="alert-link">Add groups in Identity step</a>.</p>`
             : groups.map((g, grpIdx) => {
-                const groupModules = (p.modules || []).filter(m => (g.moduleIds || []).includes(m.id));
-                const groupCreditsSum = groupModules.reduce((acc, m) => acc + (Number(m.credits) || 0), 0);
+                const groupModules = (p.modules ?? []).filter(m => (g.moduleIds ?? []).includes(m.id));
+                const groupCreditsSum = groupModules.reduce((acc, m) => acc + (Number(m.credits) ?? 0), 0);
                 const creditsMismatch = groupCreditsSum !== defCredits;
                 const hasNonElective = groupModules.some(m => !m.isElective);
 
@@ -88,7 +90,7 @@ export function renderElectivesStep() {
                                 <div>
                                   <span class="badge ${m.isElective ? 'text-bg-info' : 'text-bg-danger'} me-1" style="font-size:0.7rem" aria-label="${m.isElective ? 'Elective' : 'Mandatory'}">${m.isElective ? 'E' : 'M'}</span>
                                   <strong>${escapeHtml(m.code || '')}</strong> ${escapeHtml(m.title || 'Untitled')}
-                                  <span class="text-muted ms-1">(${m.credits || 0} cr)</span>
+                                  <span class="text-muted ms-1">(${m.credits ?? 0} cr)</span>
                                 </div>
                                 <button type="button" class="btn btn-sm btn-outline-secondary py-0" data-unassign-module="${m.id}" data-from-group="${g.id}" aria-label="Remove ${escapeHtml(m.title || 'module')} from group" data-testid="unassign-module-${m.id}-${g.id}"><i class="ph ph-x" aria-hidden="true"></i></button>
                               </div>
@@ -101,8 +103,8 @@ export function renderElectivesStep() {
                         <select class="form-select form-select-sm" id="assign-select-${g.id}" data-assign-to-group="${g.id}" data-testid="assign-module-${g.id}">
                           <option value="">+ Add elective module...</option>
                           ${electiveModules
-                            .filter(m => !(g.moduleIds || []).includes(m.id))
-                            .map(m => `<option value="${m.id}">${escapeHtml(m.code || '')} ${escapeHtml(m.title || 'Untitled')} (${m.credits || 0} cr)${assignedModuleIds.has(m.id) ? ' [in another group]' : ''}</option>`)
+                            .filter(m => !(g.moduleIds ?? []).includes(m.id))
+                            .map(m => `<option value="${m.id}">${escapeHtml(m.code ?? '')} ${escapeHtml(m.title ?? 'Untitled')} (${m.credits ?? 0} cr)${assignedModuleIds.has(m.id) ? ' [in another group]' : ''}</option>`)
                             .join('')}
                         </select>
                       </div>
@@ -111,8 +113,8 @@ export function renderElectivesStep() {
                 `;
               }).join('');
 
-          const defName = def.name || `Definition ${defIdx + 1}`;
-          const defCode = def.code || '';
+          const defName = def.name ?? `Definition ${defIdx + 1}`;
+          const defCode = def.code ?? '';
 
           return `
             <div class="accordion-item" data-testid="elective-def-${def.id}">
@@ -153,8 +155,8 @@ export function renderElectivesStep() {
               <div class="list-group-item d-flex justify-content-between align-items-center py-2">
                 <div>
                   <span class="badge text-bg-info me-2">E</span>
-                  <strong>${escapeHtml(m.code || '')}</strong> ${escapeHtml(m.title || 'Untitled')}
-                  <span class="text-muted ms-2">(${m.credits || 0} cr)</span>
+                  <strong>${escapeHtml(m.code ?? '')}</strong> ${escapeHtml(m.title ?? 'Untitled')}
+                  <span class="text-muted ms-2">(${m.credits ?? 0} cr)</span>
                 </div>
               </div>
             `).join('')}
@@ -246,7 +248,7 @@ function wireElectivesStep() {
 
   // Handle step navigation links
   document.querySelectorAll("[data-goto-step]").forEach(link => {
-    link.onclick = (e) => {
+    /** @type {HTMLElement} */ (link).onclick = (/** @type {Event} */ e) => {
       e.preventDefault();
       const stepKey = link.getAttribute("data-goto-step");
       const idx = steps.findIndex(s => s.key === stepKey);
@@ -259,16 +261,16 @@ function wireElectivesStep() {
 
   // Handle assigning modules to groups (groups are nested in definitions)
   document.querySelectorAll("[data-assign-to-group]").forEach(select => {
-    select.onchange = () => {
+    /** @type {HTMLSelectElement} */ (select).onchange = () => {
       const groupId = select.getAttribute("data-assign-to-group");
-      const moduleId = select.value;
+      const moduleId = /** @type {HTMLSelectElement} */ (select).value;
       if (!moduleId) return;
 
       // Find group in any definition
-      for (const def of (p.electiveDefinitions || [])) {
-        const group = (def.groups || []).find(g => g.id === groupId);
+      for (const def of (p.electiveDefinitions ?? [])) {
+        const group = (def.groups ?? []).find(g => g.id === groupId);
         if (group) {
-          if (!Array.isArray(group.moduleIds)) group.moduleIds = [];
+          group.moduleIds ??= [];
           if (!group.moduleIds.includes(moduleId)) {
             group.moduleIds.push(moduleId);
           }
@@ -283,15 +285,15 @@ function wireElectivesStep() {
 
   // Handle unassigning modules from groups
   document.querySelectorAll("[data-unassign-module]").forEach(btn => {
-    btn.onclick = () => {
+    /** @type {HTMLElement} */ (btn).onclick = () => {
       const moduleId = btn.getAttribute("data-unassign-module");
       const groupId = btn.getAttribute("data-from-group");
 
       // Find group in any definition
-      for (const def of (p.electiveDefinitions || [])) {
-        const group = (def.groups || []).find(g => g.id === groupId);
+      for (const def of (p.electiveDefinitions ?? [])) {
+        const group = (def.groups ?? []).find(g => g.id === groupId);
         if (group) {
-          group.moduleIds = (group.moduleIds || []).filter(id => id !== moduleId);
+          group.moduleIds = (group.moduleIds ?? []).filter(id => id !== moduleId);
           break;
         }
       }

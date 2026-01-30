@@ -1,7 +1,8 @@
 // @ts-check
 /**
- * Step components index
- * Exports all step renderers
+ * Step component registry.
+ * Maps step keys to their render functions for dynamic step loading.
+ * @module components/steps/index
  */
 
 import { renderIdentityStep } from './identity.js';
@@ -20,9 +21,13 @@ import { renderTraceabilityStep } from './traceability.js';
 import { renderSnapshotStep } from './snapshot.js';
 
 /**
- * Get render function for a step key
+ * Returns the render function for a given workflow step key.
+ *
+ * @param {string} stepKey - The step key (e.g., "identity", "outcomes", "mimlos")
+ * @returns {Function} The step's render function, or a no-op if key is unknown
  */
 export function getStepRenderer(stepKey) {
+  /** @type {Record<string, Function>} */
   const renderers = {
     "identity": renderIdentityStep,
     "versions": renderVersionsStep,
@@ -39,5 +44,5 @@ export function getStepRenderer(stepKey) {
     "traceability": renderTraceabilityStep,
     "snapshot": renderSnapshotStep,
   };
-  return renderers[stepKey] || (() => {});
+  return renderers[stepKey] ?? (() => {});
 }

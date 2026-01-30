@@ -1,7 +1,8 @@
 // @ts-check
 /**
- * Application state management
- * Handles state, persistence, and data factories
+ * Application state management.
+ * Handles global state, localStorage persistence, and data factory functions.
+ * @module state/store
  */
 
 import { uid } from '../utils/uid.js';
@@ -44,9 +45,11 @@ export const AWARD_TYPE_OPTIONS = [
 ];
 
 /**
- * Factory for empty programme object
+ * Creates an empty programme object with default values.
+ *
+ * @returns {Programme} A new programme object initialized with default values
  */
-export const defaultProgramme = () => ({
+export const defaultProgramme = () => /** @type {Programme} */ ({
   schemaVersion: 3,
   id: "current",
 
@@ -56,27 +59,36 @@ export const defaultProgramme = () => ({
   awardTypeIsOther: false,
   nfqLevel: null,
   school: "",
+  /** @type {string[]} */
   awardStandardIds: [],
+  /** @type {string[]} */
   awardStandardNames: [],
 
   // Programme-level structure
   totalCredits: 0,
+  /** @type {Module[]} */
   modules: [],
+  /** @type {PLO[]} */
   plos: [],
+  /** @type {Record<string, string[]>} */
   ploToModules: {},
 
   // Elective definitions - each definition has a credit value and contains 1-N groups
   // Students complete every definition, choosing one group from each
+  /** @type {ElectiveDefinition[]} */
   electiveDefinitions: [],       // [{ id, name, code, credits, groups: [{ id, name, code, moduleIds: [] }] }]
 
   // Versions
+  /** @type {ProgrammeVersion[]} */
   versions: [],
 
   updatedAt: null,
 });
 
 /**
- * Factory for programme version
+ * Creates a new programme version with default values.
+ *
+ * @returns {any} A new programme version object (FT/PT/Online variant)
  */
 export const defaultVersion = () => ({
   id: uid("ver"),
@@ -98,7 +110,10 @@ export const defaultVersion = () => ({
 });
 
 /**
- * Factory for stage
+ * Creates a new stage object with default values.
+ *
+ * @param {number} [sequence=1] - The stage sequence number (1-based)
+ * @returns {any} A new stage object with default exit award settings
  */
 export const defaultStage = (sequence = 1) => ({
   id: uid("stage"),
@@ -110,7 +125,10 @@ export const defaultStage = (sequence = 1) => ({
 });
 
 /**
- * Application state
+ * Global application state object.
+ * Contains the current programme, navigation state, and UI state.
+ *
+ * @type {{ programme: Programme, stepIndex: number, saving: boolean, lastSaved: string | null, selectedVersionId: string | null, selectedModuleId: string | null, reportTypeId?: string, reportVersionId?: string, [key: string]: any }}
  */
 export const state = {
   programme: defaultProgramme(),
@@ -122,7 +140,10 @@ export const state = {
 };
 
 /**
- * Get active steps based on mode
+ * Returns the active workflow steps based on the current programme mode.
+ * In MODULE_EDITOR mode, only module-related steps are shown.
+ *
+ * @returns {Array<{key: string, title: string}>} Array of active step definitions
  */
 export function activeSteps() {
   const p = state.programme;
@@ -134,20 +155,26 @@ export function activeSteps() {
 }
 
 /**
- * Get editable module IDs based on mode
+ * Returns the IDs of modules that can be edited in the current mode.
+ * In MODULE_EDITOR mode, returns only assigned modules.
+ *
+ * @returns {string[]} Array of editable module IDs
  */
 export function editableModuleIds() {
   const p = state.programme;
   if (!p) return [];
   if (p.mode === "MODULE_EDITOR") {
-    const ids = p.moduleEditor?.assignedModuleIds || [];
-    return ids.length ? ids : (p.modules || []).map(m => m.id);
+    const ids = p.moduleEditor?.assignedModuleIds ?? [];
+    return ids.length ? ids : (p.modules ?? []).map(m => m.id);
   }
-  return (p.modules || []).map(m => m.id);
+  return (p.modules ?? []).map(m => m.id);
 }
 
 /**
- * Get selected module ID (for module picker)
+ * Returns the currently selected module ID for the module picker.
+ * Auto-selects the first editable module if none selected or selection is invalid.
+ *
+ * @returns {string} The selected module ID, or empty string if no modules available
  */
 export function getSelectedModuleId() {
   const ids = editableModuleIds();
@@ -159,14 +186,18 @@ export function getSelectedModuleId() {
 }
 
 /**
- * Get version by ID
+ * Finds a programme version by its ID.
+ *
+ * @param {string} id - The version ID to find
+ * @returns {ProgrammeVersion|undefined} The matching version, or undefined if not found
  */
 export function getVersionById(id) {
-  return (state.programme.versions || []).find(v => v.id === id);
+  return (state.programme.versions ?? []).find(v => v.id === id);
 }
 
 /**
- * Load state from localStorage
+ * Loads programme state from localStorage.
+ * Applies any necessary migrations and creates a default version if needed.
  */
 export function load() {
   try {
@@ -180,7 +211,8 @@ export function load() {
     state.programme = { ...defaultProgramme(), ...migrated };
 
     // Create default version if needed (initialization, not migration)
-    if (state.programme.versions.length === 0) {
+    if (!state.programme.versions || state.programme.versions.length === 0) {
+      state.programme.versions ??= [];
       const v = defaultVersion();
       // Use legacy delivery patterns if they exist
       if (state.programme.deliveryPatterns) {
@@ -192,7 +224,7 @@ export function load() {
       state.programme.versions.push(v);
     }
 
-    if (!state.selectedVersionId && state.programme.versions.length) {
+    if (!state.selectedVersionId && state.programme.versions && state.programme.versions.length) {
       state.selectedVersionId = state.programme.versions[0].id;
     }
     
@@ -203,7 +235,8 @@ export function load() {
 }
 
 /**
- * Save state immediately
+ * Saves the current programme state to localStorage immediately.
+ * Updates the programme's updatedAt timestamp.
  */
 export function saveNow() {
   try {
@@ -217,10 +250,14 @@ export function saveNow() {
   }
 }
 
+/** @type {ReturnType<typeof setTimeout> | null} */
 let saveTimer = null;
 
 /**
- * Debounced save (400ms)
+ * Saves programme state after a 400ms debounce delay.
+ * Useful for input fields to avoid excessive saves during typing.
+ *
+ * @param {Function} [onSaved] - Optional callback invoked after save completes
  */
 export function saveDebounced(onSaved) {
   if (saveTimer) clearTimeout(saveTimer);
@@ -231,7 +268,8 @@ export function saveDebounced(onSaved) {
 }
 
 /**
- * Reset to empty programme
+ * Resets the application to an empty programme state.
+ * Clears localStorage and resets navigation to step 0.
  */
 export function resetProgramme() {
   state.programme = defaultProgramme();
@@ -242,7 +280,11 @@ export function resetProgramme() {
 }
 
 /**
- * Set mode (PROGRAMME_OWNER or MODULE_EDITOR)
+ * Sets the application mode (PROGRAMME_OWNER or MODULE_EDITOR).
+ * MODULE_EDITOR mode restricts editing to assigned modules and specific steps.
+ *
+ * @param {string} mode - Either "PROGRAMME_OWNER" or "MODULE_EDITOR"
+ * @param {string[]} [assignedModuleIds=[]] - Module IDs editable in MODULE_EDITOR mode
  */
 export function setMode(mode, assignedModuleIds = []) {
   const p = state.programme;
@@ -259,10 +301,12 @@ export function setMode(mode, assignedModuleIds = []) {
   p.mode = mode;
 
   if (mode === "MODULE_EDITOR") {
-    const defaultAssigned = (p.modules || []).map(m => m.id);
-    p.moduleEditor = p.moduleEditor || {};
-    p.moduleEditor.assignedModuleIds = assignedModuleIds.length ? assignedModuleIds : defaultAssigned;
-    p.moduleEditor.locks = p.moduleEditor.locks || { programme: true, modulesMeta: true, versions: true, plos: true };
+    const defaultAssigned = (p.modules ?? []).map(m => m.id);
+    /** @type {any} */
+    const editor = p.moduleEditor ?? { assignedModuleIds: [], locks: undefined };
+    editor.assignedModuleIds = assignedModuleIds.length ? assignedModuleIds : defaultAssigned;
+    editor.locks ??= { programme: true, modulesMeta: true, versions: true, plos: true };
+    p.moduleEditor = editor;
 
     // Jump to appropriate step if needed
     const currentKey = steps[state.stepIndex]?.key;
@@ -277,8 +321,15 @@ export function setMode(mode, assignedModuleIds = []) {
 }
 
 // Cache for award standards
+/** @type {Promise<any[]> | null} */
 let _standardsPromise = null;
 
+/**
+ * Loads and caches the standards.json file.
+ *
+ * @returns {Promise<any[]>} Promise resolving to array of award standard objects
+ * @private
+ */
 async function loadStandardsFile() {
   if (_standardsPromise) return _standardsPromise;
   _standardsPromise = (async () => {
@@ -293,14 +344,19 @@ async function loadStandardsFile() {
 }
 
 /**
- * Get all award standards (array)
+ * Returns all available award standards.
+ *
+ * @returns {Promise<any[]>} Promise resolving to array of award standard objects
  */
 export async function getAwardStandards() {
   return await loadStandardsFile();
 }
 
 /**
- * Get a single award standard by ID (defaults to first)
+ * Returns a single award standard by ID.
+ *
+ * @param {string} [standardId] - The standard ID to find (defaults to first standard)
+ * @returns {Promise<any>} Promise resolving to the standard object, or null if not found
  */
 export async function getAwardStandard(standardId) {
   const list = await loadStandardsFile();

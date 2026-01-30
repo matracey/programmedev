@@ -1,7 +1,8 @@
 // @ts-check
 /**
- * Effort Hours step component
- * Matches legacy app.js effort hours structure with 8 detailed fields
+ * Effort Hours step component.
+ * Manages detailed student effort hour breakdowns per module and delivery modality.
+ * @module components/steps/effort-hours
  */
 
 import { state, saveDebounced, editableModuleIds, getSelectedModuleId } from '../../state/store.js';
@@ -10,7 +11,8 @@ import { getDevModeToggleHtml, wireDevModeToggle } from '../dev-mode.js';
 import { accordionControlsHtml, wireAccordionControls, captureOpenCollapseIds } from './shared.js';
 
 /**
- * Render the Effort Hours step
+ * Renders the Effort Hours step UI.
+ * Displays effort hour inputs per module with delivery modality variations.
  */
 export function renderEffortHoursStep() {
   const p = state.programme;
@@ -22,7 +24,7 @@ export function renderEffortHoursStep() {
 
   const editableIds = editableModuleIds();
   const selectedId = getSelectedModuleId();
-  const modulesForEdit = (p.modules || []).filter(m => editableIds.includes(m.id));
+  const modulesForEdit = (p.modules ?? []).filter(m => editableIds.includes(m.id));
   const canPickModule = (p.mode === "MODULE_EDITOR" && editableIds.length > 1);
 
   const modulePicker = canPickModule ? `
@@ -38,52 +40,57 @@ export function renderEffortHoursStep() {
 
   // Build version/modality combinations from programme versions
   const versions = Array.isArray(p.versions) ? p.versions : [];
+  /** @type {Record<string, string>} */
   const modalityLabels = { F2F: "Face-to-face", BLENDED: "Blended", ONLINE: "Fully online" };
   const versionModalities = versions
     .filter(v => v.deliveryModality)
     .map(v => ({
       key: `${v.id}_${v.deliveryModality}`,
       versionId: v.id,
-      modality: v.deliveryModality,
-      label: `${v.label || v.code || 'Version'} — ${modalityLabels[v.deliveryModality] || v.deliveryModality}`
+      modality: v.deliveryModality || '',
+      label: `${v.label || v.code || 'Version'} — ${v.deliveryModality ? (modalityLabels[v.deliveryModality] || v.deliveryModality) : ''}`
     }));
 
   const blocks = modulesForEdit.map((m, idx) => {
     // Ensure effortHours structure exists for each version/modality
-    m.effortHours = m.effortHours || {};
+    if (!m.effortHours) m.effortHours = {};
+    const effortHours = m.effortHours;
     versionModalities.forEach(vm => {
-      m.effortHours[vm.key] = m.effortHours[vm.key] || {
-        classroomHours: 0,
-        classroomRatio: "1:60",
-        mentoringHours: 0,
-        mentoringRatio: "1:25",
-        otherContactHours: 0,
-        otherContactRatio: "",
-        otherContactSpecify: "",
-        directedElearningHours: 0,
-        independentLearningHours: 0,
-        otherHours: 0,
-        otherHoursSpecify: "",
-        workBasedHours: 0
-      };
+      if (!effortHours[vm.key]) {
+        effortHours[vm.key] = {
+          classroomHours: 0,
+          classroomRatio: "1:60",
+          mentoringHours: 0,
+          mentoringRatio: "1:25",
+          otherContactHours: 0,
+          otherContactRatio: "",
+          otherContactSpecify: "",
+          directedElearningHours: 0,
+          independentLearningHours: 0,
+          otherHours: 0,
+          otherHoursSpecify: "",
+          workBasedHours: 0
+        };
+      }
     });
 
     const isHidden = (p.mode === "MODULE_EDITOR" && editableIds.length > 1 && m.id !== selectedId);
     
     // Calculate totals for each version/modality
+    /** @param {string} key */
     const getTotalHours = (key) => {
-      const e = m.effortHours[key] || {};
-      return Number(e.classroomHours || 0) + Number(e.mentoringHours || 0) + 
-             Number(e.otherContactHours || 0) + Number(e.directedElearningHours || 0) + 
-             Number(e.independentLearningHours || 0) + Number(e.otherHours || 0) + 
-             Number(e.workBasedHours || 0);
+      const e = m.effortHours?.[key] ?? {};
+      return Number(e.classroomHours ?? 0) + Number(e.mentoringHours ?? 0) + 
+             Number(e.otherContactHours ?? 0) + Number(e.directedElearningHours ?? 0) + 
+             Number(e.independentLearningHours ?? 0) + Number(e.otherHours ?? 0) + 
+             Number(e.workBasedHours ?? 0);
     };
 
     // Expected total based on credits (1 ECTS = 25 hours typically)
-    const expectedTotal = Number(m.credits || 0) * 25;
+    const expectedTotal = Number(m.credits ?? 0) * 25;
 
     const modalityRows = versionModalities.map(vm => {
-      const e = m.effortHours[vm.key] || {};
+      const e = m.effortHours?.[vm.key] ?? {};
       const total = getTotalHours(vm.key);
       const totalClass = total === expectedTotal ? 'text-bg-success' : (total > 0 ? 'text-bg-warning' : 'text-bg-secondary');
       
@@ -248,13 +255,14 @@ export function renderEffortHoursStep() {
 
 /**
  * Get total effort hours for a module/version-modality key
+ * @param {Record<string, any>} effortData
  */
 function getTotalHours(effortData) {
-  const e = effortData || {};
-  return Number(e.classroomHours || 0) + Number(e.mentoringHours || 0) + 
-         Number(e.otherContactHours || 0) + Number(e.directedElearningHours || 0) + 
-         Number(e.independentLearningHours || 0) + Number(e.otherHours || 0) + 
-         Number(e.workBasedHours || 0);
+  const e = effortData ?? {};
+  return Number(e.classroomHours ?? 0) + Number(e.mentoringHours ?? 0) + 
+         Number(e.otherContactHours ?? 0) + Number(e.directedElearningHours ?? 0) + 
+         Number(e.independentLearningHours ?? 0) + Number(e.otherHours ?? 0) + 
+         Number(e.workBasedHours ?? 0);
 }
 
 /**
@@ -262,8 +270,9 @@ function getTotalHours(effortData) {
  */
 function wireEffortHoursStep() {
   const p = state.programme;
+  p.modules ??= [];
 
-  const picker = document.getElementById("modulePicker");
+  const picker = /** @type {HTMLSelectElement | null} */ (document.getElementById("modulePicker"));
   if (picker) {
     picker.onchange = () => {
       state.selectedModuleId = picker.value;
@@ -274,30 +283,32 @@ function wireEffortHoursStep() {
   document.querySelectorAll("[data-version-modality]").forEach(row => {
     const vmKey = row.getAttribute("data-version-modality");
     const moduleId = row.getAttribute("data-module-id");
+    if (!vmKey || !p.modules) return;
     const m = p.modules.find(x => x.id === moduleId);
     if (!m) return;
 
     row.querySelectorAll("input[data-effort-field]").forEach(inp => {
-      inp.addEventListener("input", (e) => {
+      inp.addEventListener("input", (/** @type {any} */ e) => {
         const field = inp.getAttribute("data-effort-field");
-        m.effortHours = m.effortHours || {};
-        m.effortHours[vmKey] = m.effortHours[vmKey] || {};
+        if (!field) return;
+        m.effortHours ??= {};
+        m.effortHours[vmKey] ??= {};
 
         // Handle number vs text fields
         if (field.includes("Hours")) {
-          m.effortHours[vmKey][field] = Number(e.target.value) || 0;
+          m.effortHours[vmKey][field] = Number(e.target?.value) || 0;
         } else {
-          m.effortHours[vmKey][field] = e.target.value;
+          m.effortHours[vmKey][field] = e.target?.value || '';
         }
 
         saveDebounced();
 
         // Update total display
         const total = getTotalHours(m.effortHours[vmKey]);
-        const expected = Number(m.credits || 0) * 25;
+        const expected = Number(m.credits ?? 0) * 25;
         const badge = row.querySelector("[data-total-display]");
         if (badge) {
-          badge.textContent = total;
+          badge.textContent = String(total);
           badge.classList.remove('text-bg-success', 'text-bg-warning', 'text-bg-secondary');
           if (total === expected) {
             badge.classList.add('text-bg-success');

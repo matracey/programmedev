@@ -1,13 +1,17 @@
 // @ts-check
 /**
- * Steps sidebar component
+ * Steps sidebar component.
+ * Renders the workflow step navigation list.
+ * @module components/steps
  */
 
 import { state, activeSteps } from '../state/store.js';
 
 /**
- * Render the workflow steps sidebar
- * @param {Function} onStepChange - Callback when step changes
+ * Renders the workflow steps sidebar navigation.
+ * Highlights the current step and updates navigation button states.
+ *
+ * @param {Function} onStepChange - Callback invoked when user selects a different step
  */
 export function renderSteps(onStepChange) {
   const box = document.getElementById("stepList");
@@ -40,8 +44,8 @@ export function renderSteps(onStepChange) {
     box.appendChild(btn);
   });
 
-  const backBtn = document.getElementById("backBtn") || document.getElementById("prevBtn");
-  const nextBtn = document.getElementById("nextBtn");
+  const backBtn = /** @type {HTMLButtonElement | null} */ (document.getElementById("backBtn") || document.getElementById("prevBtn"));
+  const nextBtn = /** @type {HTMLButtonElement | null} */ (document.getElementById("nextBtn"));
   if (backBtn) backBtn.disabled = state.stepIndex === 0;
   if (nextBtn) nextBtn.disabled = state.stepIndex === aSteps.length - 1;
 }

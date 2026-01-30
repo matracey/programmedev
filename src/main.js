@@ -1,6 +1,8 @@
 // @ts-check
 /**
- * QQI Programme Design Studio - Entry Point
+ * QQI Programme Design Studio - Application entry point.
+ * Initializes the application, wires up event handlers, and manages rendering.
+ * @module main
  */
 
 // Import styles
@@ -30,7 +32,10 @@ import { downloadJson, importJson } from './export/json.js';
 import { validateProgramme, completionPercent } from './utils/validation.js';
 
 /**
- * Main render function - renders the entire UI
+ * Main render function - renders the entire UI.
+ * Updates the header, step sidebar, validation flags, and current step content.
+ *
+ * @returns {Promise<void>}
  */
 async function render() {
   const steps = activeSteps();
@@ -52,7 +57,9 @@ async function render() {
 }
 
 /**
- * Navigate to a specific step by key
+ * Navigates to a specific workflow step by its key.
+ *
+ * @param {string} stepKey - The step key to navigate to (e.g., "identity", "outcomes")
  */
 function goToStep(stepKey) {
   const steps = activeSteps();
@@ -64,7 +71,8 @@ function goToStep(stepKey) {
 }
 
 /**
- * Wire global header buttons
+ * Wires up global header button event handlers.
+ * Handles export, import, reset, and theme toggle functionality.
  */
 function wireGlobalButtons() {
   // Export button
@@ -77,24 +85,28 @@ function wireGlobalButtons() {
   const importInput = document.getElementById('importInput');
   if (importInput) {
     importInput.addEventListener('change', async (e) => {
-      const file = e.target.files?.[0];
+      const target = /** @type {HTMLInputElement} */ (e.target);
+      const file = target.files?.[0];
       if (!file) return;
       
       try {
         const text = await file.text();
+        /** @type {Record<string, unknown>} */
         const data = JSON.parse(text);
         
         // Automatically migrate programme to current schema version
-        const migrated = migrateProgramme(data);
+        /** @type {Programme} */
+        const migrated = /** @type {Programme} */ (migrateProgramme(data));
         
         // Load all standards for validation (skip if no standards)
-        const standardsPromises = (migrated.awardStandardIds || []).map(id => 
+        const standardsPromises = (migrated.awardStandardIds ?? []).map((/** @type {string} */ id) => 
           getAwardStandard(id).catch(() => null)
         );
         const standards = (await Promise.all(standardsPromises)).filter(Boolean);
         
         // Validate mappings still work with new standards
-        const validation = validateStandardMappings(migrated, standards);
+        /** @type {ValidationResult} */
+        const validation = /** @type {ValidationResult} */ (validateStandardMappings(migrated, standards));
         
         if (validation.warnings.length > 0) {
           console.warn('Standard mapping warnings:', validation.warnings);
@@ -107,7 +119,7 @@ function wireGlobalButtons() {
             'These will need to be fixed manually. Import anyway?'
           );
           if (!proceed) {
-            e.target.value = '';
+            target.value = '';
             return;
           }
         }
@@ -121,10 +133,11 @@ function wireGlobalButtons() {
           alert(`Programme imported and upgraded from schema v${data.schemaVersion} to v${migrated.schemaVersion}`);
         }
       } catch (err) {
-        alert('Failed to import JSON: ' + err.message);
+        const error = /** @type {Error} */ (err);
+        alert('Failed to import JSON: ' + error.message);
       }
       
-      e.target.value = '';
+      target.value = '';
     });
   }
   
@@ -162,7 +175,8 @@ function wireGlobalButtons() {
 }
 
 /**
- * Initialize the application
+ * Initializes the application.
+ * Loads state from localStorage, wires event handlers, and performs initial render.
  */
 function init() {
   // Load state from localStorage
@@ -175,7 +189,8 @@ function init() {
   initNavButtons(render);
   
   // Expose render globally for step components
-  window.render = render;
+  /** @type {Window & { render?: () => void | Promise<void> }} */
+  (window).render = render;
   
   // Initial render
   render();

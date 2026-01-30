@@ -1,15 +1,21 @@
 // @ts-check
 /**
- * Shared components and helpers for steps
+ * Shared components and helper functions for step UI.
+ * Provides reusable UI patterns like Bloom's taxonomy guidance and accordion controls.
+ * @module components/steps/shared
  */
 
 import { escapeHtml } from '../../utils/dom.js';
 
 /**
- * Generate Bloom's taxonomy guidance HTML based on NFQ level
+ * Generates Bloom's taxonomy guidance HTML with NFQ-level-appropriate verbs.
+ *
+ * @param {number|null} level - The NFQ level (6-10) to generate guidance for
+ * @param {string} contextLabel - Label describing the context (e.g., "Programme Learning Outcomes")
+ * @returns {string} HTML string containing verb chips and guidance text
  */
 export function bloomsGuidanceHtml(level, contextLabel) {
-  const lvl = Number(level || 0);
+  const lvl = Number(level ?? 0);
   const title = lvl ? `Bloom helper (aligned to NFQ level ${lvl})` : "Bloom helper (choose NFQ level first)";
 
   let focus = "Use measurable action verbs. Avoid: understand, know, learn about, be aware of.";
@@ -48,7 +54,10 @@ export function bloomsGuidanceHtml(level, contextLabel) {
 }
 
 /**
- * Reusable accordion controls (expand / collapse all)
+ * Generates HTML for accordion expand/collapse all controls.
+ *
+ * @param {string} accordionId - The ID of the accordion element to control
+ * @returns {string} HTML string containing expand/collapse buttons
  */
 export function accordionControlsHtml(accordionId) {
   return `
@@ -60,9 +69,15 @@ export function accordionControlsHtml(accordionId) {
   `;
 }
 
+/**
+ * Wires up event handlers for accordion expand/collapse all buttons.
+ *
+ * @param {string} accordionId - The ID of the accordion element to control
+ */
 export function wireAccordionControls(accordionId) {
   const accordion = document.getElementById(accordionId);
 
+  /** @param {boolean} shouldExpand */
   const toggleAll = (shouldExpand) => {
     if (!accordion) return;
     accordion.querySelectorAll('.accordion-collapse').forEach(el => {
@@ -80,16 +95,19 @@ export function wireAccordionControls(accordionId) {
   };
 
   document.querySelectorAll(`[data-accordion-expand-all="${accordionId}"]`).forEach(btn => {
-    btn.onclick = () => toggleAll(true);
+    /** @type {HTMLElement} */ (btn).onclick = () => toggleAll(true);
   });
   document.querySelectorAll(`[data-accordion-collapse-all="${accordionId}"]`).forEach(btn => {
-    btn.onclick = () => toggleAll(false);
+    /** @type {HTMLElement} */ (btn).onclick = () => toggleAll(false);
   });
 }
 
 /**
- * Capture IDs of currently open accordion collapse elements for a container.
- * Returns a Set of collapse element IDs (e.g., 'module_<id>_collapse').
+ * Captures the IDs of currently expanded accordion items.
+ * Used to preserve expansion state across re-renders.
+ *
+ * @param {string} accordionId - The ID of the accordion container
+ * @returns {Set<string>} Set of collapse element IDs that are currently open
  */
 export function captureOpenCollapseIds(accordionId) {
   const set = new Set();
@@ -102,9 +120,13 @@ export function captureOpenCollapseIds(accordionId) {
 }
 
 /**
- * Update accordion header text in-place without re-rendering (preserves input focus).
+ * Updates an accordion header's title and subtitle in-place without re-rendering.
+ * Preserves input focus and accordion state.
+ *
  * @param {string} headingId - The ID of the accordion header element (h2)
- * @param {object} options - { title: string, subtitle: string } to update
+ * @param {Object} options - The content to update
+ * @param {string} [options.title] - New title HTML (updates .fw-semibold element)
+ * @param {string} [options.subtitle] - New subtitle text (updates .small.text-secondary element)
  */
 export function updateAccordionHeader(headingId, { title, subtitle }) {
   const header = document.getElementById(headingId);

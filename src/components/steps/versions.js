@@ -1,6 +1,9 @@
 // @ts-check
 /**
- * Versions step component
+ * Programme Versions step component.
+ * Manages programme versions (e.g., Full-time, Part-time, Online) with
+ * delivery modalities, patterns, intakes, and proctoring settings.
+ * @module components/steps/versions
  */
 
 import { state, saveDebounced, defaultVersion } from '../../state/store.js';
@@ -16,7 +19,8 @@ const MOD_DEFS = [
 ];
 
 /**
- * Render the Versions step
+ * Renders the Programme Versions step UI.
+ * Displays version cards with delivery settings, intakes, and proctoring options.
  */
 export function renderVersionsStep() {
   const p = state.programme;
@@ -28,7 +32,7 @@ export function renderVersionsStep() {
   const openCollapseIds = captureOpenCollapseIds('versionsAccordion');
 
   const vCards = versions.map((v, idx) => {
-    const intakeVal = (v.intakes || []).join(", ");
+    const intakeVal = (v.intakes ?? []).join(", ");
     const selectedMod = v.deliveryModality || "";
     const modSummary = selectedMod ? (MOD_DEFS.find(m => m.key === selectedMod)?.label || selectedMod) : "Choose modality";
     const collapseId = `ver_${v.id}_collapse`;
@@ -45,7 +49,7 @@ export function renderVersionsStep() {
     `).join("");
 
     const patternCard = selectedMod ? (() => {
-      const pat = (v.deliveryPatterns || {})[selectedMod] || defaultPatternFor(selectedMod);
+      const pat = (v.deliveryPatterns ?? {})[selectedMod] ?? defaultPatternFor(selectedMod);
       return `
         <div class="card mt-2">
           <div class="card-body">
@@ -56,15 +60,15 @@ export function renderVersionsStep() {
             <fieldset class="row g-2 mt-2" aria-labelledby="pattern-heading-${v.id}">
               <div class="col-md-4">
                 <label class="form-label" for="pat_${v.id}_${selectedMod}_sync">Synchronous Online Classes %</label>
-                <input type="number" min="0" max="100" class="form-control" id="pat_${v.id}_${selectedMod}_sync" data-testid="version-pattern-sync-${v.id}" value="${Number(pat.syncOnlinePct || 0)}">
+                <input type="number" min="0" max="100" class="form-control" id="pat_${v.id}_${selectedMod}_sync" data-testid="version-pattern-sync-${v.id}" value="${Number(pat.syncOnlinePct ?? 0)}">
               </div>
               <div class="col-md-4">
                 <label class="form-label" for="pat_${v.id}_${selectedMod}_async">Asynchronous Directed Learning %</label>
-                <input type="number" min="0" max="100" class="form-control" id="pat_${v.id}_${selectedMod}_async" data-testid="version-pattern-async-${v.id}" value="${Number(pat.asyncDirectedPct || 0)}">
+                <input type="number" min="0" max="100" class="form-control" id="pat_${v.id}_${selectedMod}_async" data-testid="version-pattern-async-${v.id}" value="${Number(pat.asyncDirectedPct ?? 0)}">
               </div>
               <div class="col-md-4">
                 <label class="form-label" for="pat_${v.id}_${selectedMod}_campus">On Campus Learning Event %</label>
-                <input type="number" min="0" max="100" class="form-control" id="pat_${v.id}_${selectedMod}_campus" data-testid="version-pattern-campus-${v.id}" value="${Number(pat.onCampusPct || 0)}">
+                <input type="number" min="0" max="100" class="form-control" id="pat_${v.id}_${selectedMod}_campus" data-testid="version-pattern-campus-${v.id}" value="${Number(pat.onCampusPct ?? 0)}">
               </div>
             </fieldset>
           </div>
@@ -112,11 +116,11 @@ export function renderVersionsStep() {
               </div>
               <div class="col-md-3">
                 <label class="form-label fw-semibold" for="vcohort_${v.id}">Target cohort size</label>
-                <input type="number" min="0" class="form-control" id="vcohort_${v.id}" data-testid="version-cohort-${v.id}" value="${Number(v.targetCohortSize || 0)}">
+                <input type="number" min="0" class="form-control" id="vcohort_${v.id}" data-testid="version-cohort-${v.id}" value="${Number(v.targetCohortSize ?? 0)}">
               </div>
               <div class="col-md-3">
                 <label class="form-label fw-semibold" for="vgroups_${v.id}">Number of groups</label>
-                <input type="number" min="0" class="form-control" id="vgroups_${v.id}" data-testid="version-groups-${v.id}" value="${Number(v.numberOfGroups || 0)}">
+                <input type="number" min="0" class="form-control" id="vgroups_${v.id}" data-testid="version-groups-${v.id}" value="${Number(v.numberOfGroups ?? 0)}">
               </div>
               <div class="col-12">
                 <label class="form-label fw-semibold" id="modality-label-${v.id}">Delivery modality</label>
@@ -140,7 +144,7 @@ export function renderVersionsStep() {
                 <textarea class="form-control" rows="2" id="vproctorNotes_${v.id}" data-testid="version-proctor-notes-${v.id}" placeholder="What is proctored, when, and why?">${escapeHtml(v.onlineProctoredExamsNotes || "")}</textarea>
               </div>
               <div class="col-12">
-                <div class="small text-secondary">Stages in this version: <span class="fw-semibold">${(v.stages || []).length}</span> (define in the next step).</div>
+                <div class="small text-secondary">Stages in this version: <span class="fw-semibold">${(v.stages ?? []).length}</span> (define in the next step).</div>
               </div>
             </fieldset>
           </div>
@@ -168,92 +172,98 @@ export function renderVersionsStep() {
 }
 
 /**
- * Wire Versions step event handlers
+ * Wires up event handlers for the Versions step.
+ * Handles version CRUD, delivery patterns, and form field updates.
+ *
+ * @private
  */
 function wireVersionsStep() {
   const p = state.programme;
-  p.mode = p.mode || 'PROGRAMME_OWNER';
+  p.mode ??= 'PROGRAMME_OWNER';
   if (!Array.isArray(p.versions)) p.versions = [];
+  const versions = p.versions;
 
   const addBtn = document.getElementById("addVersionBtn");
   if (addBtn) {
     addBtn.onclick = () => {
       const v = defaultVersion();
-      p.versions.push(v);
+      versions.push(v);
       state.selectedVersionId = v.id;
       saveDebounced();
       window.render?.();
     };
   }
 
-  (p.versions || []).forEach((v) => {
+  (p.versions ?? []).forEach((v) => {
+    /** @param {string} suffix */
     const byId = (suffix) => document.getElementById(`${suffix}_${v.id}`);
 
     const removeBtn = document.getElementById(`removeVer_${v.id}`);
     if (removeBtn) removeBtn.onclick = () => {
-      p.versions = (p.versions || []).filter(x => x.id !== v.id);
+      p.versions = (p.versions ?? []).filter(x => x.id !== v.id);
       if (state.selectedVersionId === v.id) state.selectedVersionId = (p.versions[0] && p.versions[0].id) || null;
       saveDebounced();
       window.render?.();
     };
 
     const label = byId("vlabel");
-    if (label) label.oninput = (e) => {
-      v.label = e.target.value;
+    if (label) label.oninput = (/** @type {any} */ e) => {
+      v.label = e.target?.value || "";
       const lbl = document.querySelector(`[data-version-label="${v.id}"]`);
       if (lbl) lbl.textContent = v.label || "(untitled)";
       saveDebounced();
     };
 
     const code = byId("vcode");
-    if (code) code.oninput = (e) => {
-      v.code = e.target.value;
+    if (code) code.oninput = (/** @type {any} */ e) => {
+      v.code = e.target?.value || "";
       const codeEl = document.querySelector(`[data-version-code="${v.id}"]`);
       if (codeEl) codeEl.textContent = v.code || "No code";
       saveDebounced();
     };
 
     const duration = byId("vduration");
-    if (duration) duration.oninput = (e) => { v.duration = e.target.value; saveDebounced(); };
+    if (duration) duration.oninput = (/** @type {any} */ e) => { /** @type {any} */ (v).duration = e.target?.value || ""; saveDebounced(); };
 
     const intakes = byId("vintakes");
-    if (intakes) intakes.oninput = (e) => {
-      v.intakes = e.target.value.split(",").map(x => x.trim()).filter(Boolean);
+    if (intakes) intakes.oninput = (/** @type {any} */ e) => {
+      v.intakes = (e.target?.value || "").split(",").map((/** @type {string} */ x) => x.trim()).filter(Boolean);
       const intakesEl = document.querySelector(`[data-version-intakes="${v.id}"]`);
-      if (intakesEl) intakesEl.textContent = v.intakes.join(", ") || "No intakes";
+      if (intakesEl) intakesEl.textContent = (v.intakes ?? []).join(", ") || "No intakes";
       saveDebounced();
     };
 
     const cohort = byId("vcohort");
-    if (cohort) cohort.oninput = (e) => { v.targetCohortSize = Number(e.target.value || 0); saveDebounced(); };
+    if (cohort) cohort.oninput = (/** @type {any} */ e) => { /** @type {any} */ (v).targetCohortSize = Number(e.target?.value ?? 0); saveDebounced(); };
 
     const groups = byId("vgroups");
-    if (groups) groups.oninput = (e) => { v.numberOfGroups = Number(e.target.value || 0); saveDebounced(); };
+    if (groups) groups.oninput = (/** @type {any} */ e) => { /** @type {any} */ (v).numberOfGroups = Number(e.target?.value ?? 0); saveDebounced(); };
 
     const notes = byId("vnotes");
-    if (notes) notes.oninput = (e) => { v.deliveryNotes = e.target.value; saveDebounced(); };
+    if (notes) notes.oninput = (/** @type {any} */ e) => { /** @type {any} */ (v).deliveryNotes = e.target?.value || ""; saveDebounced(); };
 
     const proctor = byId("vproctor");
-    if (proctor) proctor.onchange = (e) => {
-      v.onlineProctoredExams = e.target.value;
+    if (proctor) proctor.onchange = (/** @type {any} */ e) => {
+      /** @type {any} */ (v).onlineProctoredExams = e.target?.value || "";
       saveDebounced();
       window.render?.();
     };
 
     const proctorNotes = byId("vproctorNotes");
-    if (proctorNotes) proctorNotes.oninput = (e) => { v.onlineProctoredExamsNotes = e.target.value; saveDebounced(); };
+    if (proctorNotes) proctorNotes.oninput = (/** @type {any} */ e) => { /** @type {any} */ (v).onlineProctoredExamsNotes = e.target?.value || ""; saveDebounced(); };
 
     // Modality radio buttons & patterns
     const MOD_KEYS = ["F2F", "BLENDED", "ONLINE"];
-    if (!v.deliveryPatterns || typeof v.deliveryPatterns !== "object") v.deliveryPatterns = {};
+    v.deliveryPatterns ??= {};
+    const deliveryPatterns = v.deliveryPatterns;
 
     MOD_KEYS.forEach((mod) => {
       const radio = document.getElementById(`vmod_${v.id}_${mod}`);
       if (!radio) return;
-      radio.onchange = (e) => {
-        if (e.target.checked) {
+      radio.onchange = (/** @type {any} */ e) => {
+        if (e.target?.checked) {
           v.deliveryModality = mod;
-          if (!v.deliveryPatterns[mod]) v.deliveryPatterns[mod] = defaultPatternFor(mod);
+          if (!deliveryPatterns[mod]) deliveryPatterns[mod] = defaultPatternFor(mod);
           const modEl = document.querySelector(`[data-version-modality="${v.id}"]`);
           const modLabel = MOD_DEFS.find(m => m.key === mod)?.label || mod;
           if (modEl) modEl.textContent = modLabel;
@@ -265,18 +275,18 @@ function wireVersionsStep() {
 
     const selectedMod = v.deliveryModality;
     if (selectedMod) {
-      if (!v.deliveryPatterns[selectedMod]) v.deliveryPatterns[selectedMod] = defaultPatternFor(selectedMod);
+      if (!deliveryPatterns[selectedMod]) deliveryPatterns[selectedMod] = defaultPatternFor(selectedMod);
 
-      const sync = document.getElementById(`pat_${v.id}_${selectedMod}_sync`);
-      const async = document.getElementById(`pat_${v.id}_${selectedMod}_async`);
-      const campus = document.getElementById(`pat_${v.id}_${selectedMod}_campus`);
+      const sync = /** @type {HTMLInputElement | null} */ (document.getElementById(`pat_${v.id}_${selectedMod}_sync`));
+      const async = /** @type {HTMLInputElement | null} */ (document.getElementById(`pat_${v.id}_${selectedMod}_async`));
+      const campus = /** @type {HTMLInputElement | null} */ (document.getElementById(`pat_${v.id}_${selectedMod}_campus`));
 
       const update = () => {
-        const pat = v.deliveryPatterns[selectedMod] || defaultPatternFor(selectedMod);
-        pat.syncOnlinePct = Number(sync ? sync.value : pat.syncOnlinePct || 0);
-        pat.asyncDirectedPct = Number(async ? async.value : pat.asyncDirectedPct || 0);
-        pat.onCampusPct = Number(campus ? campus.value : pat.onCampusPct || 0);
-        v.deliveryPatterns[selectedMod] = pat;
+        const pat = deliveryPatterns[selectedMod] || defaultPatternFor(selectedMod);
+        pat.syncOnlinePct = Number(sync ? sync.value : pat.syncOnlinePct ?? 0);
+        pat.asyncDirectedPct = Number(async ? async.value : pat.asyncDirectedPct ?? 0);
+        pat.onCampusPct = Number(campus ? campus.value : pat.onCampusPct ?? 0);
+        deliveryPatterns[selectedMod] = pat;
         saveDebounced();
       };
 

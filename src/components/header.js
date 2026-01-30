@@ -1,6 +1,8 @@
 // @ts-check
 /**
- * Header rendering component
+ * Header component.
+ * Renders the application header with programme title, completion badge, and save status.
+ * @module components/header
  */
 
 import { state, activeSteps } from '../state/store.js';
@@ -8,7 +10,8 @@ import { completionPercent, validateProgramme } from '../utils/validation.js';
 import { escapeHtml } from '../utils/dom.js';
 
 /**
- * Render the header (programme title, completion badge, save status)
+ * Renders the header section including title, completion badge, and save status.
+ * The completion badge shows a popover with remaining items when hovered.
  */
 export function renderHeader() {
   const p = state.programme;
@@ -51,17 +54,27 @@ export function renderHeader() {
   }
 }
 
+/**
+ * Generates HTML for the completion popover todo list.
+ * Groups validation flags by step for easy navigation.
+ *
+ * @param {Array<{type: string, msg: string, step: string}>} flags - Validation flags to display
+ * @returns {string} HTML string for the popover content
+ * @private
+ */
 function generateTodoList(flags) {
   if (!flags || flags.length === 0) {
     return `<div class="small text-success"><strong>All requirements met!</strong></div>`;
   }
 
+  /** @type {Record<string, Array<{type: string, msg: string, step: string}>>} */
   const byStep = {};
   flags.forEach(f => {
     if (!byStep[f.step]) byStep[f.step] = [];
     byStep[f.step].push(f);
   });
 
+  /** @type {Record<string, string>} */
   const stepMap = {};
   activeSteps().forEach(s => { stepMap[s.key] = s.title; });
 

@@ -1,14 +1,22 @@
 // @ts-check
 /**
- * Word document export using docxtemplater
+ * Word document export using docxtemplater.
+ * Generates QQI-compatible programme descriptor documents.
+ * @module export/word
  */
 
 import PizZip from 'pizzip';
 import Docxtemplater from 'docxtemplater';
+// @ts-ignore - file-saver types may not match exactly
 import { saveAs } from 'file-saver';
 
 /**
- * Export programme descriptor as Word document
+ * Exports programme descriptor as a Word document.
+ * Uses a template file and populates it with programme data.
+ *
+ * @param {Programme} p - The programme data
+ * @returns {Promise<void>}
+ * @throws {Error} If template loading fails
  */
 export async function exportProgrammeDescriptorWord(p) {
   // Load template
@@ -26,20 +34,20 @@ export async function exportProgrammeDescriptorWord(p) {
 
   const plos = Array.isArray(p.plos) ? p.plos : [];
   const miplosText = plos.length
-    ? plos.map((o, i) => `${i + 1}. ${o.text || ""}`).join("\n")
+    ? plos.map((/** @type {PLO} */ o, /** @type {number} */ i) => `${i + 1}. ${o.text || ""}`).join("\n")
     : "";
 
   const mappingSnapshot = plos.length
-    ? plos.map((o, i) => {
-        const mappings = o.standardMappings || [];
+    ? plos.map((/** @type {PLO} */ o, /** @type {number} */ i) => {
+        const mappings = o.standardMappings ?? [];
         const mapStr = mappings.length 
-          ? mappings.map(m => `${m.thread}: ${m.criteria}`).join("; ")
+          ? mappings.map((/** @type {any} */ m) => `${m.thread}: ${m.criteria}`).join("; ")
           : "No mappings";
-        return `PLO ${i + 1}: ${o.text || ""}\n  → ${mapStr}`;
+        return `PLO ${i + 1}: ${o.text ?? ""}\n  → ${mapStr}`;
       }).join("\n\n")
     : "";
 
-  const awardStandardName = (p.awardStandardNames || [])[0] || (p.awardStandardIds || [])[0] || "";
+  const awardStandardName = (p.awardStandardNames ?? [])[0] ?? (p.awardStandardIds ?? [])[0] ?? "";
 
   const data = {
     provider_name: "",
@@ -74,6 +82,8 @@ export async function exportProgrammeDescriptorWord(p) {
 
 /**
  * Export programme to Word (alias with fallback)
+ * @param {Programme} p - The programme data
+ * @returns {Promise<void>}
  */
 export async function exportProgrammeToWord(p) {
   try {
