@@ -14,7 +14,7 @@ import { test, expect, loadProgrammeData, getProgrammeData } from './fixtures/te
  */
 async function triggerSave(page) {
   // Focus and blur the title input to trigger the debounced save
-  const titleInput = page.locator('#titleInput');
+  const titleInput = page.getByTestId('title-input');
   const currentValue = await titleInput.inputValue();
   await titleInput.fill(currentValue + ' ');
   await titleInput.fill(currentValue); // restore original
@@ -309,7 +309,7 @@ test.describe('Programme Migration - UI Verification', () => {
     await page.waitForTimeout(500);
 
     // Navigate to Identity step
-    await page.click('button:has-text("1. Identity")');
+    await page.getByTestId('step-identity').click();
     await page.waitForTimeout(300);
 
     // The first standard selector should show Computing as selected value
@@ -334,7 +334,7 @@ test.describe('Programme Migration - UI Verification', () => {
     await page.waitForTimeout(500);
 
     // Navigate to Versions step
-    await page.click('button:has-text("3. Programme Versions")');
+    await page.getByTestId('step-versions').click();
     await page.waitForTimeout(500);
 
     // Verify version label is visible 

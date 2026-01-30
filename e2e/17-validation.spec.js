@@ -1,5 +1,5 @@
 // @ts-check
-import { test, expect, loadProgrammeData, getProgrammeData, navigateToStep } from './fixtures/test-fixtures.js';
+import { test, expect, loadProgrammeData } from './fixtures/test-fixtures.js';
 import { higherDiplomaComputing } from './fixtures/test-data.js';
 
 test.describe('QQI Validation Flags', () => {
@@ -22,7 +22,7 @@ test.describe('QQI Validation Flags', () => {
   });
 
   test('should clear title error when title is provided', async ({ page }) => {
-    await page.locator('#titleInput').fill('Test Programme');
+    await page.getByTestId('title-input').fill('Test Programme');
     await page.waitForTimeout(500); // Wait for save debounce
     
     // Reload the page to see updated flags (the app doesn't auto-refresh flags on title change)
@@ -34,7 +34,7 @@ test.describe('QQI Validation Flags', () => {
   });
 
   test('should clear NFQ error when level is provided', async ({ page }) => {
-    await page.locator('#levelInput').fill('8');
+    await page.getByTestId('level-input').fill('8');
     await page.waitForTimeout(600);
     
     await expect(page.locator('text=NFQ level is missing')).not.toBeVisible();
@@ -42,15 +42,15 @@ test.describe('QQI Validation Flags', () => {
 
   test('should show credits mismatch error', async ({ page }) => {
     // Fill identity first
-    await page.locator('#titleInput').fill('Test Programme');
-    await page.locator('#levelInput').fill('8');
-    await page.locator('#totalCreditsInput').fill('60');
+    await page.getByTestId('title-input').fill('Test Programme');
+    await page.getByTestId('level-input').fill('8');
+    await page.getByTestId('total-credits-input').fill('60');
     await page.waitForTimeout(300);
     
     // Add module with wrong credits
-    await page.click('button:has-text("5. Credits & Modules")');
+    await page.getByTestId('step-structure').click();
     await page.waitForTimeout(200);
-    await page.click('button:has-text("+ Add module")');
+    await page.getByTestId('add-module-btn').click();
     await page.waitForTimeout(200);
     await page.locator('[data-module-field="credits"]').first().fill('30');
     await page.waitForTimeout(600);
@@ -61,15 +61,15 @@ test.describe('QQI Validation Flags', () => {
 
   test('should show error for unmapped PLOs', async ({ page }) => {
     // Add PLOs but don't map them
-    await page.click('button:has-text("2. PLOs")');
+    await page.getByTestId('step-outcomes').click();
     await page.waitForTimeout(200);
     
     for (let i = 0; i < 3; i++) {
-      await page.click('button:has-text("+ Add PLO")');
+      await page.getByTestId('add-plo-btn').click();
       await page.waitForTimeout(300);
       
       // Click "Expand all" to ensure all PLO accordions are visible
-      const expandAllBtn = page.locator('button:has-text("Expand all")');
+      const expandAllBtn = page.getByRole('button', { name: 'Expand all' });
       if (await expandAllBtn.isVisible()) {
         await expandAllBtn.click();
         await page.waitForTimeout(200);
@@ -135,21 +135,21 @@ test.describe('QQI Validation - Complete Programme', () => {
 test.describe('QQI Validation - Stage Structure', () => {
   test('should warn when stage credit targets dont match programme credits', async ({ page }) => {
     // Fill identity first
-    await page.locator('#titleInput').fill('Test Programme');
-    await page.locator('#levelInput').fill('8');
-    await page.locator('#totalCreditsInput').fill('60');
+    await page.getByTestId('title-input').fill('Test Programme');
+    await page.getByTestId('level-input').fill('8');
+    await page.getByTestId('total-credits-input').fill('60');
     await page.waitForTimeout(300);
     
     // Add version
-    await page.click('button:has-text("3. Programme Versions")');
+    await page.getByTestId('step-versions').click();
     await page.waitForTimeout(200);
-    await page.click('button:has-text("+ Add version")');
+    await page.getByTestId('add-version-btn').click();
     await page.waitForTimeout(300);
     
     // Add stage with wrong credit target
-    await page.click('button:has-text("4. Stage Structure")');
+    await page.getByTestId('step-stages').click();
     await page.waitForTimeout(200);
-    await page.click('#addStageBtn');
+    await page.getByTestId('add-stage-btn').click();
     await page.waitForTimeout(200);
     
     const creditsInput = page.locator('[data-stage-field="creditTarget"]').first();
@@ -165,9 +165,9 @@ test.describe('QQI Validation - Stage Structure', () => {
 
   test('should warn when no stages defined', async ({ page }) => {
     // Fresh state has no versions - need to add one first
-    await page.click('button:has-text("3. Programme Versions")');
+    await page.getByTestId('step-versions').click();
     await page.waitForTimeout(200);
-    await page.click('button:has-text("+ Add version")');
+    await page.getByTestId('add-version-btn').click();
     await page.waitForTimeout(200);
     
     // The delivery pattern fields show defaults but may not be saved yet.
@@ -192,14 +192,14 @@ test.describe('QQI Validation - Stage Structure', () => {
 
   test('should warn for exit award without title', async ({ page }) => {
     // Add version and stage
-    await page.click('button:has-text("3. Programme Versions")');
+    await page.getByTestId('step-versions').click();
     await page.waitForTimeout(200);
-    await page.click('button:has-text("+ Add version")');
+    await page.getByTestId('add-version-btn').click();
     await page.waitForTimeout(300);
     
-    await page.click('button:has-text("4. Stage Structure")');
+    await page.getByTestId('step-stages').click();
     await page.waitForTimeout(200);
-    await page.click('#addStageBtn');
+    await page.getByTestId('add-stage-btn').click();
     await page.waitForTimeout(300);
     
     // Enable exit award but leave title empty

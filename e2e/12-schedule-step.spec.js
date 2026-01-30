@@ -1,5 +1,5 @@
 // @ts-check
-import { test, expect, loadProgrammeData, getProgrammeData, navigateToStep } from './fixtures/test-fixtures.js';
+import { test, expect, getProgrammeData } from './fixtures/test-fixtures.js';
 
 // Helper: capture IDs of open Bootstrap collapse panels within an accordion
 async function getOpenCollapseIds(page, accordionId) {
@@ -11,31 +11,31 @@ async function getOpenCollapseIds(page, accordionId) {
 test.describe('Step 11: Programme Schedule', () => {
   test.beforeEach(async ({ page }) => {
     // Fill Identity first
-    await page.locator('#titleInput').fill('Test Programme');
-    await page.locator('#levelInput').fill('8');
-    await page.locator('#totalCreditsInput').fill('60');
+    await page.getByTestId('title-input').fill('Test Programme');
+    await page.getByTestId('level-input').fill('8');
+    await page.getByTestId('total-credits-input').fill('60');
     await page.waitForTimeout(300);
     
     // Set up version with stages and modules
-    await page.click('button:has-text("3. Programme Versions")');
+    await page.getByTestId('step-versions').click();
     await page.waitForTimeout(200);
-    await page.click('button:has-text("+ Add version")');
+    await page.getByTestId('add-version-btn').click();
     await page.waitForTimeout(300);
     
-    await page.click('button:has-text("5. Credits & Modules")');
+    await page.getByTestId('step-structure').click();
     await page.waitForTimeout(200);
-    await page.click('button:has-text("+ Add module")');
+    await page.getByTestId('add-module-btn').click();
     await page.waitForTimeout(200);
-    await page.click('button:has-text("+ Add module")');
+    await page.getByTestId('add-module-btn').click();
     await page.waitForTimeout(300);
     
-    await page.click('button:has-text("4. Stage Structure")');
+    await page.getByTestId('step-stages').click();
     await page.waitForTimeout(200);
-    await page.click('#addStageBtn');
+    await page.getByTestId('add-stage-btn').click();
     await page.waitForTimeout(600);
     
     // Navigate to Schedule
-    await page.click('button:has-text("11. Programme Schedule")');
+    await page.getByTestId('step-schedule').click();
     await page.waitForTimeout(300);
   });
 
@@ -76,14 +76,14 @@ test.describe('Step 11: Programme Schedule', () => {
 
   test('should switch between versions', async ({ page }) => {
     // Add another version
-    await page.click('button:has-text("3. Programme Versions")');
+    await page.getByTestId('step-versions').click();
     await page.waitForTimeout(200);
     await expect(page.locator('h4:has-text("Programme Versions")')).toBeVisible();
-    await page.click('button:has-text("+ Add version")');
+    await page.getByTestId('add-version-btn').click();
     await page.waitForTimeout(400);
     
     // Go back to schedule
-    await page.click('button:has-text("11. Programme Schedule")');
+    await page.getByTestId('step-schedule').click();
     await page.waitForTimeout(300);
     
     // Multiple versions should exist in data
@@ -114,26 +114,26 @@ test.describe('Step 11: Programme Schedule', () => {
 test.describe('Step 11: Schedule Visualization', () => {
   test('should show visual representation of programme timeline', async ({ page }) => {
     // Fill Identity first
-    await page.locator('#titleInput').fill('Test Programme');
-    await page.locator('#levelInput').fill('8');
-    await page.locator('#totalCreditsInput').fill('60');
+    await page.getByTestId('title-input').fill('Test Programme');
+    await page.getByTestId('level-input').fill('8');
+    await page.getByTestId('total-credits-input').fill('60');
     await page.waitForTimeout(300);
     
     // Set up data
-    await page.click('button:has-text("3. Programme Versions")');
+    await page.getByTestId('step-versions').click();
     await page.waitForTimeout(200);
-    await page.click('button:has-text("+ Add version")');
+    await page.getByTestId('add-version-btn').click();
     await page.waitForTimeout(300);
     
-    await page.click('button:has-text("4. Stage Structure")');
+    await page.getByTestId('step-stages').click();
     await page.waitForTimeout(200);
-    await page.click('#addStageBtn');
+    await page.getByTestId('add-stage-btn').click();
     await page.waitForTimeout(200);
-    await page.click('#addStageBtn');
+    await page.getByTestId('add-stage-btn').click();
     await page.waitForTimeout(400);
     
     // Go to schedule
-    await page.click('button:has-text("11. Programme Schedule")');
+    await page.getByTestId('step-schedule').click();
     await page.waitForTimeout(300);
     
     // Should show some visual representation (table, grid, etc.)

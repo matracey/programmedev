@@ -1,5 +1,5 @@
 // @ts-check
-import { test, expect, loadProgrammeData, getProgrammeData, navigateToStep } from './fixtures/test-fixtures.js';
+import { test, expect, loadProgrammeData, getProgrammeData } from './fixtures/test-fixtures.js';
 import { moduleEditorViewData } from './fixtures/test-data.js';
 
 test.describe('Module Editor Mode', () => {
@@ -20,7 +20,7 @@ test.describe('Module Editor Mode', () => {
 
   test('should show only assigned modules for editing', async ({ page }) => {
     // Navigate to a module-related step
-    await page.click('button:has-text("MIMLOs")');
+    await page.getByTestId('step-mimlos').click();
     await page.waitForTimeout(300);
     
     // Module selector should only show assigned modules
@@ -37,7 +37,7 @@ test.describe('Module Editor Mode', () => {
   test('should restrict editing of locked programme fields', async ({ page }) => {
     // Programme-level fields should be read-only
     // Check if identity step is available
-    const identityBtn = page.locator('button:has-text("Identity")');
+    const identityBtn = page.getByTestId('step-identity');
     
     // In MODULE_EDITOR mode, identity should not be accessible
     const isVisible = await identityBtn.isVisible();
@@ -47,7 +47,7 @@ test.describe('Module Editor Mode', () => {
   });
 
   test('should allow editing MIMLOs for assigned modules', async ({ page }) => {
-    await page.click('button:has-text("MIMLOs")');
+    await page.getByTestId('step-mimlos').click();
     await page.waitForTimeout(300);
     
     // Should be able to add MIMLO
@@ -67,7 +67,7 @@ test.describe('Module Editor Mode', () => {
   });
 
   test('should allow editing assessments for assigned modules', async ({ page }) => {
-    await page.click('button:has-text("Assessments")');
+    await page.getByTestId('step-assessments').click();
     await page.waitForTimeout(400);
     
     const addBtn = page.locator('button[data-add-asm]').first();
@@ -99,12 +99,12 @@ test.describe('Module Editor Mode', () => {
   });
 
   test('should show QQI Snapshot step in module editor mode', async ({ page }) => {
-    const snapshotBtn = page.locator('button:has-text("QQI Snapshot"), button:has-text("Snapshot")');
+    const snapshotBtn = page.getByTestId('step-snapshot');
     await expect(snapshotBtn).toBeVisible();
   });
 
   test('should access mapping step in module editor mode', async ({ page }) => {
-    const mappingBtn = page.locator('button:has-text("Mapping")');
+    const mappingBtn = page.getByTestId('step-mapping');
     
     if (await mappingBtn.isVisible()) {
       await mappingBtn.click();

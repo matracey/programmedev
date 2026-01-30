@@ -1,5 +1,5 @@
 // @ts-check
-import { test, expect, loadProgrammeData, getProgrammeData, navigateToStep } from './fixtures/test-fixtures.js';
+import { test, expect, getProgrammeData } from './fixtures/test-fixtures.js';
 
 // Helper: capture IDs of open Bootstrap collapse panels within an accordion
 async function getOpenCollapseIds(page, accordionId) {
@@ -11,15 +11,15 @@ async function getOpenCollapseIds(page, accordionId) {
 test.describe('Step 10: Reading Lists', () => {
   test.beforeEach(async ({ page }) => {
     // Fill Identity step first
-    await page.locator('#titleInput').fill('Test Programme');
-    await page.locator('#levelInput').fill('8');
-    await page.locator('#totalCreditsInput').fill('60');
+    await page.getByTestId('title-input').fill('Test Programme');
+    await page.getByTestId('level-input').fill('8');
+    await page.getByTestId('total-credits-input').fill('60');
     await page.waitForTimeout(500);
     
     // Set up module
-    await page.click('button:has-text("5. Credits & Modules")');
+    await page.getByTestId('step-structure').click();
     await page.waitForTimeout(200);
-    await page.click('button:has-text("+ Add module")');
+    await page.getByTestId('add-module-btn').click();
     await page.waitForTimeout(200);
     
     // Fill module details using data attributes
@@ -33,7 +33,7 @@ test.describe('Step 10: Reading Lists', () => {
     await page.waitForTimeout(400);
     
     // Navigate to Reading Lists
-    await page.click('button:has-text("10. Reading Lists")');
+    await page.getByTestId('step-reading-lists').click();
     await page.waitForTimeout(300);
   });
 

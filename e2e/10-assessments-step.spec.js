@@ -1,5 +1,5 @@
 // @ts-check
-import { test, expect, loadProgrammeData, getProgrammeData, navigateToStep } from './fixtures/test-fixtures.js';
+import { test, expect, getProgrammeData } from './fixtures/test-fixtures.js';
 
 // Helper: capture IDs of open Bootstrap collapse panels within an accordion
 async function getOpenCollapseIds(page, accordionId) {
@@ -11,15 +11,15 @@ async function getOpenCollapseIds(page, accordionId) {
 test.describe('Step 9: Assessments', () => {
   test.beforeEach(async ({ page }) => {
     // Fill Identity step first
-    await page.locator('#titleInput').fill('Test Programme');
-    await page.locator('#levelInput').fill('8');
-    await page.locator('#totalCreditsInput').fill('60');
+    await page.getByTestId('title-input').fill('Test Programme');
+    await page.getByTestId('level-input').fill('8');
+    await page.getByTestId('total-credits-input').fill('60');
     await page.waitForTimeout(500);
     
     // Set up module with MIMLOs first
-    await page.click('button:has-text("5. Credits & Modules")');
+    await page.getByTestId('step-structure').click();
     await page.waitForTimeout(200);
-    await page.click('button:has-text("+ Add module")');
+    await page.getByTestId('add-module-btn').click();
     await page.waitForTimeout(200);
     
     // Fill module details using data attributes
@@ -33,7 +33,7 @@ test.describe('Step 9: Assessments', () => {
     await page.waitForTimeout(400);
     
     // Add MIMLOs (uses input, not textarea)
-    await page.click('button:has-text("7. MIMLOs")');
+    await page.getByTestId('step-mimlos').click();
     await page.waitForTimeout(200);
     
     const addMimloBtn = page.locator('button[data-add-mimlo]').first();
@@ -45,7 +45,7 @@ test.describe('Step 9: Assessments', () => {
     }
     
     // Navigate to Assessments
-    await page.click('button:has-text("9. Assessments")');
+    await page.getByTestId('step-assessments').click();
     await page.waitForTimeout(300);
   });
 
@@ -234,17 +234,17 @@ test.describe('Step 9: Assessments', () => {
 test.describe('Step 9: Assessment Types', () => {
   test.beforeEach(async ({ page }) => {
     // Fill Identity first
-    await page.locator('#titleInput').fill('Test Programme');
-    await page.locator('#levelInput').fill('8');
-    await page.locator('#totalCreditsInput').fill('60');
+    await page.getByTestId('title-input').fill('Test Programme');
+    await page.getByTestId('level-input').fill('8');
+    await page.getByTestId('total-credits-input').fill('60');
     await page.waitForTimeout(300);
     
-    await page.click('button:has-text("5. Credits & Modules")');
+    await page.getByTestId('step-structure').click();
     await page.waitForTimeout(200);
-    await page.click('button:has-text("+ Add module")');
+    await page.getByTestId('add-module-btn').click();
     await page.waitForTimeout(400);
     
-    await page.click('button:has-text("9. Assessments")');
+    await page.getByTestId('step-assessments').click();
     await page.waitForTimeout(300);
   });
 

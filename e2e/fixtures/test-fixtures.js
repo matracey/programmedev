@@ -67,7 +67,15 @@ export const getInMemoryProgrammeState = async (page) => {
 /**
  * Helper to navigate to a specific step by clicking on it
  */
-export const navigateToStep = async (page, stepNumber) => {
+export const navigateToStep = async (page, stepKey) => {
+  await page.getByTestId(`step-${stepKey}`).click();
+  await page.waitForTimeout(300); // Allow for render
+};
+
+/**
+ * Helper to navigate to a specific step by number
+ */
+export const navigateToStepByNumber = async (page, stepNumber) => {
   await page.click(`button:has-text("${stepNumber}.")`);
   await page.waitForTimeout(300); // Allow for render
 };
@@ -76,7 +84,7 @@ export const navigateToStep = async (page, stepNumber) => {
  * Helper to click the Next button
  */
 export const clickNext = async (page) => {
-  await page.click('#nextBtn');
+  await page.getByTestId('next-btn').click();
   await page.waitForTimeout(300);
 };
 
@@ -84,7 +92,7 @@ export const clickNext = async (page) => {
  * Helper to click the Back button
  */
 export const clickBack = async (page) => {
-  await page.click('#backBtn');
+  await page.getByTestId('back-btn').click();
   await page.waitForTimeout(300);
 };
 

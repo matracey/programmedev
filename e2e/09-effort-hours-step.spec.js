@@ -1,5 +1,5 @@
 // @ts-check
-import { test, expect, loadProgrammeData, getProgrammeData, navigateToStep } from './fixtures/test-fixtures.js';
+import { test, expect, getProgrammeData } from './fixtures/test-fixtures.js';
 
 // Helper: capture IDs of open Bootstrap collapse panels within an accordion
 async function getOpenCollapseIds(page, accordionId) {
@@ -11,15 +11,15 @@ async function getOpenCollapseIds(page, accordionId) {
 test.describe('Step 8: Effort Hours', () => {
   test.beforeEach(async ({ page }) => {
     // Fill Identity step first
-    await page.locator('#titleInput').fill('Test Programme');
-    await page.locator('#levelInput').fill('8');
-    await page.locator('#totalCreditsInput').fill('60');
+    await page.getByTestId('title-input').fill('Test Programme');
+    await page.getByTestId('level-input').fill('8');
+    await page.getByTestId('total-credits-input').fill('60');
     await page.waitForTimeout(500);
     
     // Set up version WITH modality (required for effort hours to show)
-    await page.click('button:has-text("3. Programme Versions")');
+    await page.getByTestId('step-versions').click();
     await page.waitForTimeout(200);
-    await page.click('button:has-text("+ Add version")');
+    await page.getByTestId('add-version-btn').click();
     await page.waitForTimeout(300);
     
     // Select a delivery modality - required for effort hours table
@@ -30,9 +30,9 @@ test.describe('Step 8: Effort Hours', () => {
     }
     
     // Navigate to Credits & Modules
-    await page.click('button:has-text("5. Credits & Modules")');
+    await page.getByTestId('step-structure').click();
     await page.waitForTimeout(200);
-    await page.click('button:has-text("+ Add module")');
+    await page.getByTestId('add-module-btn').click();
     await page.waitForTimeout(200);
     
     // Fill module details using data attributes
@@ -46,7 +46,7 @@ test.describe('Step 8: Effort Hours', () => {
     await page.waitForTimeout(500);
     
     // Navigate to Effort Hours
-    await page.click('button:has-text("8. Effort Hours")');
+    await page.getByTestId('step-effort-hours').click();
     await page.waitForTimeout(300);
   });
 
@@ -152,10 +152,10 @@ test.describe('Step 8: Effort Hours', () => {
 
   test('should switch between versions for effort hours', async ({ page }) => {
     // Add another version with modality
-    await page.click('button:has-text("3. Programme Versions")');
+    await page.getByTestId('step-versions').click();
     await page.waitForTimeout(200);
     await expect(page.locator('h4:has-text("Programme Versions")')).toBeVisible();
-    await page.click('button:has-text("+ Add version")');
+    await page.getByTestId('add-version-btn').click();
     await page.waitForTimeout(400);
     
     // Set modality for new version
@@ -166,7 +166,7 @@ test.describe('Step 8: Effort Hours', () => {
     }
     
     // Go back to effort hours
-    await page.click('button:has-text("8. Effort Hours")');
+    await page.getByTestId('step-effort-hours').click();
     await page.waitForTimeout(400);
     
     // Should have at least one version/modality row (or multiple if both versions have modalities)
@@ -210,15 +210,15 @@ test.describe('Step 8: Effort Hours', () => {
 test.describe('Step 8: Effort Hours Per Modality', () => {
   test('should have separate effort hours per delivery modality', async ({ page }) => {
     // Fill identity
-    await page.locator('#titleInput').fill('Test Programme');
-    await page.locator('#levelInput').fill('8');
-    await page.locator('#totalCreditsInput').fill('60');
+    await page.getByTestId('title-input').fill('Test Programme');
+    await page.getByTestId('level-input').fill('8');
+    await page.getByTestId('total-credits-input').fill('60');
     await page.waitForTimeout(400);
     
     // Set up version with specific modality
-    await page.click('button:has-text("3. Programme Versions")');
+    await page.getByTestId('step-versions').click();
     await page.waitForTimeout(300);
-    await page.click('button:has-text("+ Add version")');
+    await page.getByTestId('add-version-btn').click();
     await page.waitForTimeout(400);
     
     // Set modality
@@ -229,13 +229,13 @@ test.describe('Step 8: Effort Hours Per Modality', () => {
     }
     
     // Add module
-    await page.click('button:has-text("5. Credits & Modules")');
+    await page.getByTestId('step-structure').click();
     await page.waitForTimeout(300);
-    await page.click('button:has-text("+ Add module")');
+    await page.getByTestId('add-module-btn').click();
     await page.waitForTimeout(500);
     
     // Go to effort hours
-    await page.click('button:has-text("8. Effort Hours")');
+    await page.getByTestId('step-effort-hours').click();
     await page.waitForTimeout(400);
     
     // Check that the page shows effort hours section

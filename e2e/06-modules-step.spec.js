@@ -1,5 +1,5 @@
 // @ts-check
-import { test, expect, loadProgrammeData, getProgrammeData, navigateToStep } from './fixtures/test-fixtures.js';
+import { test, expect, getProgrammeData } from './fixtures/test-fixtures.js';
 
 // Helper: capture IDs of open Bootstrap collapse panels within an accordion
 async function getOpenCollapseIds(page, accordionId) {
@@ -11,25 +11,25 @@ async function getOpenCollapseIds(page, accordionId) {
 test.describe('Step 5: Credits & Modules', () => {
   test.beforeEach(async ({ page }) => {
     // Fill Identity first to ensure localStorage is properly initialized
-    await page.locator('#titleInput').fill('Test Programme');
-    await page.locator('#levelInput').fill('8');
-    await page.locator('#totalCreditsInput').fill('60');
+    await page.getByTestId('title-input').fill('Test Programme');
+    await page.getByTestId('level-input').fill('8');
+    await page.getByTestId('programme-credits').fill('60');
     await page.waitForTimeout(300);
     
-    await page.click('button:has-text("5. Credits & Modules")');
+    await page.getByTestId('step-structure').click();
     await page.waitForTimeout(300);
   });
 
   test('should display modules section heading', async ({ page }) => {
-    await expect(page.locator('h5:has-text("Credits & modules")')).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Credits.*modules/i })).toBeVisible();
   });
 
   test('should show Add Module button', async ({ page }) => {
-    await expect(page.locator('button:has-text("+ Add module")')).toBeVisible();
+    await expect(page.getByTestId('add-module-btn')).toBeVisible();
   });
 
   test('should add a new module', async ({ page }) => {
-    await page.click('button:has-text("+ Add module")');
+    await page.getByTestId('add-module-btn').click();
     await page.waitForTimeout(600); // Wait for debounced save (400ms) to complete
     
     // Module form should appear - use specific data attribute selector
@@ -40,7 +40,7 @@ test.describe('Step 5: Credits & Modules', () => {
   });
 
   test('should set module code', async ({ page }) => {
-    await page.click('button:has-text("+ Add module")');
+    await page.getByTestId('add-module-btn').click();
     await page.waitForTimeout(300);
     
     // Find code input using data attribute
@@ -53,7 +53,7 @@ test.describe('Step 5: Credits & Modules', () => {
   });
 
   test('should set module title', async ({ page }) => {
-    await page.click('button:has-text("+ Add module")');
+    await page.getByTestId('add-module-btn').click();
     await page.waitForTimeout(300);
     
     // Find title input using data attribute
@@ -66,7 +66,7 @@ test.describe('Step 5: Credits & Modules', () => {
   });
 
   test('should set module credits', async ({ page }) => {
-    await page.click('button:has-text("+ Add module")');
+    await page.getByTestId('add-module-btn').click();
     await page.waitForTimeout(300);
     
     // Find credits input using data attribute
@@ -87,7 +87,7 @@ test.describe('Step 5: Credits & Modules', () => {
     ];
     
     for (let i = 0; i < modulesToAdd.length; i++) {
-      await page.click('button:has-text("+ Add module")');
+      await page.getByTestId('add-module-btn').click();
       await page.waitForTimeout(200);
     }
     
@@ -99,10 +99,10 @@ test.describe('Step 5: Credits & Modules', () => {
 
   test('should delete a module', async ({ page }) => {
     // Add module first
-    await page.click('button:has-text("+ Add module")');
+    await page.getByTestId('add-module-btn').click();
     await page.waitForTimeout(500);
     
-    // Click Remove span (role="button", not an actual button)
+    // Click Remove button (inside accordion header)
     await page.locator('[data-remove-module]').first().click();
     await page.waitForTimeout(500);
     
@@ -112,17 +112,17 @@ test.describe('Step 5: Credits & Modules', () => {
 
   test('should show credits sum', async ({ page }) => {
     // Set programme credits first
-    await page.click('button:has-text("1. Identity")');
+    await page.getByTestId('step-identity').click();
     await page.waitForTimeout(200);
-    await page.locator('#totalCreditsInput').fill('60');
+    await page.getByTestId('programme-credits').fill('60');
     await page.waitForTimeout(300);
     
     // Go back to modules
-    await page.click('button:has-text("5. Credits & Modules")');
+    await page.getByTestId('step-structure').click();
     await page.waitForTimeout(300);
     
     // Add modules
-    await page.click('button:has-text("+ Add module")');
+    await page.getByTestId('add-module-btn').click();
     await page.waitForTimeout(200);
     
     // Use data attribute for credits input
@@ -139,15 +139,15 @@ test.describe('Step 5: Credits & Modules', () => {
 
   test('should validate credits mismatch', async ({ page }) => {
     // Set programme credits
-    await page.click('button:has-text("1. Identity")');
+    await page.getByTestId('step-identity').click();
     await page.waitForTimeout(200);
-    await page.locator('#totalCreditsInput').fill('60');
+    await page.getByTestId('programme-credits').fill('60');
     await page.waitForTimeout(300);
     
     // Add module with wrong credits
-    await page.click('button:has-text("5. Credits & Modules")');
+    await page.getByTestId('step-structure').click();
     await page.waitForTimeout(200);
-    await page.click('button:has-text("+ Add module")');
+    await page.getByTestId('add-module-btn').click();
     await page.waitForTimeout(200);
     
     // Use data attribute for credits input
@@ -156,14 +156,14 @@ test.describe('Step 5: Credits & Modules', () => {
     await page.waitForTimeout(600);
     
     // Should show mismatch error in flags
-    await expect(page.locator('text=mismatch')).toBeVisible();
+    await expect(page.getByText('mismatch')).toBeVisible();
   });
 
   test('keeps open module panels after add module (re-render)', async ({ page }) => {
     // Ensure at least two modules exist
-    await page.click('button:has-text("+ Add module")');
+    await page.getByTestId('add-module-btn').click();
     await page.waitForTimeout(300);
-    await page.click('button:has-text("+ Add module")');
+    await page.getByTestId('add-module-btn').click();
     await page.waitForTimeout(600);
 
     // Open first two module accordions
@@ -176,7 +176,7 @@ test.describe('Step 5: Credits & Modules', () => {
     const before = await getOpenCollapseIds(page, 'modulesAccordion');
 
     // Trigger re-render by adding a module
-    await page.click('button:has-text("+ Add module")');
+    await page.getByTestId('add-module-btn').click();
     await page.waitForTimeout(600);
 
     const after = await getOpenCollapseIds(page, 'modulesAccordion');
@@ -187,10 +187,10 @@ test.describe('Step 5: Credits & Modules', () => {
 
 test.describe('Step 5: Module Details', () => {
   test('should expand module to show details', async ({ page }) => {
-    await page.click('button:has-text("5. Credits & Modules")');
+    await page.getByTestId('step-structure').click();
     await page.waitForTimeout(200);
     
-    await page.click('button:has-text("+ Add module")');
+    await page.getByTestId('add-module-btn').click();
     await page.waitForTimeout(300);
     
     // Look for expand/accordion toggle

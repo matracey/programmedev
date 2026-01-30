@@ -1,5 +1,5 @@
 // @ts-check
-import { test, expect, loadProgrammeData, getProgrammeData, navigateToStep } from './fixtures/test-fixtures.js';
+import { test, expect, loadProgrammeData, getProgrammeData } from './fixtures/test-fixtures.js';
 import { higherDiplomaComputing } from './fixtures/test-data.js';
 
 test.describe('Import/Export Functionality', () => {
@@ -10,7 +10,7 @@ test.describe('Import/Export Functionality', () => {
     // Click Export JSON in header
     const downloadPromise = page.waitForEvent('download', { timeout: 5000 }).catch(() => null);
     
-    await page.click('button:has-text("Export JSON")');
+    await page.getByRole('button', { name: 'Export JSON' }).click();
     
     const download = await downloadPromise;
     if (download) {
@@ -79,7 +79,7 @@ test.describe('Import/Export Functionality', () => {
 test.describe('LocalStorage Persistence', () => {
   test('should save changes to localStorage', async ({ page }) => {
     // Make a change using specific ID
-    await page.locator('#titleInput').fill('Persisted Programme');
+    await page.getByTestId('title-input').fill('Persisted Programme');
     await page.waitForTimeout(600);
     
     // Check localStorage
@@ -89,7 +89,7 @@ test.describe('LocalStorage Persistence', () => {
 
   test('should persist data across page reload', async ({ page }) => {
     // Make a change using specific ID
-    await page.locator('#titleInput').fill('Persisted After Reload');
+    await page.getByTestId('title-input').fill('Persisted After Reload');
     await page.waitForTimeout(600);
     
     // Reload page
@@ -97,13 +97,13 @@ test.describe('LocalStorage Persistence', () => {
     await page.waitForLoadState('networkidle');
     
     // Data should still be there
-    const titleInput = page.locator('#titleInput');
+    const titleInput = page.getByTestId('title-input');
     await expect(titleInput).toHaveValue('Persisted After Reload');
   });
 
   test('should show last saved timestamp', async ({ page }) => {
     // Make a change to trigger save
-    await page.locator('#titleInput').fill('Test Save');
+    await page.getByTestId('title-input').fill('Test Save');
     await page.waitForTimeout(600);
     
     // Check save status
@@ -119,18 +119,18 @@ test.describe('Import Complete Programme Flow', () => {
     await page.waitForTimeout(800);
     
     // Check Identity using specific IDs
-    await page.click('button:has-text("1. Identity")');
+    await page.getByTestId('step-identity').click();
     await page.waitForTimeout(500);
-    await expect(page.locator('#titleInput')).toHaveValue('Higher Diploma in Science in Computing');
+    await expect(page.getByTestId('title-input')).toHaveValue('Higher Diploma in Science in Computing');
     
     // Check PLOs - look for any PLO text content
-    await page.click('button:has-text("2. PLOs")');
+    await page.getByTestId('step-outcomes').click();
     await page.waitForTimeout(500);
     // First PLO text starts with "Design, develop..."
     await expect(page.getByText('Design', { exact: false }).first()).toBeVisible();
     
     // Check Modules
-    await page.click('button:has-text("5. Credits & Modules")');
+    await page.getByTestId('step-structure').click();
     await page.waitForTimeout(800);
     // Module data uses code CMP8001 and title Software Development
     // The code is in a textbox value, so check the input has the expected value

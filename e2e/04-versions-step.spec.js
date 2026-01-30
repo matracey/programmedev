@@ -1,5 +1,5 @@
 // @ts-check
-import { test, expect, loadProgrammeData, getProgrammeData, navigateToStep } from './fixtures/test-fixtures.js';
+import { test, expect, getProgrammeData } from './fixtures/test-fixtures.js';
 
 // Utility: capture open collapse IDs for an accordion container
 async function getOpenCollapseIds(page, accordionId) {
@@ -12,20 +12,20 @@ async function getOpenCollapseIds(page, accordionId) {
 
 test.describe('Step 3: Programme Versions', () => {
   test.beforeEach(async ({ page }) => {
-    await page.click('button:has-text("3. Programme Versions")');
+    await page.getByTestId('step-versions').click();
     await page.waitForTimeout(300);
   });
 
   test('should display versions section heading', async ({ page }) => {
-    await expect(page.locator('h4:has-text("Programme Versions")')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Programme Versions' })).toBeVisible();
   });
 
   test('should show Add Version button', async ({ page }) => {
-    await expect(page.locator('button:has-text("+ Add version")')).toBeVisible();
+    await expect(page.getByTestId('add-version-btn')).toBeVisible();
   });
 
   test('should add a new version', async ({ page }) => {
-    await page.click('button:has-text("+ Add version")');
+    await page.getByTestId('add-version-btn').click();
     await page.waitForTimeout(300);
     // Ensure version card is visible and expanded
     await expect(page.locator('#versionsAccordion .accordion-item').first()).toBeVisible();
@@ -34,12 +34,12 @@ test.describe('Step 3: Programme Versions', () => {
     if (expanded !== 'true') await header.click();
     
     // Should show version form fields (label input)
-    await expect(page.locator('label:has-text("Version label")')).toBeVisible();
+    await expect(page.getByLabel('Version label')).toBeVisible();
     await expect(page.locator('input[id^="vlabel_"]').first()).toBeVisible();
   });
 
   test('should configure version label and code', async ({ page }) => {
-    await page.click('button:has-text("+ Add version")');
+    await page.getByTestId('add-version-btn').click();
     await page.waitForTimeout(300);
     
     // Expand the first version panel and fill label
@@ -47,7 +47,7 @@ test.describe('Step 3: Programme Versions', () => {
     const header = page.locator('#versionsAccordion .accordion-button').first();
     const expanded = await header.getAttribute('aria-expanded');
     if (expanded !== 'true') await header.click();
-    const labelInput = page.locator('input[id^="vlabel_"]').first();
+    const labelInput = page.getByLabel('Version label');
     await labelInput.fill('Full-time');
     
     await page.waitForTimeout(600);
@@ -57,12 +57,12 @@ test.describe('Step 3: Programme Versions', () => {
   });
 
   test('should select delivery modality', async ({ page }) => {
-    await page.click('button:has-text("+ Add version")');
+    await page.getByTestId('add-version-btn').click();
     await page.waitForTimeout(300);
     
     // Look for delivery modality options (F2F, Blended, Online)
     const f2fOption = page.locator('text=Face-to-face, text=F2F, input[value="F2F"]').first();
-    const blendedOption = page.locator('text=Blended');
+    const blendedOption = page.getByText('Blended');
     const onlineOption = page.locator('text=Fully online, text=Online');
     
     // Select one if available
@@ -77,7 +77,7 @@ test.describe('Step 3: Programme Versions', () => {
   });
 
   test('should configure delivery pattern percentages', async ({ page }) => {
-    await page.click('button:has-text("+ Add version")');
+    await page.getByTestId('add-version-btn').click();
     await page.waitForTimeout(500);
     
     // Look for percentage inputs for sync/async/on-campus
@@ -89,7 +89,7 @@ test.describe('Step 3: Programme Versions', () => {
   });
 
   test('should validate delivery pattern totals 100%', async ({ page }) => {
-    await page.click('button:has-text("+ Add version")');
+    await page.getByTestId('add-version-btn').click();
     await page.waitForTimeout(500);
     
     // This validation is checked in the QQI flags
@@ -111,7 +111,7 @@ test.describe('Step 3: Programme Versions', () => {
   });
 
   test('should set cohort size and number of groups', async ({ page }) => {
-    await page.click('button:has-text("+ Add version")');
+    await page.getByTestId('add-version-btn').click();
     await page.waitForTimeout(300);
     
     // Expand first version and find cohort size input
@@ -119,7 +119,7 @@ test.describe('Step 3: Programme Versions', () => {
     const header = page.locator('#versionsAccordion .accordion-button').first();
     const expanded = await header.getAttribute('aria-expanded');
     if (expanded !== 'true') await header.click();
-    const cohortInput = page.locator('input[id^="vcohort_"]').first();
+    const cohortInput = page.getByLabel('Target cohort size');
     await cohortInput.fill('60');
     
     await page.waitForTimeout(600);
@@ -131,7 +131,7 @@ test.describe('Step 3: Programme Versions', () => {
   });
 
   test('should configure online proctored exams setting', async ({ page }) => {
-    await page.click('button:has-text("+ Add version")');
+    await page.getByTestId('add-version-btn').click();
     await page.waitForTimeout(300);
     
     // Look for proctored exams options (YES/NO/TBC)
@@ -146,15 +146,15 @@ test.describe('Step 3: Programme Versions', () => {
 
   test('should add multiple versions (FT, PT, Online)', async ({ page }) => {
     // Add Full-time version
-    await page.click('button:has-text("+ Add version")');
+    await page.getByTestId('add-version-btn').click();
     await page.waitForTimeout(300);
     
     // Add Part-time version
-    await page.click('button:has-text("+ Add version")');
+    await page.getByTestId('add-version-btn').click();
     await page.waitForTimeout(300);
     
     // Add Online version
-    await page.click('button:has-text("+ Add version")');
+    await page.getByTestId('add-version-btn').click();
     await page.waitForTimeout(600);
     
     const data = await getProgrammeData(page);
@@ -163,11 +163,11 @@ test.describe('Step 3: Programme Versions', () => {
 
   test('should delete a version', async ({ page }) => {
     // Add a version first
-    await page.click('button:has-text("+ Add version")');
+    await page.getByTestId('add-version-btn').click();
     await page.waitForTimeout(500);
     
     // Look for delete button
-    const deleteBtn = page.locator('button:has-text("Delete"), button:has-text("Remove"), button:has-text("×")').first();
+    const deleteBtn = page.getByRole('button', { name: /Delete|Remove|×/ }).first();
     
     if (await deleteBtn.isVisible()) {
       await deleteBtn.click();
@@ -177,9 +177,9 @@ test.describe('Step 3: Programme Versions', () => {
 
   test('keeps open version panels after proctor change (re-render)', async ({ page }) => {
     // Ensure two versions exist
-    await page.click('button:has-text("+ Add version")');
+    await page.getByTestId('add-version-btn').click();
     await page.waitForTimeout(200);
-    await page.click('button:has-text("+ Add version")');
+    await page.getByTestId('add-version-btn').click();
     await page.waitForTimeout(300);
 
     // Expand all
@@ -208,13 +208,13 @@ test.describe('Step 3: Programme Versions', () => {
 
 test.describe('Step 3: Version Selection', () => {
   test('should allow switching between versions', async ({ page }) => {
-    await page.click('button:has-text("3. Programme Versions")');
+    await page.getByTestId('step-versions').click();
     await page.waitForTimeout(300);
     
     // Add two versions
-    await page.click('button:has-text("+ Add version")');
+    await page.getByTestId('add-version-btn').click();
     await page.waitForTimeout(300);
-    await page.click('button:has-text("+ Add version")');
+    await page.getByTestId('add-version-btn').click();
     await page.waitForTimeout(500);
     
     // Look for version tabs or selector

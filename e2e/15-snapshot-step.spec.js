@@ -1,5 +1,5 @@
 // @ts-check
-import { test, expect, loadProgrammeData, getProgrammeData, navigateToStep } from './fixtures/test-fixtures.js';
+import { test, expect, loadProgrammeData } from './fixtures/test-fixtures.js';
 import { higherDiplomaComputing } from './fixtures/test-data.js';
 
 // Helper: capture IDs of open Bootstrap collapse panels within an accordion
@@ -16,7 +16,7 @@ test.describe('Step 14: QQI Snapshot', () => {
     await page.waitForTimeout(500); // Extra wait for data to be processed
     
     // Navigate to QQI Snapshot
-    await page.click('button:has-text("14. QQI Snapshot")');
+    await page.getByTestId('step-snapshot').click();
     await page.waitForTimeout(600);
   });
 
@@ -80,12 +80,12 @@ test.describe('Step 14: QQI Snapshot', () => {
   });
 
   test('should show Export JSON button', async ({ page }) => {
-    await expect(page.locator('#downloadJsonBtn, button:has-text("Download JSON")')).toBeVisible();
+    await expect(page.getByTestId('snapshot-download-json')).toBeVisible();
   });
 
   test('should show Export Word button', async ({ page }) => {
     // Word export only visible when programme is 100% complete
-    const wordBtn = page.locator('#exportWordBtn, button:has-text("Export Programme Descriptor")');
+    const wordBtn = page.getByTestId('snapshot-export-word');
     const incompleteMsg = page.locator('text=Complete all sections');
     
     // Either the Word button should be visible OR the "complete sections" message
@@ -97,12 +97,12 @@ test.describe('Step 14: QQI Snapshot', () => {
 test.describe('Step 14: QQI Snapshot - Export Functions', () => {
   test.beforeEach(async ({ page }) => {
     await loadProgrammeData(page, higherDiplomaComputing);
-    await page.click('button:has-text("14. QQI Snapshot")');
+    await page.getByTestId('step-snapshot').click();
     await page.waitForTimeout(500);
   });
 
   test('should copy JSON to clipboard', async ({ page }) => {
-    const copyBtn = page.locator('button:has-text("Copy JSON"), button:has-text("Copy")').first();
+    const copyBtn = page.getByTestId('snapshot-copy-json');
     
     if (await copyBtn.isVisible()) {
       await copyBtn.click();
@@ -118,7 +118,7 @@ test.describe('Step 14: QQI Snapshot - Export Functions', () => {
     // Set up download listener
     const downloadPromise = page.waitForEvent('download', { timeout: 5000 }).catch(() => null);
     
-    const downloadBtn = page.locator('button:has-text("Download JSON"), button:has-text("Export JSON")').first();
+    const downloadBtn = page.getByTestId('snapshot-download-json');
     
     if (await downloadBtn.isVisible()) {
       await downloadBtn.click();
@@ -133,7 +133,7 @@ test.describe('Step 14: QQI Snapshot - Export Functions', () => {
 
   test('should trigger Word export', async ({ page }) => {
     // Word export may require programme to be complete
-    const wordBtn = page.locator('button:has-text("Word"), button:has-text("DOCX")').first();
+    const wordBtn = page.getByTestId('snapshot-export-word');
     
     if (await wordBtn.isVisible() && await wordBtn.isEnabled()) {
       const downloadPromise = page.waitForEvent('download', { timeout: 5000 }).catch(() => null);
@@ -154,7 +154,7 @@ test.describe('Step 14: QQI Snapshot - Version Cards', () => {
   test.beforeEach(async ({ page }) => {
     await loadProgrammeData(page, higherDiplomaComputing);
     await page.waitForTimeout(500);
-    await page.click('button:has-text("14. QQI Snapshot")');
+    await page.getByTestId('step-snapshot').click();
     await page.waitForTimeout(600);
   });
 
@@ -189,7 +189,7 @@ test.describe('Step 14: QQI Snapshot - Version Cards', () => {
 test.describe('Step 14: QQI Snapshot - Validation Summary', () => {
   test('should show validation status', async ({ page }) => {
     await loadProgrammeData(page, higherDiplomaComputing);
-    await page.click('button:has-text("14. QQI Snapshot")');
+    await page.getByTestId('step-snapshot').click();
     await page.waitForTimeout(300);
     
     // Should show some validation info
@@ -199,7 +199,7 @@ test.describe('Step 14: QQI Snapshot - Validation Summary', () => {
 
   test('should indicate incomplete programme when validation fails', async ({ page }) => {
     // Start with empty programme
-    await page.click('button:has-text("14. QQI Snapshot")');
+    await page.getByTestId('step-snapshot').click();
     await page.waitForTimeout(300);
     
     // Should show incomplete status or warnings - or just show empty state

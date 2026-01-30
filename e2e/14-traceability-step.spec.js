@@ -1,24 +1,24 @@
 // @ts-check
-import { test, expect, loadProgrammeData, getProgrammeData, navigateToStep } from './fixtures/test-fixtures.js';
+import { test, expect, getProgrammeData } from './fixtures/test-fixtures.js';
 
 test.describe('Step 13: Traceability (Sankey Diagram)', () => {
   test.beforeEach(async ({ page }) => {
     // Set up complete data flow for traceability
     // 1. Identity with NFQ Level
-    await page.locator('#titleInput').fill('Test Programme');
-    await page.locator('#levelInput').fill('8');
-    await page.locator('#totalCreditsInput').fill('60');
+    await page.getByTestId('title-input').fill('Test Programme');
+    await page.getByTestId('level-input').fill('8');
+    await page.getByTestId('total-credits-input').fill('60');
     await page.waitForTimeout(400);
     
     // 2. PLOs
-    await page.click('button:has-text("2. PLOs")');
+    await page.getByTestId('step-outcomes').click();
     await page.waitForTimeout(300);
     for (let i = 0; i < 2; i++) {
-      await page.click('button:has-text("+ Add PLO")');
+      await page.getByTestId('add-plo-btn').click();
       await page.waitForTimeout(300);
       
       // Click "Expand all" to ensure all PLO accordions are visible
-      const expandAllBtn = page.locator('button:has-text("Expand all")');
+      const expandAllBtn = page.getByRole('button', { name: 'Expand all' });
       if (await expandAllBtn.isVisible()) {
         await expandAllBtn.click();
         await page.waitForTimeout(200);
@@ -31,14 +31,14 @@ test.describe('Step 13: Traceability (Sankey Diagram)', () => {
     await page.waitForTimeout(500);
     
     // 3. Modules with MIMLOs
-    await page.click('button:has-text("5. Credits & Modules")');
+    await page.getByTestId('step-structure').click();
     await page.waitForTimeout(300);
-    await page.click('button:has-text("+ Add module")');
+    await page.getByTestId('add-module-btn').click();
     await page.waitForTimeout(400);
     await page.locator('[data-module-field="title"]').first().fill('Software Development');
     await page.waitForTimeout(500);
     
-    await page.click('button:has-text("7. MIMLOs")');
+    await page.getByTestId('step-mimlos').click();
     await page.waitForTimeout(400);
     const addMimloBtn = page.locator('button[data-add-mimlo]').first();
     if (await addMimloBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
@@ -52,7 +52,7 @@ test.describe('Step 13: Traceability (Sankey Diagram)', () => {
     await page.waitForTimeout(500);
     
     // 4. Mapping
-    await page.click('button:has-text("12. Mapping")');
+    await page.getByTestId('step-mapping').click();
     await page.waitForTimeout(400);
     const checkbox = page.locator('input[type="checkbox"]').first();
     if (await checkbox.isVisible({ timeout: 3000 }).catch(() => false)) {
@@ -61,7 +61,7 @@ test.describe('Step 13: Traceability (Sankey Diagram)', () => {
     await page.waitForTimeout(500);
     
     // Navigate to Traceability
-    await page.click('button:has-text("13. Traceability")');
+    await page.getByTestId('step-traceability').click();
     await page.waitForTimeout(600);
   });
 
@@ -93,7 +93,7 @@ test.describe('Step 13: Traceability (Sankey Diagram)', () => {
 
   test('should show traceability even with incomplete data', async ({ page }) => {
     // Navigate directly to traceability - it should handle incomplete data gracefully
-    await page.click('button:has-text("13. Traceability")');
+    await page.getByTestId('step-traceability').click();
     await page.waitForTimeout(800);
     
     // Should show heading regardless of data state
@@ -106,26 +106,26 @@ test.describe('Step 13: Traceability Chain', () => {
     // This is the key traceability chain for QQI validation
     
     // Set up complete chain with Identity
-    await page.locator('#titleInput').fill('Test Programme');
-    await page.locator('#levelInput').fill('8');
-    await page.locator('#totalCreditsInput').fill('60');
+    await page.getByTestId('title-input').fill('Test Programme');
+    await page.getByTestId('level-input').fill('8');
+    await page.getByTestId('total-credits-input').fill('60');
     
     // PLO
-    await page.click('button:has-text("2. PLOs")');
+    await page.getByTestId('step-outcomes').click();
     await page.waitForTimeout(200);
-    await page.click('button:has-text("+ Add PLO")');
+    await page.getByTestId('add-plo-btn').click();
     await page.locator('[data-plo-id]').first().fill('Design software applications');
     await page.waitForTimeout(300);
     
     // Module
-    await page.click('button:has-text("5. Credits & Modules")');
+    await page.getByTestId('step-structure').click();
     await page.waitForTimeout(200);
-    await page.click('button:has-text("+ Add module")');
+    await page.getByTestId('add-module-btn').click();
     await page.locator('[data-module-field="title"]').first().fill('Software Development');
     await page.waitForTimeout(300);
     
     // MIMLO
-    await page.click('button:has-text("7. MIMLOs")');
+    await page.getByTestId('step-mimlos').click();
     await page.waitForTimeout(200);
     const addMimloBtn = page.locator('button[data-add-mimlo]').first();
     if (await addMimloBtn.isVisible()) {
@@ -135,7 +135,7 @@ test.describe('Step 13: Traceability Chain', () => {
     await page.waitForTimeout(300);
     
     // Assessment linked to MIMLO
-    await page.click('button:has-text("9. Assessments")');
+    await page.getByTestId('step-assessments').click();
     await page.waitForTimeout(200);
     const addAsmBtn = page.locator('button[data-add-asm]').first();
     if (await addAsmBtn.isVisible()) {
@@ -150,7 +150,7 @@ test.describe('Step 13: Traceability Chain', () => {
     await page.waitForTimeout(300);
     
     // Map PLO to Module
-    await page.click('button:has-text("12. Mapping")');
+    await page.getByTestId('step-mapping').click();
     await page.waitForTimeout(200);
     const mapCheckbox = page.locator('input[type="checkbox"]').first();
     if (await mapCheckbox.isVisible()) {
@@ -159,7 +159,7 @@ test.describe('Step 13: Traceability Chain', () => {
     await page.waitForTimeout(400);
     
     // View Traceability
-    await page.click('button:has-text("13. Traceability")');
+    await page.getByTestId('step-traceability').click();
     await page.waitForTimeout(1000);
     
     // Chart should show the complete chain
