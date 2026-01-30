@@ -65,7 +65,7 @@ export function renderElectivesStep() {
                 const hasNonElective = groupModules.some(m => !m.isElective);
 
                 return `
-                  <div class="card mb-2 border-start border-info border-3">
+                  <div class="card mb-2 border-start border-info border-3" data-testid="elective-group-${g.id}">
                     <div class="card-header py-2 d-flex justify-content-between align-items-center bg-light">
                       <div>
                         ${g.code ? `<span class="badge text-bg-dark me-2">${escapeHtml(g.code)}</span>` : ''}
@@ -81,22 +81,23 @@ export function renderElectivesStep() {
                     <div class="card-body py-2">
                       ${groupModules.length === 0 
                         ? `<p class="text-muted mb-2 small">No modules assigned to this group yet.</p>`
-                        : `<div class="list-group list-group-flush mb-2">
+                        : `<div class="list-group list-group-flush mb-2" role="list" aria-label="Modules in group ${escapeHtml(g.name || `Group ${grpIdx + 1}`)}">
                             ${groupModules.map(m => `
-                              <div class="list-group-item d-flex justify-content-between align-items-center py-1 px-2">
+                              <div class="list-group-item d-flex justify-content-between align-items-center py-1 px-2" role="listitem">
                                 <div>
-                                  <span class="badge ${m.isElective ? 'text-bg-info' : 'text-bg-danger'} me-1" style="font-size:0.7rem">${m.isElective ? 'E' : 'M'}</span>
+                                  <span class="badge ${m.isElective ? 'text-bg-info' : 'text-bg-danger'} me-1" style="font-size:0.7rem" aria-label="${m.isElective ? 'Elective' : 'Mandatory'}">${m.isElective ? 'E' : 'M'}</span>
                                   <strong>${escapeHtml(m.code || '')}</strong> ${escapeHtml(m.title || 'Untitled')}
                                   <span class="text-muted ms-1">(${m.credits || 0} cr)</span>
                                 </div>
-                                <button class="btn btn-sm btn-outline-secondary py-0" data-unassign-module="${m.id}" data-from-group="${g.id}">×</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary py-0" data-unassign-module="${m.id}" data-from-group="${g.id}" aria-label="Remove ${escapeHtml(m.title || 'module')} from group" data-testid="unassign-module-${m.id}-${g.id}">×</button>
                               </div>
                             `).join('')}
                            </div>`
                       }
                       
                       <div>
-                        <select class="form-select form-select-sm" data-assign-to-group="${g.id}">
+                        <label class="visually-hidden" for="assign-select-${g.id}">Add module to ${escapeHtml(g.name || `Group ${grpIdx + 1}`)}</label>
+                        <select class="form-select form-select-sm" id="assign-select-${g.id}" data-assign-to-group="${g.id}" data-testid="assign-module-${g.id}">
                           <option value="">+ Add elective module...</option>
                           ${electiveModules
                             .filter(m => !(g.moduleIds || []).includes(m.id))
@@ -113,9 +114,9 @@ export function renderElectivesStep() {
           const defCode = def.code || '';
 
           return `
-            <div class="accordion-item">
+            <div class="accordion-item" data-testid="elective-def-${def.id}">
               <h2 class="accordion-header" id="${headingId}">
-                <button class="accordion-button ${isActive ? '' : 'collapsed'}" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="${isActive}" aria-controls="${collapseId}">
+                <button class="accordion-button ${isActive ? '' : 'collapsed'}" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="${isActive}" aria-controls="${collapseId}" data-testid="elective-def-accordion-${def.id}">
                   <div class="d-flex align-items-center gap-2 w-100">
                     ${defCode ? `<span class="badge text-bg-dark">${escapeHtml(defCode)}</span>` : ''}
                     <span class="fw-semibold">${escapeHtml(defName)}</span>
@@ -164,9 +165,9 @@ export function renderElectivesStep() {
   content.innerHTML = devModeToggleHtml + `
     <div class="card shadow-sm mb-3">
       <div class="card-body">
-        <h5 class="card-title mb-3">Electives</h5>
+        <h5 class="card-title mb-3" id="electives-heading">Electives</h5>
         
-        <div class="alert alert-light">
+        <div class="alert alert-light" role="note">
           <strong>How elective definitions & groups work:</strong>
           <ul class="mb-0 mt-2">
             <li>Students complete <strong>every</strong> elective definition in the programme</li>
@@ -175,12 +176,12 @@ export function renderElectivesStep() {
           </ul>
         </div>
 
-        <div class="row g-3 mb-3">
+        <div class="row g-3 mb-3" role="group" aria-label="Credit summary">
           <div class="col-md-3">
             <div class="card bg-light">
               <div class="card-body py-2 text-center">
                 <div class="small text-muted">Mandatory Credits</div>
-                <div class="fs-4 fw-bold">${mandatoryCredits}</div>
+                <div class="fs-4 fw-bold" data-testid="mandatory-credits">${mandatoryCredits}</div>
               </div>
             </div>
           </div>
@@ -188,7 +189,7 @@ export function renderElectivesStep() {
             <div class="card bg-light">
               <div class="card-body py-2 text-center">
                 <div class="small text-muted">Elective Definitions</div>
-                <div class="fs-4 fw-bold">${electiveDefinitions.length}</div>
+                <div class="fs-4 fw-bold" data-testid="elective-def-count">${electiveDefinitions.length}</div>
               </div>
             </div>
           </div>
@@ -196,7 +197,7 @@ export function renderElectivesStep() {
             <div class="card bg-light">
               <div class="card-body py-2 text-center">
                 <div class="small text-muted">Elective Credits</div>
-                <div class="fs-4 fw-bold">${electiveCredits} cr</div>
+                <div class="fs-4 fw-bold" data-testid="elective-credits">${electiveCredits} cr</div>
               </div>
             </div>
           </div>
@@ -204,7 +205,7 @@ export function renderElectivesStep() {
             <div class="card bg-light">
               <div class="card-body py-2 text-center">
                 <div class="small text-muted">Programme Total</div>
-                <div class="fs-4 fw-bold">${totalCredits} cr</div>
+                <div class="fs-4 fw-bold" data-testid="total-credits">${totalCredits} cr</div>
               </div>
             </div>
           </div>
@@ -216,11 +217,13 @@ export function renderElectivesStep() {
 
     <div class="card shadow-sm">
       <div class="card-body">
-        <h6 class="card-title mb-3">Elective Definitions & Groups</h6>
-        ${definitionsHtml}
+        <h6 class="card-title mb-3" id="elective-defs-groups-heading">Elective Definitions & Groups</h6>
+        <div aria-labelledby="elective-defs-groups-heading" data-testid="elective-definitions-container">
+          ${definitionsHtml}
+        </div>
         
         ${electiveDefinitions.length > 0 && electiveModules.length === 0 
-          ? `<div class="alert alert-warning mt-3 mb-0">
+          ? `<div class="alert alert-warning mt-3 mb-0" role="alert">
               No elective modules available. 
               <a href="#" data-goto-step="structure" class="alert-link">Go to Credits & Modules</a> to mark some modules as Elective (E).
              </div>`

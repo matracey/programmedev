@@ -276,57 +276,58 @@ export function renderAssessmentsStep() {
       const asmActive = openCollapseIds.has(asmCollapseId) ? true : (openCollapseIds.size === 0 && asmIdx === 0);
 
       return `
-        <div class="accordion-item bg-body">
+        <div class="accordion-item bg-body" data-testid="assessment-item-${a.id}">
           <h2 class="accordion-header" id="${asmHeadingId}">
-            <button class="accordion-button ${asmActive ? '' : 'collapsed'} w-100" type="button" data-bs-toggle="collapse" data-bs-target="#${asmCollapseId}" aria-expanded="${asmActive}" aria-controls="${asmCollapseId}">
+            <button class="accordion-button ${asmActive ? '' : 'collapsed'} w-100" type="button" data-bs-toggle="collapse" data-bs-target="#${asmCollapseId}" aria-expanded="${asmActive}" aria-controls="${asmCollapseId}" data-testid="assessment-accordion-${a.id}">
               <div class="d-flex w-100 align-items-center gap-2">
                 <div class="flex-grow-1 text-start">
                   <div class="fw-semibold">${escapeHtml(a.title || "Assessment")}</div>
                   <div class="small text-nowrap text-secondary">${escapeHtml(a.type || "")} • ${a.weighting ?? 0}%</div>
                 </div>
                 <div class="header-actions d-flex align-items-center gap-2 me-2">
-                  <span class="btn btn-sm btn-outline-danger" data-remove-asm="${m.id}" data-asm-id="${a.id}" role="button">Remove</span>
+                  <span class="btn btn-sm btn-outline-danger" role="button" tabindex="0" data-remove-asm="${m.id}" data-asm-id="${a.id}" aria-label="Remove assessment ${escapeHtml(a.title || '')}" data-testid="remove-asm-${a.id}">Remove</span>
                 </div>
               </div>
             </button>
           </h2>
           <div id="${asmCollapseId}" class="accordion-collapse collapse ${asmActive ? 'show' : ''}" aria-labelledby="${asmHeadingId}">
             <div class="accordion-body">
-              <div class="row g-2">
+              <fieldset class="row g-2">
+                <legend class="visually-hidden">Assessment details</legend>
                 <div class="col-md-4">
-                  <label class="form-label small fw-semibold">Title</label>
-                  <input class="form-control" data-asm-title="${m.id}" data-asm-id="${a.id}" value="${escapeHtml(a.title || "")}">
+                  <label class="form-label small fw-semibold" for="asm-title-${a.id}">Title</label>
+                  <input class="form-control" id="asm-title-${a.id}" data-asm-title="${m.id}" data-asm-id="${a.id}" data-testid="asm-title-${a.id}" value="${escapeHtml(a.title || "")}">
                 </div>
                 <div class="col-md-3">
-                  <label class="form-label small fw-semibold">Type</label>
-                  <select class="form-select" data-asm-type="${m.id}" data-asm-id="${a.id}">
+                  <label class="form-label small fw-semibold" for="asm-type-${a.id}">Type</label>
+                  <select class="form-select" id="asm-type-${a.id}" data-asm-type="${m.id}" data-asm-id="${a.id}" data-testid="asm-type-${a.id}">
                     ${typeOpts.map(t => `<option value="${escapeHtml(t)}" ${(a.type || "") === t ? "selected" : ""}>${escapeHtml(t)}</option>`).join("")}
                   </select>
                 </div>
                 <div class="col-md-2">
-                  <label class="form-label small fw-semibold">Weighting %</label>
-                  <input type="number" min="0" max="100" step="1" class="form-control"
-                    data-asm-weight="${m.id}" data-asm-id="${a.id}" value="${a.weighting ?? ""}">
+                  <label class="form-label small fw-semibold" for="asm-weight-${a.id}">Weighting %</label>
+                  <input type="number" min="0" max="100" step="1" class="form-control" id="asm-weight-${a.id}"
+                    data-asm-weight="${m.id}" data-asm-id="${a.id}" data-testid="asm-weight-${a.id}" value="${a.weighting ?? ""}">
                 </div>
                 <div class="col-md-3">
-                  <label class="form-label small fw-semibold">Mode</label>
-                  <select class="form-select" data-asm-mode="${m.id}" data-asm-id="${a.id}">
+                  <label class="form-label small fw-semibold" for="asm-mode-${a.id}">Mode</label>
+                  <select class="form-select" id="asm-mode-${a.id}" data-asm-mode="${m.id}" data-asm-id="${a.id}" data-testid="asm-mode-${a.id}">
                     ${ASSESSMENT_MODES.map(x => `<option value="${x}" ${mode === x ? "selected" : ""}>${x}</option>`).join("")}
                   </select>
                 </div>
-              </div>
+              </fieldset>
 
               <div class="row g-2 mt-2">
                 <div class="col-md-6">
-                  <div class="fw-semibold small mb-1">Map to MIMLOs</div>
-                  <div class="border rounded p-2" data-asm-mimlo-box="${m.id}" data-asm-id="${a.id}">
-                    ${(m.mimlos || []).map(mi => {
+                  <div class="fw-semibold small mb-1" id="mimlo-map-heading-${a.id}">Map to MIMLOs</div>
+                  <div class="border rounded p-2" data-asm-mimlo-box="${m.id}" data-asm-id="${a.id}" role="group" aria-labelledby="mimlo-map-heading-${a.id}">
+                    ${(m.mimlos || []).map((mi, miIdx) => {
                       const checked = (a.mimloIds || []).includes(mi.id);
                       return `
                         <div class="form-check">
-                          <input class="form-check-input" type="checkbox"
-                            data-asm-mimlo="${m.id}" data-asm-id="${a.id}" data-mimlo-id="${mi.id}" ${checked ? "checked" : ""}>
-                          <label class="form-check-label small">${escapeHtml(mimloText(mi))}</label>
+                          <input class="form-check-input" type="checkbox" id="asm-mimlo-${a.id}-${mi.id}"
+                            data-asm-mimlo="${m.id}" data-asm-id="${a.id}" data-mimlo-id="${mi.id}" data-testid="asm-mimlo-${a.id}-${mi.id}" ${checked ? "checked" : ""}>
+                          <label class="form-check-label small" for="asm-mimlo-${a.id}-${mi.id}">${escapeHtml(mimloText(mi))}</label>
                         </div>
                       `;
                     }).join("") || '<span class="text-muted small">Add MIMLOs first</span>'}
@@ -334,13 +335,13 @@ export function renderAssessmentsStep() {
                 </div>
 
                 <div class="col-md-6">
-                  <div class="fw-semibold small mb-1">Integrity controls</div>
-                  <div class="border rounded p-2">
+                  <div class="fw-semibold small mb-1" id="integrity-heading-${a.id}">Integrity controls</div>
+                  <div class="border rounded p-2" role="group" aria-labelledby="integrity-heading-${a.id}">
                     ${INTEGRITY_CONTROLS.map(({ key, label }) => `
                       <div class="form-check">
-                        <input class="form-check-input" type="checkbox"
-                          data-integrity-option="${m.id}" data-asm-id="${a.id}" data-int-key="${key}" ${integ[key] ? "checked" : ""}>
-                        <label class="form-check-label small">${label}</label>
+                        <input class="form-check-input" type="checkbox" id="asm-int-${a.id}-${key}"
+                          data-integrity-option="${m.id}" data-asm-id="${a.id}" data-int-key="${key}" data-testid="asm-integrity-${a.id}-${key}" ${integ[key] ? "checked" : ""}>
+                        <label class="form-check-label small" for="asm-int-${a.id}-${key}">${label}</label>
                       </div>
                     `).join("")}
                   </div>
@@ -348,8 +349,8 @@ export function renderAssessmentsStep() {
               </div>
 
               <div class="mt-2">
-                <label class="form-label small fw-semibold">Notes</label>
-                <textarea class="form-control" rows="2" data-asm-notes="${m.id}" data-asm-id="${a.id}">${escapeHtml(a.notes || "")}</textarea>
+                <label class="form-label small fw-semibold" for="asm-notes-${a.id}">Notes</label>
+                <textarea class="form-control" rows="2" id="asm-notes-${a.id}" data-asm-notes="${m.id}" data-asm-id="${a.id}" data-testid="asm-notes-${a.id}">${escapeHtml(a.notes || "")}</textarea>
               </div>
             </div>
           </div>
@@ -362,9 +363,9 @@ export function renderAssessmentsStep() {
     const collapseId = `asm_${m.id}_collapse`;
     const modActive = openCollapseIds.has(collapseId) ? true : (openCollapseIds.size === 0 && idx === 0);
     return `
-      <div class="accordion-item bg-body" ${isHidden ? 'style="display:none"' : ''} data-module-card="${m.id}">
+      <div class="accordion-item bg-body" ${isHidden ? 'style="display:none"' : ''} data-module-card="${m.id}" data-testid="asm-module-${m.id}">
         <h2 class="accordion-header" id="${headingId}">
-          <button class="accordion-button ${modActive ? '' : 'collapsed'} w-100" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="${modActive}" aria-controls="${collapseId}">
+          <button class="accordion-button ${modActive ? '' : 'collapsed'} w-100" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="${modActive}" aria-controls="${collapseId}" data-testid="asm-module-accordion-${m.id}">
             <div class="d-flex w-100 align-items-center gap-2">
               <div class="flex-grow-1 text-start">
                 <div class="fw-semibold">${escapeHtml(m.code || "")} — ${escapeHtml(m.title || "")}</div>
@@ -372,7 +373,7 @@ export function renderAssessmentsStep() {
               </div>
               <div class="header-actions d-flex align-items-center gap-2 me-2">
                 ${totalBadge}
-                <span class="btn btn-sm btn-outline-primary" data-add-asm="${m.id}" role="button">+ Add</span>
+                <button type="button" class="btn btn-sm btn-outline-primary" data-add-asm="${m.id}" aria-label="Add assessment to ${escapeHtml(m.title || 'module')}" data-testid="add-asm-${m.id}">+ Add</button>
               </div>
             </div>
           </button>
@@ -390,25 +391,26 @@ export function renderAssessmentsStep() {
   const reportSection = `
     <div class="card border-0 bg-white shadow-sm mb-3">
       <div class="card-body">
-        <div class="row g-2 align-items-end">
+        <fieldset class="row g-2 align-items-end">
+          <legend class="visually-hidden">Assessment reports</legend>
           <div class="col-md-4">
-            <label class="form-label small fw-semibold">Report type</label>
-            <select class="form-select" id="reportTypeSelect">
+            <label class="form-label small fw-semibold" for="reportTypeSelect">Report type</label>
+            <select class="form-select" id="reportTypeSelect" data-testid="report-type-select">
               ${ASSESSMENT_REPORT_TYPES.map(r => `<option value="${r.id}" ${(state.reportTypeId || "byStageType") === r.id ? "selected" : ""}>${escapeHtml(r.label)}</option>`).join("")}
             </select>
           </div>
           <div class="col-md-4">
-            <label class="form-label small fw-semibold">Version</label>
-            <select class="form-select" id="reportVersionSelect">
+            <label class="form-label small fw-semibold" for="reportVersionSelect">Version</label>
+            <select class="form-select" id="reportVersionSelect" data-testid="report-version-select">
               ${(p.versions || []).map(v => `<option value="${v.id}" ${(state.reportVersionId || (p.versions?.[0]?.id)) === v.id ? "selected" : ""}>${escapeHtml(v.label || v.code || "Version")}</option>`).join("")}
             </select>
           </div>
           <div class="col-md-4 d-flex gap-2">
-            <button class="btn btn-outline-primary w-50" id="runReportInlineBtn" type="button">Show below</button>
-            <button class="btn btn-outline-secondary w-50" id="runReportNewTabBtn" type="button">Open in new tab</button>
+            <button class="btn btn-outline-primary w-50" id="runReportInlineBtn" type="button" data-testid="run-report-inline">Show below</button>
+            <button class="btn btn-outline-secondary w-50" id="runReportNewTabBtn" type="button" data-testid="run-report-newtab">Open in new tab</button>
           </div>
-        </div>
-        <div class="mt-3" id="reportOutput" style="display:none;"></div>
+        </fieldset>
+        <div class="mt-3" id="reportOutput" role="region" aria-live="polite" style="display:none;"></div>
       </div>
     </div>
   `;
@@ -416,7 +418,7 @@ export function renderAssessmentsStep() {
   content.innerHTML = devModeToggleHtml + `
     <div class="d-flex align-items-center justify-content-between mb-3">
       <div>
-        <div class="h5 mb-0">Assessments</div>
+        <div class="h5 mb-0" id="assessments-heading">Assessments</div>
         <div class="text-muted small">Create assessments per module, set weightings, and map to MIMLOs.</div>
       </div>
     </div>
@@ -424,8 +426,8 @@ export function renderAssessmentsStep() {
     ${reportSection}
     ${modulePicker}
     ${accordionControlsHtml('assessmentsAccordion')}
-    <div class="accordion" id="assessmentsAccordion">
-      ${modulesForEdit.length ? cards : `<div class="alert alert-warning">No modules available to edit.</div>`}
+    <div class="accordion" id="assessmentsAccordion" aria-labelledby="assessments-heading" data-testid="assessments-accordion">
+      ${modulesForEdit.length ? cards : `<div class="alert alert-warning" role="alert">No modules available to edit.</div>`}
     </div>
   `;
 

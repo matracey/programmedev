@@ -154,27 +154,27 @@ export function renderScheduleStep() {
           <div id="${collapseId}" class="accordion-collapse collapse ${isActive ? 'show' : ''}" aria-labelledby="${headingId}">
             <div class="accordion-body p-0">
               <div class="table-responsive">
-                <table class="table table-sm table-bordered align-middle mb-0">
+                <table class="table table-sm table-bordered align-middle mb-0" aria-label="Module schedule for ${escapeHtml(stg.name || 'Stage ' + stg.sequence)}" data-testid="schedule-table-${stg.sequence}">
                   <thead>
                     <tr>
-                      <th rowspan="2" class="align-middle" style="min-width:180px">Module Title</th>
-                      <th rowspan="2" class="text-center align-middle" style="width:60px">Sem</th>
-                      <th rowspan="2" class="text-center align-middle" style="width:50px">Status</th>
-                      <th rowspan="2" class="text-center align-middle" style="width:50px">NFQ</th>
-                      <th rowspan="2" class="text-center align-middle" style="width:50px">ECTS</th>
-                      <th colspan="5" class="text-center">Total Student Effort (hours)</th>
-                      <th colspan="4" class="text-center">Assessment Strategy (%)</th>
+                      <th rowspan="2" class="align-middle" style="min-width:180px" scope="col">Module Title</th>
+                      <th rowspan="2" class="text-center align-middle" style="width:60px" scope="col">Sem</th>
+                      <th rowspan="2" class="text-center align-middle" style="width:50px" scope="col">Status</th>
+                      <th rowspan="2" class="text-center align-middle" style="width:50px" scope="col">NFQ</th>
+                      <th rowspan="2" class="text-center align-middle" style="width:50px" scope="col">ECTS</th>
+                      <th colspan="5" class="text-center" scope="colgroup">Total Student Effort (hours)</th>
+                      <th colspan="4" class="text-center" scope="colgroup">Assessment Strategy (%)</th>
                     </tr>
                     <tr>
-                      <th class="text-center small" style="width:50px">Total</th>
-                      <th class="text-center small" style="width:55px">Contact</th>
-                      <th class="text-center small" style="width:55px">Dir. E-Learn</th>
-                      <th class="text-center small" style="width:60px">Indep. Learn</th>
-                      <th class="text-center small" style="width:55px">Work-based</th>
-                      <th class="text-center small" style="width:40px">CA</th>
-                      <th class="text-center small" style="width:45px">Project</th>
-                      <th class="text-center small" style="width:50px">Practical</th>
-                      <th class="text-center small" style="width:45px">Exam</th>
+                      <th class="text-center small" style="width:50px" scope="col">Total</th>
+                      <th class="text-center small" style="width:55px" scope="col">Contact</th>
+                      <th class="text-center small" style="width:55px" scope="col">Dir. E-Learn</th>
+                      <th class="text-center small" style="width:60px" scope="col">Indep. Learn</th>
+                      <th class="text-center small" style="width:55px" scope="col">Work-based</th>
+                      <th class="text-center small" style="width:40px" scope="col">CA</th>
+                      <th class="text-center small" style="width:45px" scope="col">Project</th>
+                      <th class="text-center small" style="width:50px" scope="col">Practical</th>
+                      <th class="text-center small" style="width:45px" scope="col">Exam</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -224,10 +224,11 @@ export function renderScheduleStep() {
             <div class="small text-secondary">QQI-style module schedule showing effort hours and assessment strategy per stage.</div>
           </div>
           <div class="d-flex gap-2 align-items-center">
-            <select class="form-select" id="scheduleVersionSelect" style="min-width: 260px;">
+            <label for="scheduleVersionSelect" class="visually-hidden">Select programme version</label>
+            <select class="form-select" id="scheduleVersionSelect" style="min-width: 260px;" aria-label="Select programme version" data-testid="schedule-version-select">
               ${vSelect}
             </select>
-            <button class="btn btn-outline-secondary btn-sm" id="printScheduleBtn" title="Print schedule">
+            <button class="btn btn-outline-secondary btn-sm" id="printScheduleBtn" title="Print schedule" aria-label="Print schedule" data-testid="schedule-print-btn">
               <i class="bi bi-printer"></i> Print
             </button>
           </div>

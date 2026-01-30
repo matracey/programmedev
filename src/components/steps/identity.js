@@ -69,7 +69,7 @@ function renderElectiveDefinitionsList(p, openCollapseIds) {
                     <div class="small text-secondary">${Number(def.credits || 0)} cr • ${(def.groups || []).length} group(s)</div>
                   </div>
                   <div class="header-actions d-flex align-items-center gap-2 me-2">
-                    <span class="btn btn-sm btn-outline-danger" data-remove-elective-definition="${def.id}" role="button">Remove</span>
+                    <span class="btn btn-sm btn-outline-danger" role="button" tabindex="0" data-remove-elective-definition="${def.id}">Remove</span>
                   </div>
                 </div>
               </button>
@@ -149,58 +149,61 @@ export function renderIdentityStep() {
   content.innerHTML = devModeToggleHtml + `
     <div class="card shadow-sm">
       <div class="card-body">
-        <h5 class="card-title mb-3">Identity (QQI-critical)</h5>
-        <div class="row g-3">
+        <h5 class="card-title mb-3" id="identity-heading">Identity (QQI-critical)</h5>
+        <form class="row g-3" aria-labelledby="identity-heading">
           <div class="col-md-6">
-            <label class="form-label fw-semibold">Programme title</label>
-            <input class="form-control" id="titleInput" value="${escapeHtml(p.title)}">
+            <label class="form-label fw-semibold" for="titleInput">Programme title</label>
+            <input class="form-control" id="titleInput" data-testid="title-input" value="${escapeHtml(p.title)}" aria-required="true">
           </div>
           <div class="col-md-6">
-            <label class="form-label fw-semibold">Award type</label>
-            <select class="form-select" id="awardSelect">
+            <label class="form-label fw-semibold" for="awardSelect">Award type</label>
+            <select class="form-select" id="awardSelect" data-testid="award-select" aria-required="true">
               <option value="" disabled ${(!p.awardType && !p.awardTypeIsOther) ? "selected" : ""}>Select an award type</option>
               ${awardOpts}
             </select>
             <div class="mt-2" id="awardOtherWrap" style="display:${p.awardTypeIsOther ? "block" : "none"}">
-              <input class="form-control" id="awardOtherInput" value="${escapeHtml(p.awardTypeIsOther ? p.awardType : "")}" placeholder="Type the award type">
+              <label class="visually-hidden" for="awardOtherInput">Custom award type</label>
+              <input class="form-control" id="awardOtherInput" data-testid="award-other-input" value="${escapeHtml(p.awardTypeIsOther ? p.awardType : "")}" placeholder="Type the award type" aria-label="Custom award type">
             </div>
           </div>
           <div class="col-md-4">
-            <label class="form-label fw-semibold">NFQ level</label>
-            <input type="number" min="6" max="9" step="1" class="form-control" id="levelInput" value="${p.nfqLevel ?? ""}">
+            <label class="form-label fw-semibold" for="levelInput">NFQ level</label>
+            <input type="number" min="6" max="9" step="1" class="form-control" id="levelInput" data-testid="level-input" value="${p.nfqLevel ?? ""}" aria-required="true" aria-describedby="levelHelp">
+            <div id="levelHelp" class="visually-hidden">Enter a value between 6 and 9</div>
           </div>
           <div class="col-md-4">
-            <label class="form-label fw-semibold">Total credits (ECTS)</label>
-            <input type="number" min="1" step="1" class="form-control" id="totalCreditsInput" value="${p.totalCredits ?? ""}" placeholder="e.g., 180 / 240">
+            <label class="form-label fw-semibold" for="totalCreditsInput">Total credits (ECTS)</label>
+            <input type="number" min="1" step="1" class="form-control" id="totalCreditsInput" data-testid="total-credits-input" value="${p.totalCredits ?? ""}" placeholder="e.g., 180 / 240" aria-required="true">
           </div>
           <div class="col-md-4">
-            <label class="form-label fw-semibold">School / Discipline</label>
-            <select class="form-select" id="schoolSelect">
+            <label class="form-label fw-semibold" for="schoolSelect">School / Discipline</label>
+            <select class="form-select" id="schoolSelect" data-testid="school-select">
               <option value="" disabled ${!p.school ? "selected" : ""}>Select a School</option>
               ${schoolOpts}
             </select>
           </div>
           <div class="col-md-12">
-            <label class="form-label fw-semibold">QQI award standard</label>
-            <div id="standardSelectorsContainer"></div>
-            <div class="form-text">Select up to two standards. These drive PLO mapping and autocompletion.</div>
+            <label class="form-label fw-semibold" id="standardLabel">QQI award standard</label>
+            <div id="standardSelectorsContainer" aria-labelledby="standardLabel" data-testid="standard-selectors"></div>
+            <div class="form-text" id="standardHelp">Select up to two standards. These drive PLO mapping and autocompletion.</div>
           </div>
           <div class="col-12">
-            <label class="form-label fw-semibold">Intake months</label>
-            <input class="form-control" id="intakeInput" value="${escapeHtml((p.intakeMonths || []).join(", "))}" placeholder="Comma-separated, e.g., Sep, Jan">
+            <label class="form-label fw-semibold" for="intakeInput">Intake months</label>
+            <input class="form-control" id="intakeInput" data-testid="intake-input" value="${escapeHtml((p.intakeMonths || []).join(", "))}" placeholder="Comma-separated, e.g., Sep, Jan" aria-describedby="intakeHelp">
+            <div id="intakeHelp" class="visually-hidden">Enter comma-separated months, e.g., Sep, Jan</div>
           </div>
-        </div>
+        </form>
       </div>
     </div>
 
     <div class="card shadow-sm mt-3">
       <div class="card-body">
         <div class="d-flex justify-content-between align-items-center mb-3">
-          <h5 class="card-title mb-0">Elective Definitions</h5>
-          <button class="btn btn-dark btn-sm" id="addElectiveDefinitionBtn">+ Add definition</button>
+          <h5 class="card-title mb-0" id="elective-defs-heading">Elective Definitions</h5>
+          <button class="btn btn-dark btn-sm" id="addElectiveDefinitionBtn" data-testid="add-elective-definition-btn" aria-label="Add new elective definition">+ Add definition</button>
         </div>
         
-        <div class="alert alert-light mb-3">
+        <div class="alert alert-light mb-3" role="note">
           <strong>How elective definitions work:</strong>
           <ul class="mb-0 mt-1 small">
             <li>Students complete <strong>every</strong> elective definition in the programme</li>
@@ -209,7 +212,7 @@ export function renderIdentityStep() {
           </ul>
         </div>
 
-        <div id="electiveDefinitionsList">
+        <div id="electiveDefinitionsList" aria-labelledby="elective-defs-heading">
           ${renderElectiveDefinitionsList(p, openCollapseIds)}
         </div>
       </div>

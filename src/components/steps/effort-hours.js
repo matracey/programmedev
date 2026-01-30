@@ -27,8 +27,8 @@ export function renderEffortHoursStep() {
   const modulePicker = canPickModule ? `
     <div class="row g-3 mb-3">
       <div class="col-md-6">
-        <label class="form-label fw-semibold">Assigned module</label>
-        <select class="form-select" id="modulePicker">
+        <label class="form-label fw-semibold" for="modulePicker">Assigned module</label>
+        <select class="form-select" id="modulePicker" data-testid="effort-module-picker" aria-label="Select module for effort hours">
           ${modulesForEdit.map(m => `<option value="${m.id}" ${m.id===selectedId?"selected":""}>${escapeHtml(m.code || "")} — ${escapeHtml(m.title || "")}</option>`).join("")}
         </select>
       </div>
@@ -87,58 +87,70 @@ export function renderEffortHoursStep() {
       const totalClass = total === expectedTotal ? 'text-bg-success' : (total > 0 ? 'text-bg-warning' : 'text-bg-secondary');
       
       return `
-        <tr data-version-modality="${vm.key}" data-module-id="${m.id}">
+        <tr data-version-modality="${vm.key}" data-module-id="${m.id}" data-testid="effort-row-${m.id}-${vm.key}">
           <td class="fw-semibold align-middle">${escapeHtml(vm.label)}</td>
           <td>
             <input type="number" class="form-control form-control-sm" style="width:70px" 
-              data-effort-field="classroomHours" value="${e.classroomHours || 0}" min="0">
+              data-effort-field="classroomHours" value="${e.classroomHours || 0}" min="0"
+              aria-label="Classroom hours for ${escapeHtml(vm.label)}" data-testid="effort-classroom-hours-${m.id}-${vm.key}">
           </td>
           <td>
             <input type="text" class="form-control form-control-sm" style="width:70px" 
-              data-effort-field="classroomRatio" value="${escapeHtml(e.classroomRatio || '1:60')}" placeholder="1:60">
+              data-effort-field="classroomRatio" value="${escapeHtml(e.classroomRatio || '1:60')}" placeholder="1:60"
+              aria-label="Classroom ratio for ${escapeHtml(vm.label)}" data-testid="effort-classroom-ratio-${m.id}-${vm.key}">
           </td>
           <td>
             <input type="number" class="form-control form-control-sm" style="width:70px" 
-              data-effort-field="mentoringHours" value="${e.mentoringHours || 0}" min="0">
+              data-effort-field="mentoringHours" value="${e.mentoringHours || 0}" min="0"
+              aria-label="Mentoring hours for ${escapeHtml(vm.label)}" data-testid="effort-mentoring-hours-${m.id}-${vm.key}">
           </td>
           <td>
             <input type="text" class="form-control form-control-sm" style="width:70px" 
-              data-effort-field="mentoringRatio" value="${escapeHtml(e.mentoringRatio || '1:25')}" placeholder="1:25">
+              data-effort-field="mentoringRatio" value="${escapeHtml(e.mentoringRatio || '1:25')}" placeholder="1:25"
+              aria-label="Mentoring ratio for ${escapeHtml(vm.label)}" data-testid="effort-mentoring-ratio-${m.id}-${vm.key}">
           </td>
           <td>
             <input type="number" class="form-control form-control-sm" style="width:60px" 
-              data-effort-field="otherContactHours" value="${e.otherContactHours || 0}" min="0">
+              data-effort-field="otherContactHours" value="${e.otherContactHours || 0}" min="0"
+              aria-label="Other contact hours for ${escapeHtml(vm.label)}" data-testid="effort-other-contact-hours-${m.id}-${vm.key}">
           </td>
           <td>
             <input type="text" class="form-control form-control-sm" style="width:70px" 
-              data-effort-field="otherContactRatio" value="${escapeHtml(e.otherContactRatio || '')}" placeholder="1:X">
+              data-effort-field="otherContactRatio" value="${escapeHtml(e.otherContactRatio || '')}" placeholder="1:X"
+              aria-label="Other contact ratio for ${escapeHtml(vm.label)}" data-testid="effort-other-contact-ratio-${m.id}-${vm.key}">
           </td>
           <td>
             <input type="text" class="form-control form-control-sm" style="width:90px" 
-              data-effort-field="otherContactSpecify" value="${escapeHtml(e.otherContactSpecify || '')}" placeholder="Specify...">
+              data-effort-field="otherContactSpecify" value="${escapeHtml(e.otherContactSpecify || '')}" placeholder="Specify..."
+              aria-label="Other contact type for ${escapeHtml(vm.label)}" data-testid="effort-other-contact-specify-${m.id}-${vm.key}">
           </td>
           <td>
             <input type="number" class="form-control form-control-sm" style="width:70px" 
-              data-effort-field="directedElearningHours" value="${e.directedElearningHours || 0}" min="0">
+              data-effort-field="directedElearningHours" value="${e.directedElearningHours || 0}" min="0"
+              aria-label="Directed e-learning hours for ${escapeHtml(vm.label)}" data-testid="effort-directed-elearning-${m.id}-${vm.key}">
           </td>
           <td>
             <input type="number" class="form-control form-control-sm" style="width:70px" 
-              data-effort-field="independentLearningHours" value="${e.independentLearningHours || 0}" min="0">
+              data-effort-field="independentLearningHours" value="${e.independentLearningHours || 0}" min="0"
+              aria-label="Independent learning hours for ${escapeHtml(vm.label)}" data-testid="effort-independent-learning-${m.id}-${vm.key}">
           </td>
           <td>
             <input type="number" class="form-control form-control-sm" style="width:60px" 
-              data-effort-field="otherHours" value="${e.otherHours || 0}" min="0">
+              data-effort-field="otherHours" value="${e.otherHours || 0}" min="0"
+              aria-label="Other hours for ${escapeHtml(vm.label)}" data-testid="effort-other-hours-${m.id}-${vm.key}">
           </td>
           <td>
             <input type="text" class="form-control form-control-sm" style="width:90px" 
-              data-effort-field="otherHoursSpecify" value="${escapeHtml(e.otherHoursSpecify || '')}" placeholder="Specify...">
+              data-effort-field="otherHoursSpecify" value="${escapeHtml(e.otherHoursSpecify || '')}" placeholder="Specify..."
+              aria-label="Other hours type for ${escapeHtml(vm.label)}" data-testid="effort-other-hours-specify-${m.id}-${vm.key}">
           </td>
           <td>
             <input type="number" class="form-control form-control-sm" style="width:70px" 
-              data-effort-field="workBasedHours" value="${e.workBasedHours || 0}" min="0">
+              data-effort-field="workBasedHours" value="${e.workBasedHours || 0}" min="0"
+              aria-label="Work-based learning hours for ${escapeHtml(vm.label)}" data-testid="effort-work-based-${m.id}-${vm.key}">
           </td>
           <td class="text-center align-middle">
-            <span class="badge ${totalClass}" data-total-display>${total}</span>
+            <span class="badge ${totalClass}" data-total-display data-testid="effort-total-${m.id}-${vm.key}">${total}</span>
           </td>
         </tr>
       `;
@@ -170,29 +182,29 @@ export function renderEffortHoursStep() {
           <div class="accordion-body">
             ${noVersionsMsg || `
             <div class="table-responsive">
-              <table class="table table-sm table-bordered align-middle mb-0" data-effort-table="${m.id}">
+              <table class="table table-sm table-bordered align-middle mb-0" data-effort-table="${m.id}" aria-label="Effort hours for ${escapeHtml(m.title)}" data-testid="effort-table-${m.id}">
                 <thead>
                   <tr>
-                    <th rowspan="2" class="align-middle" style="min-width:150px">Version / Modality</th>
-                    <th colspan="2" class="text-center">Classroom &amp; Demonstrations</th>
-                    <th colspan="2" class="text-center">Mentoring &amp; Small-group</th>
-                    <th colspan="3" class="text-center">Other Contact (specify)</th>
-                    <th rowspan="2" class="text-center align-middle" style="min-width:80px">Directed<br>E-learning</th>
-                    <th rowspan="2" class="text-center align-middle" style="min-width:80px">Independent<br>Learning</th>
-                    <th colspan="2" class="text-center">Other Hours (specify)</th>
-                    <th rowspan="2" class="text-center align-middle" style="min-width:80px">Work-based<br>Learning</th>
-                    <th rowspan="2" class="text-center align-middle" style="min-width:70px">Total<br>Effort</th>
+                    <th rowspan="2" class="align-middle" style="min-width:150px" scope="col">Version / Modality</th>
+                    <th colspan="2" class="text-center" scope="colgroup">Classroom &amp; Demonstrations</th>
+                    <th colspan="2" class="text-center" scope="colgroup">Mentoring &amp; Small-group</th>
+                    <th colspan="3" class="text-center" scope="colgroup">Other Contact (specify)</th>
+                    <th rowspan="2" class="text-center align-middle" style="min-width:80px" scope="col">Directed<br>E-learning</th>
+                    <th rowspan="2" class="text-center align-middle" style="min-width:80px" scope="col">Independent<br>Learning</th>
+                    <th colspan="2" class="text-center" scope="colgroup">Other Hours (specify)</th>
+                    <th rowspan="2" class="text-center align-middle" style="min-width:80px" scope="col">Work-based<br>Learning</th>
+                    <th rowspan="2" class="text-center align-middle" style="min-width:70px" scope="col">Total<br>Effort</th>
                   </tr>
                   <tr>
-                    <th class="text-center small">Hours</th>
-                    <th class="text-center small">Min Ratio</th>
-                    <th class="text-center small">Hours</th>
-                    <th class="text-center small">Min Ratio</th>
-                    <th class="text-center small">Hours</th>
-                    <th class="text-center small">Ratio</th>
-                    <th class="text-center small">Type</th>
-                    <th class="text-center small">Hours</th>
-                    <th class="text-center small">Type</th>
+                    <th class="text-center small" scope="col">Hours</th>
+                    <th class="text-center small" scope="col">Min Ratio</th>
+                    <th class="text-center small" scope="col">Hours</th>
+                    <th class="text-center small" scope="col">Min Ratio</th>
+                    <th class="text-center small" scope="col">Hours</th>
+                    <th class="text-center small" scope="col">Ratio</th>
+                    <th class="text-center small" scope="col">Type</th>
+                    <th class="text-center small" scope="col">Hours</th>
+                    <th class="text-center small" scope="col">Type</th>
                   </tr>
                 </thead>
                 <tbody>

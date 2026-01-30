@@ -42,14 +42,14 @@ export function renderStagesStep() {
       return `
         <div class="border rounded p-2 mb-2">
           <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="st_${s.id}_mod_${m.id}" ${checked ? "checked" : ""}>
+            <input class="form-check-input" type="checkbox" id="st_${s.id}_mod_${m.id}" data-testid="stage-module-${s.id}-${m.id}" ${checked ? "checked" : ""}>
             <label class="form-check-label" for="st_${s.id}_mod_${m.id}">
               ${escapeHtml(m.code ? `${m.code} — ` : "")}${escapeHtml(m.title)} <span class="text-secondary small">(${Number(m.credits || 0)} cr)</span>
             </label>
           </div>
           <div class="mt-2 ${checked ? "" : "d-none"}" id="st_${s.id}_semWrap_${m.id}">
-            <label class="form-label small mb-1">Semester / timing tag (optional)</label>
-            <input class="form-control form-control-sm" id="st_${s.id}_sem_${m.id}" value="${escapeHtml(semVal)}" placeholder="e.g., S1 / S2 / Year / Block 1">
+            <label class="form-label small mb-1" for="st_${s.id}_sem_${m.id}">Semester / timing tag (optional)</label>
+            <input class="form-control form-control-sm" id="st_${s.id}_sem_${m.id}" data-testid="stage-semester-${s.id}-${m.id}" value="${escapeHtml(semVal)}" placeholder="e.g., S1 / S2 / Year / Block 1">
           </div>
         </div>
       `;
@@ -62,51 +62,54 @@ export function renderStagesStep() {
     const isActive = openCollapseIds.has(collapseId) ? true : (openCollapseIds.size === 0 && idx === 0);
     const summaryName = s.name || `Stage ${s.sequence || ""}`;
     return `
-      <div class="accordion-item bg-body">
+      <div class="accordion-item bg-body" data-testid="stage-item-${s.id}">
         <h2 class="accordion-header" id="${headingId}">
-          <button class="accordion-button ${isActive ? "" : "collapsed"} w-100" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="${isActive}" aria-controls="${collapseId}">
+          <button class="accordion-button ${isActive ? "" : "collapsed"} w-100" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="${isActive}" aria-controls="${collapseId}" data-testid="stage-accordion-${s.id}">
             <div class="d-flex w-100 align-items-center gap-2">
               <div class="flex-grow-1">
                 <div class="fw-semibold">${escapeHtml(summaryName)}</div>
                 <div class="small text-secondary">Sequence ${Number(s.sequence || 1)} • Target ${Number(s.creditsTarget || 0)}cr • Assigned ${stageCreditSum}cr</div>
               </div>
               <div class="header-actions d-flex align-items-center gap-2 me-2">
-                <span class="btn btn-sm btn-outline-danger" id="removeStage_${s.id}" role="button">Remove stage</span>
+                <span class="btn btn-sm btn-outline-danger" role="button" tabindex="0" id="removeStage_${s.id}" aria-label="Remove stage ${summaryName}" data-testid="remove-stage-${s.id}">Remove stage</span>
               </div>
             </div>
           </button>
         </h2>
         <div id="${collapseId}" class="accordion-collapse collapse ${isActive ? "show" : ""}" aria-labelledby="${headingId}">
           <div class="accordion-body">
-            <div class="row g-3">
+            <fieldset class="row g-3">
+              <legend class="visually-hidden">Stage ${idx + 1} details</legend>
               <div class="col-md-6">
-                <label class="form-label fw-semibold">Stage name</label>
-                <input class="form-control" id="stname_${s.id}" value="${escapeHtml(s.name || "")}">
+                <label class="form-label fw-semibold" for="stname_${s.id}">Stage name</label>
+                <input class="form-control" id="stname_${s.id}" data-testid="stage-name-${s.id}" value="${escapeHtml(s.name || "")}">
               </div>
               <div class="col-md-3">
-                <label class="form-label fw-semibold">Sequence</label>
-                <input type="number" min="1" class="form-control" id="stseq_${s.id}" value="${Number(s.sequence || 1)}">
+                <label class="form-label fw-semibold" for="stseq_${s.id}">Sequence</label>
+                <input type="number" min="1" class="form-control" id="stseq_${s.id}" data-testid="stage-sequence-${s.id}" value="${Number(s.sequence || 1)}">
               </div>
               <div class="col-md-3">
-                <label class="form-label fw-semibold">Credits target</label>
-                <input type="number" min="0" class="form-control" id="stcred_${s.id}" value="${Number(s.creditsTarget || 0)}">
-                <div class="small text-secondary mt-1">Assigned modules sum to <span class="fw-semibold">${stageCreditSum}</span> credits.</div>
+                <label class="form-label fw-semibold" for="stcred_${s.id}">Credits target</label>
+                <input type="number" min="0" class="form-control" id="stcred_${s.id}" data-testid="stage-credits-${s.id}" value="${Number(s.creditsTarget || 0)}">
+                <div class="small text-secondary mt-1" role="status">Assigned modules sum to <span class="fw-semibold">${stageCreditSum}</span> credits.</div>
               </div>
               <div class="col-12">
                 <div class="form-check">
-                  <input class="form-check-input" type="checkbox" id="stexit_${s.id}" ${exitOn ? "checked" : ""}>
+                  <input class="form-check-input" type="checkbox" id="stexit_${s.id}" data-testid="stage-exit-${s.id}" ${exitOn ? "checked" : ""}>
                   <label class="form-check-label fw-semibold" for="stexit_${s.id}">Enable exit award for this stage</label>
                 </div>
               </div>
               <div class="col-12 ${exitWrapClass}" id="stexitWrap_${s.id}">
-                <label class="form-label fw-semibold">Exit award title</label>
-                <input class="form-control" id="stexitTitle_${s.id}" value="${escapeHtml((s.exitAward && s.exitAward.awardTitle) || "")}">
+                <label class="form-label fw-semibold" for="stexitTitle_${s.id}">Exit award title</label>
+                <input class="form-control" id="stexitTitle_${s.id}" data-testid="stage-exit-title-${s.id}" value="${escapeHtml((s.exitAward && s.exitAward.awardTitle) || "")}">
               </div>
               <div class="col-12">
-                <label class="form-label fw-semibold">Modules in this stage</label>
-                ${moduleChecks || `<div class="text-secondary">No modules defined yet (add modules in Credits & Modules).</div>`}
+                <label class="form-label fw-semibold" id="stage-modules-label-${s.id}">Modules in this stage</label>
+                <div role="group" aria-labelledby="stage-modules-label-${s.id}">
+                  ${moduleChecks || `<div class="text-secondary">No modules defined yet (add modules in Credits & Modules).</div>`}
+                </div>
               </div>
-            </div>
+            </fieldset>
           </div>
         </div>
       </div>
@@ -116,20 +119,21 @@ export function renderStagesStep() {
   content.innerHTML = devModeToggleHtml + `
     <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
       <div>
-        <h4 class="mb-1">Stage Structure</h4>
+        <h4 class="mb-1" id="stages-heading">Stage Structure</h4>
         <div class="text-secondary">Define stages for the selected programme version and assign modules to each stage.</div>
       </div>
       <div class="d-flex gap-2 align-items-center">
-        <select class="form-select" id="stageVersionSelect" style="min-width: 260px;">
+        <label class="visually-hidden" for="stageVersionSelect">Select programme version</label>
+        <select class="form-select" id="stageVersionSelect" data-testid="stage-version-select" style="min-width: 260px;">
           ${vSelect}
         </select>
-        <button class="btn btn-dark" id="addStageBtn">+ Add stage</button>
+        <button class="btn btn-dark" id="addStageBtn" data-testid="add-stage-btn" aria-label="Add new stage">+ Add stage</button>
       </div>
     </div>
 
     ${accordionControlsHtml('stagesAccordion')}
-    <div class="mt-2 accordion" id="stagesAccordion">
-      ${stageCards || `<div class="alert alert-info mb-0">No stages yet for this version. Add a stage to begin.</div>`}
+    <div class="mt-2 accordion" id="stagesAccordion" aria-labelledby="stages-heading" data-testid="stages-accordion">
+      ${stageCards || `<div class="alert alert-info mb-0" role="status">No stages yet for this version. Add a stage to begin.</div>`}
     </div>
   `;
 

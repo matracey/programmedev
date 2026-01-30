@@ -36,8 +36,8 @@ export function renderReadingListsStep() {
   const modulePicker = canPickModule ? `
     <div class="row g-3 mb-3">
       <div class="col-md-6">
-        <label class="form-label fw-semibold">Assigned module</label>
-        <select class="form-select" id="readingListModulePicker">
+        <label class="form-label fw-semibold" for="readingListModulePicker">Assigned module</label>
+        <select class="form-select" id="readingListModulePicker" data-testid="reading-list-module-picker" aria-label="Select module for reading list">
           ${modulesForEdit.map(m => `<option value="${m.id}" ${m.id === selectedId ? "selected" : ""}>${escapeHtml(m.code || "")} — ${escapeHtml(m.title || "")}</option>`).join("")}
         </select>
       </div>
@@ -53,50 +53,58 @@ export function renderReadingListsStep() {
       const isOld = yearNum > 0 && (currentYear - yearNum) > 5;
       const oldWarning = isOld ? `<span class="badge text-bg-warning ms-2" title="This resource is more than 5 years old">⚠ ${currentYear - yearNum} years old</span>` : '';
       
+      const authorInputId = `reading-author-${m.id}-${i}`;
+      const titleInputId = `reading-title-${m.id}-${i}`;
+      const publisherInputId = `reading-publisher-${m.id}-${i}`;
+      const yearInputId = `reading-year-${m.id}-${i}`;
+      const isbnInputId = `reading-isbn-${m.id}-${i}`;
+      const typeInputId = `reading-type-${m.id}-${i}`;
+      const notesInputId = `reading-notes-${m.id}-${i}`;
+      
       return `
-        <div class="card border-0 bg-light mb-2">
+        <div class="card border-0 bg-light mb-2" data-testid="reading-item-${m.id}-${i}">
           <div class="card-body py-2">
             <div class="d-flex justify-content-between align-items-start mb-2">
               <div class="d-flex align-items-center gap-2">
                 <span class="fw-semibold small">Resource ${i + 1}</span>
                 ${oldWarning}
               </div>
-              <button class="btn btn-outline-danger btn-sm" data-remove-reading="${m.id}" data-reading-index="${i}">Remove</button>
+              <button class="btn btn-outline-danger btn-sm" data-remove-reading="${m.id}" data-reading-index="${i}" aria-label="Remove reading item ${i + 1}" data-testid="reading-remove-${m.id}-${i}">Remove</button>
             </div>
             <div class="row g-2">
               <div class="col-md-4">
-                <label class="form-label small">Author(s)</label>
-                <input class="form-control form-control-sm" data-reading-field="author" data-reading-module="${m.id}" data-reading-index="${i}" value="${escapeHtml(item.author || '')}" placeholder="e.g., Smith, J. & Jones, M.">
+                <label class="form-label small" for="${authorInputId}">Author(s)</label>
+                <input class="form-control form-control-sm" id="${authorInputId}" data-reading-field="author" data-reading-module="${m.id}" data-reading-index="${i}" value="${escapeHtml(item.author || '')}" placeholder="e.g., Smith, J. & Jones, M." data-testid="reading-author-${m.id}-${i}">
               </div>
               <div class="col-md-4">
-                <label class="form-label small">Title</label>
-                <input class="form-control form-control-sm" data-reading-field="title" data-reading-module="${m.id}" data-reading-index="${i}" value="${escapeHtml(item.title || '')}" placeholder="Book or article title">
+                <label class="form-label small" for="${titleInputId}">Title</label>
+                <input class="form-control form-control-sm" id="${titleInputId}" data-reading-field="title" data-reading-module="${m.id}" data-reading-index="${i}" value="${escapeHtml(item.title || '')}" placeholder="Book or article title" data-testid="reading-title-${m.id}-${i}">
               </div>
               <div class="col-md-2">
-                <label class="form-label small">Publisher</label>
-                <input class="form-control form-control-sm" data-reading-field="publisher" data-reading-module="${m.id}" data-reading-index="${i}" value="${escapeHtml(item.publisher || '')}" placeholder="Publisher name">
+                <label class="form-label small" for="${publisherInputId}">Publisher</label>
+                <input class="form-control form-control-sm" id="${publisherInputId}" data-reading-field="publisher" data-reading-module="${m.id}" data-reading-index="${i}" value="${escapeHtml(item.publisher || '')}" placeholder="Publisher name" data-testid="reading-publisher-${m.id}-${i}">
               </div>
               <div class="col-md-2">
-                <label class="form-label small">Year</label>
-                <input type="number" min="1900" max="${currentYear + 1}" class="form-control form-control-sm" data-reading-field="year" data-reading-module="${m.id}" data-reading-index="${i}" value="${item.year || ''}" placeholder="${currentYear}">
+                <label class="form-label small" for="${yearInputId}">Year</label>
+                <input type="number" min="1900" max="${currentYear + 1}" class="form-control form-control-sm" id="${yearInputId}" data-reading-field="year" data-reading-module="${m.id}" data-reading-index="${i}" value="${item.year || ''}" placeholder="${currentYear}" data-testid="reading-year-${m.id}-${i}">
               </div>
             </div>
             <div class="row g-2 mt-1">
               <div class="col-md-4">
-                <label class="form-label small">ISBN <button type="button" class="btn btn-link btn-sm p-0 ms-1" data-lookup-isbn="${m.id}" data-isbn-index="${i}" title="Look up book details by ISBN">🔍 Lookup</button></label>
-                <input class="form-control form-control-sm" data-reading-field="isbn" data-reading-module="${m.id}" data-reading-index="${i}" value="${escapeHtml(item.isbn || '')}" placeholder="e.g., 978-0-13-468599-1">
+                <label class="form-label small" for="${isbnInputId}">ISBN <button type="button" class="btn btn-link btn-sm p-0 ms-1" data-lookup-isbn="${m.id}" data-isbn-index="${i}" title="Look up book details by ISBN" aria-label="Look up book details by ISBN for item ${i + 1}" data-testid="reading-isbn-lookup-${m.id}-${i}">🔍 Lookup</button></label>
+                <input class="form-control form-control-sm" id="${isbnInputId}" data-reading-field="isbn" data-reading-module="${m.id}" data-reading-index="${i}" value="${escapeHtml(item.isbn || '')}" placeholder="e.g., 978-0-13-468599-1" data-testid="reading-isbn-${m.id}-${i}">
               </div>
               <div class="col-md-4">
-                <label class="form-label small">Type</label>
-                <select class="form-select form-select-sm" data-reading-field="type" data-reading-module="${m.id}" data-reading-index="${i}">
+                <label class="form-label small" for="${typeInputId}">Type</label>
+                <select class="form-select form-select-sm" id="${typeInputId}" data-reading-field="type" data-reading-module="${m.id}" data-reading-index="${i}" data-testid="reading-type-${m.id}-${i}">
                   <option value="core" ${(item.type || 'core') === 'core' ? 'selected' : ''}>Core / Essential</option>
                   <option value="recommended" ${item.type === 'recommended' ? 'selected' : ''}>Recommended</option>
                   <option value="supplementary" ${item.type === 'supplementary' ? 'selected' : ''}>Supplementary</option>
                 </select>
               </div>
               <div class="col-md-4">
-                <label class="form-label small">Notes (optional)</label>
-                <input class="form-control form-control-sm" data-reading-field="notes" data-reading-module="${m.id}" data-reading-index="${i}" value="${escapeHtml(item.notes || '')}" placeholder="e.g., Chapters 1-5">
+                <label class="form-label small" for="${notesInputId}">Notes (optional)</label>
+                <input class="form-control form-control-sm" id="${notesInputId}" data-reading-field="notes" data-reading-module="${m.id}" data-reading-index="${i}" value="${escapeHtml(item.notes || '')}" placeholder="e.g., Chapters 1-5" data-testid="reading-notes-${m.id}-${i}">
               </div>
             </div>
           </div>
@@ -131,7 +139,7 @@ export function renderReadingListsStep() {
           <div class="accordion-body">
             <div class="small text-secondary mb-3">Add core and recommended reading for this module. Resources older than 5 years will be flagged.</div>
             ${items || '<div class="small text-secondary mb-2">No reading list items yet.</div>'}
-            <button class="btn btn-outline-secondary btn-sm" data-add-reading="${m.id}">+ Add reading</button>
+            <button class="btn btn-outline-secondary btn-sm" data-add-reading="${m.id}" aria-label="Add reading item to ${escapeHtml(m.title)}" data-testid="reading-add-${m.id}">+ Add reading</button>
           </div>
         </div>
       </div>

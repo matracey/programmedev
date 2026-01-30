@@ -37,48 +37,49 @@ export function renderStructureStep() {
     const creditsPreview = Number(m.credits || 0);
     const isElective = m.isElective === true;
     const typeBadge = isElective 
-      ? `<span class="badge text-bg-info me-2" title="Elective">E</span>`
-      : `<span class="badge text-bg-primary me-2" title="Mandatory">M</span>`;
+      ? `<span class="badge text-bg-info me-2" title="Elective" aria-label="Elective module">E</span>`
+      : `<span class="badge text-bg-primary me-2" title="Mandatory" aria-label="Mandatory module">M</span>`;
 
     const isActive = openCollapseIds.has(collapseId) ? true : (openCollapseIds.size === 0 && idx === 0);
     return `
-      <div class="accordion-item bg-body">
+      <div class="accordion-item bg-body" data-testid="module-item-${m.id}">
         <h2 class="accordion-header" id="${headingId}">
-          <button class="accordion-button ${isActive ? "" : "collapsed"} w-100" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="${isActive}" aria-controls="${collapseId}">
+          <button class="accordion-button ${isActive ? "" : "collapsed"} w-100" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="${isActive}" aria-controls="${collapseId}" data-testid="module-accordion-${m.id}">
             <div class="d-flex w-100 align-items-center gap-2">
               <div class="flex-grow-1">
                 <div class="fw-semibold">${typeBadge}Module ${idx + 1}${codePreview ? `: ${escapeHtml(codePreview)}` : ""}</div>
                 <div class="small text-secondary">${escapeHtml(titlePreview)} • ${creditsPreview} cr</div>
               </div>
               <div class="header-actions d-flex align-items-center gap-2 me-2">
-                <span class="btn btn-sm btn-outline-danger" data-remove-module="${m.id}" role="button">Remove</span>
+                <span class="btn btn-sm btn-outline-danger" role="button" tabindex="0" data-remove-module="${m.id}" aria-label="Remove module ${titlePreview}" data-testid="remove-module-${m.id}">Remove</span>
               </div>
             </div>
           </button>
         </h2>
         <div id="${collapseId}" class="accordion-collapse collapse ${isActive ? "show" : ""}" aria-labelledby="${headingId}">
           <div class="accordion-body">
-            <div class="row g-3">
+            <fieldset class="row g-3">
+              <legend class="visually-hidden">Module ${idx + 1} details</legend>
               <div class="col-md-2">
-                <label class="form-label fw-semibold">Type</label>
-                <select class="form-select" data-module-field="isElective" data-module-id="${m.id}">
+                <label class="form-label fw-semibold" for="module-type-${m.id}">Type</label>
+                <select class="form-select" id="module-type-${m.id}" data-module-field="isElective" data-module-id="${m.id}" data-testid="module-type-${m.id}">
                   <option value="false" ${!isElective ? "selected" : ""}>Mandatory</option>
                   <option value="true" ${isElective ? "selected" : ""}>Elective</option>
                 </select>
               </div>
               <div class="col-md-2">
-                <label class="form-label fw-semibold">Code (opt.)</label>
-                <input class="form-control" data-module-field="code" data-module-id="${m.id}" value="${escapeHtml(m.code || "")}">
+                <label class="form-label fw-semibold" for="module-code-${m.id}">Code (opt.)</label>
+                <input class="form-control" id="module-code-${m.id}" data-module-field="code" data-module-id="${m.id}" data-testid="module-code-${m.id}" value="${escapeHtml(m.code || "")}">
               </div>
               <div class="col-md-5">
-                <label class="form-label fw-semibold">Title</label>
-                <input class="form-control" data-module-field="title" data-module-id="${m.id}" value="${escapeHtml(m.title || "")}">
+                <label class="form-label fw-semibold" for="module-title-${m.id}">Title</label>
+                <input class="form-control" id="module-title-${m.id}" data-module-field="title" data-module-id="${m.id}" data-testid="module-title-${m.id}" value="${escapeHtml(m.title || "")}" aria-required="true">
               </div>
               <div class="col-md-3">
-                <label class="form-label fw-semibold">Credits</label>
-                <input type="number" class="form-control" data-module-field="credits" data-module-id="${m.id}" value="${Number(m.credits || 0)}">
+                <label class="form-label fw-semibold" for="module-credits-${m.id}">Credits</label>
+                <input type="number" class="form-control" id="module-credits-${m.id}" data-module-field="credits" data-module-id="${m.id}" data-testid="module-credits-${m.id}" value="${Number(m.credits || 0)}" aria-required="true">
               </div>
-            </div>
+            </fieldset>
           </div>
         </div>
       </div>
@@ -89,8 +90,8 @@ export function renderStructureStep() {
     <div class="card shadow-sm">
       <div class="card-body">
         <div class="d-flex justify-content-between align-items-center mb-3">
-          <h5 class="card-title mb-0">Credits & modules (QQI-critical)</h5>
-          <button class="btn btn-dark btn-sm" id="addModuleBtn">+ Add module</button>
+          <h5 class="card-title mb-0" id="modules-heading">Credits & modules (QQI-critical)</h5>
+          <button class="btn btn-dark btn-sm" id="addModuleBtn" data-testid="add-module-btn" aria-label="Add new module">+ Add module</button>
         </div>
 
         <div class="row g-3 mb-3">
@@ -109,14 +110,14 @@ export function renderStructureStep() {
           </div>
         </div>
 
-        <div class="small text-muted mb-3">
+        <div class="small text-muted mb-3" role="note">
           <strong>Tip:</strong> Mark modules as <span class="badge text-bg-primary">M</span> Mandatory or <span class="badge text-bg-info">E</span> Elective. 
           Elective modules are assigned to groups in the "Electives" step.
         </div>
 
         ${accordionControlsHtml('modulesAccordion')}
-        <div class="accordion" id="modulesAccordion">
-          ${moduleRows || `<div class="alert alert-info mb-0">No modules added yet.</div>`}
+        <div class="accordion" id="modulesAccordion" aria-labelledby="modules-heading" data-testid="modules-accordion">
+          ${moduleRows || `<div class="alert alert-info mb-0" role="status">No modules added yet.</div>`}
         </div>
       </div>
     </div>

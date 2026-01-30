@@ -17,7 +17,7 @@ export function renderFlags(flags, goToStep) {
   box.innerHTML = "";
   
   if (!flags.length) {
-    box.innerHTML = `<div class="flag-item flag-ok">${tagHtml("ok")} <div class="small">No flags — programme looks good!</div></div>`;
+    box.innerHTML = `<div class="flag-item flag-ok" data-testid="flag-ok">${tagHtml("ok")} <div class="small">No flags — programme looks good!</div></div>`;
     return;
   }
   
@@ -28,6 +28,7 @@ export function renderFlags(flags, goToStep) {
   // Summary header
   const summaryDiv = document.createElement("div");
   summaryDiv.className = "flags-summary mb-2 small";
+  summaryDiv.setAttribute("data-testid", "flags-summary");
   const parts = [];
   if (errors.length) parts.push(`<span class="text-danger fw-bold">${errors.length} error${errors.length > 1 ? 's' : ''}</span>`);
   if (warnings.length) parts.push(`<span class="text-warning fw-bold">${warnings.length} warning${warnings.length > 1 ? 's' : ''}</span>`);
@@ -36,9 +37,10 @@ export function renderFlags(flags, goToStep) {
   
   const aSteps = activeSteps();
   
-  flags.forEach(f => {
+  flags.forEach((f, idx) => {
     const div = document.createElement("div");
     div.className = `flag-item flag-${f.type}`;
+    div.setAttribute("data-testid", `flag-${f.type}-${idx}`);
     
     // Find step index for navigation
     const stepIdx = aSteps.findIndex(s => s.key === f.step);
@@ -57,11 +59,22 @@ export function renderFlags(flags, goToStep) {
     // Make clickable if step is accessible
     if (stepIdx >= 0 && goToStep) {
       div.style.cursor = "pointer";
+      div.setAttribute("role", "button");
+      div.setAttribute("tabindex", "0");
+      div.setAttribute("aria-label", `${f.type === 'error' ? 'Error' : 'Warning'}: ${f.msg}. Click to go to ${stepTitle}`);
       div.onclick = () => {
         goToStep(f.step);
         // Scroll to content area
         const content = document.getElementById("content");
         if (content) content.scrollIntoView({ behavior: "smooth", block: "start" });
+      };
+      div.onkeydown = (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          goToStep(f.step);
+          const content = document.getElementById("content");
+          if (content) content.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
       };
     }
     

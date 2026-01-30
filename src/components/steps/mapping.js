@@ -72,7 +72,7 @@ export function renderMappingStep() {
       
       return `
         <label class="list-group-item d-flex gap-2 align-items-center ${disabledClass}">
-          <input class="form-check-input m-0" type="checkbox" data-map-plo="${o.id}" data-map-module="${m.id}" ${isChecked ? "checked" : ""} ${disabledAttr}>
+          <input class="form-check-input m-0" type="checkbox" data-map-plo="${o.id}" data-map-module="${m.id}" ${isChecked ? "checked" : ""} ${disabledAttr} aria-label="Map PLO ${idx + 1} to ${escapeHtml(m.title)}" data-testid="mapping-checkbox-${o.id}-${m.id}">
           <span class="small">${escapeHtml((m.code ? m.code + " — " : "") + m.title)} <span class="text-secondary">(${Number(m.credits || 0)} cr)</span>${disabledNote}</span>
         </label>
       `;

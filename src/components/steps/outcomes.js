@@ -88,8 +88,8 @@ export function renderOutcomesStep() {
     // Standard selector dropdown for multi-standard support
     const standardSelectorHtml = hasMultipleStandards ? `
       <div class="mb-2">
-        <label class="form-label small mb-1">Select standard to map to</label>
-        <select class="form-select form-select-sm" data-plo-standard-selector="${o.id}">
+        <label class="form-label small mb-1" for="plo-standard-${o.id}">Select standard to map to</label>
+        <select class="form-select form-select-sm" id="plo-standard-${o.id}" data-plo-standard-selector="${o.id}" data-testid="plo-standard-${o.id}">
           ${(p.awardStandardIds || []).map((stdId, i) => {
             const stdName = (p.awardStandardNames || [])[i] || stdId;
             const selected = (ploSelectedStandards[o.id] || (p.awardStandardIds || [])[0]) === stdId;
@@ -100,44 +100,45 @@ export function renderOutcomesStep() {
     ` : '';
 
     return `
-      <div class="accordion-item bg-body">
+      <div class="accordion-item bg-body" data-testid="plo-item-${o.id}">
         <h2 class="accordion-header" id="${headingId}">
-          <button class="accordion-button ${isActive ? "" : "collapsed"} w-100" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="${isActive}" aria-controls="${collapseId}">
+          <button class="accordion-button ${isActive ? "" : "collapsed"} w-100" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="${isActive}" aria-controls="${collapseId}" data-testid="plo-accordion-${o.id}">
             <div class="d-flex w-100 align-items-center gap-2">
               <div class="flex-grow-1">
                 <div class="fw-semibold">PLO ${idx + 1}</div>
                 <div class="small text-secondary">${escapeHtml(previewShort)}</div>
               </div>
               <div class="header-actions d-flex align-items-center gap-2 me-2">
-                <span class="btn btn-outline-danger btn-sm" data-remove-plo="${o.id}" role="button">Remove</span>
+                <span class="btn btn-outline-danger btn-sm" role="button" tabindex="0" data-remove-plo="${o.id}" aria-label="Remove PLO ${idx + 1}" data-testid="remove-plo-${o.id}">Remove</span>
               </div>
             </div>
           </button>
         </h2>
         <div id="${collapseId}" class="accordion-collapse collapse ${isActive ? "show" : ""}" aria-labelledby="${headingId}">
           <div class="accordion-body">
-            <textarea class="form-control" data-plo-id="${o.id}" rows="3" placeholder="e.g., Analyse… / Design and implement…">${escapeHtml(o.text || "")}</textarea>
-            <div class="plo-lint-warnings mt-2">${lintWarnings}</div>
+            <label class="visually-hidden" for="plo-text-${o.id}">PLO ${idx + 1} text</label>
+            <textarea class="form-control" id="plo-text-${o.id}" data-plo-id="${o.id}" data-testid="plo-textarea-${o.id}" rows="3" placeholder="e.g., Analyse… / Design and implement…" aria-describedby="plo-lint-${o.id}">${escapeHtml(o.text || "")}</textarea>
+            <div class="plo-lint-warnings mt-2" id="plo-lint-${o.id}" role="status" aria-live="polite">${lintWarnings}</div>
 
             <div class="mt-3">
-              <div class="fw-semibold small mb-2">Map this PLO to QQI award standards</div>
+              <div class="fw-semibold small mb-2" id="plo-mapping-heading-${o.id}">Map this PLO to QQI award standards</div>
               ${!(p.awardStandardIds && p.awardStandardIds.length) ? `
-                <div class="small text-danger">Select a QQI award standard in Identity to enable mapping.</div>
+                <div class="small text-danger" role="alert">Select a QQI award standard in Identity to enable mapping.</div>
               ` : `
                 ${standardSelectorHtml}
-                <div class="d-flex flex-wrap gap-2 align-items-end">
+                <div class="d-flex flex-wrap gap-2 align-items-end" role="group" aria-labelledby="plo-mapping-heading-${o.id}">
                   <div style="min-width:220px">
-                    <label class="form-label small mb-1">Criteria</label>
-                    <select class="form-select form-select-sm" data-plo-map-criteria="${o.id}"></select>
+                    <label class="form-label small mb-1" for="plo-criteria-${o.id}">Criteria</label>
+                    <select class="form-select form-select-sm" id="plo-criteria-${o.id}" data-plo-map-criteria="${o.id}" data-testid="plo-criteria-${o.id}"></select>
                   </div>
                   <div style="min-width:260px">
-                    <label class="form-label small mb-1">Thread</label>
-                    <select class="form-select form-select-sm" data-plo-map-thread="${o.id}"></select>
+                    <label class="form-label small mb-1" for="plo-thread-${o.id}">Thread</label>
+                    <select class="form-select form-select-sm" id="plo-thread-${o.id}" data-plo-map-thread="${o.id}" data-testid="plo-thread-${o.id}"></select>
                   </div>
-                  <button type="button" class="btn btn-outline-primary btn-sm" data-add-plo-map="${o.id}">Add mapping</button>
+                  <button type="button" class="btn btn-outline-primary btn-sm" data-add-plo-map="${o.id}" aria-label="Add mapping for PLO ${idx + 1}" data-testid="add-mapping-${o.id}">Add mapping</button>
                 </div>
-                <div class="small text-secondary mt-2" data-plo-map-desc="${o.id}"></div>
-                <div class="mt-2" data-plo-map-list="${o.id}">
+                <div class="small text-secondary mt-2" data-plo-map-desc="${o.id}" aria-live="polite"></div>
+                <div class="mt-2" data-plo-map-list="${o.id}" role="list" aria-label="Current mappings for PLO ${idx + 1}">
                   ${mappingsHtml}
                 </div>
               `}
@@ -152,18 +153,18 @@ export function renderOutcomesStep() {
     <div class="card shadow-sm">
       <div class="card-body">
         <div class="d-flex justify-content-between align-items-center mb-3">
-          <h5 class="card-title mb-0">Programme Learning Outcomes (PLOs) (QQI-critical)</h5>
-          <button class="btn btn-dark btn-sm" id="addPloBtn">+ Add PLO</button>
+          <h5 class="card-title mb-0" id="plos-heading">Programme Learning Outcomes (PLOs) (QQI-critical)</h5>
+          <button class="btn btn-dark btn-sm" id="addPloBtn" data-testid="add-plo-btn" aria-label="Add new PLO">+ Add PLO</button>
         </div>
         ${bloomsGuidanceHtml(p.nfqLevel, "Programme Learning Outcomes")}
-        <div class="small-muted mb-3">Aim for ~6–12 clear, assessable outcomes. Keep them measurable and assessable.</div>
+        <div class="small-muted mb-3" role="note">Aim for ~6–12 clear, assessable outcomes. Keep them measurable and assessable.</div>
         ${accordionControlsHtml('ploAccordion')}
-        <div class="accordion" id="ploAccordion">
-          ${rows || `<div class="alert alert-info mb-0">No PLOs added yet.</div>`}
+        <div class="accordion" id="ploAccordion" aria-labelledby="plos-heading" data-testid="plo-accordion">
+          ${rows || `<div class="alert alert-info mb-0" role="status">No PLOs added yet.</div>`}
         </div>
         <hr class="my-4"/>
-        <h6 class="mb-2">PLO ↔ Award Standard Mapping Snapshot</h6>
-        <div id="ploMappingSnapshot" class="small"></div>
+        <h6 class="mb-2" id="plo-snapshot-heading">PLO ↔ Award Standard Mapping Snapshot</h6>
+        <div id="ploMappingSnapshot" class="small" aria-labelledby="plo-snapshot-heading" data-testid="plo-mapping-snapshot"></div>
       </div>
     </div>
   `;

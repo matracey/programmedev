@@ -91,14 +91,14 @@ export async function renderTraceabilityStep() {
         </div>
 
         <!-- Tab navigation -->
-        <ul class="nav nav-tabs mb-3" id="traceabilityTabs" role="tablist">
+        <ul class="nav nav-tabs mb-3" id="traceabilityTabs" role="tablist" aria-label="Traceability view options">
           <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="table-tab" data-bs-toggle="tab" data-bs-target="#tableView" type="button" role="tab" aria-controls="tableView" aria-selected="true">
+            <button class="nav-link active" id="table-tab" data-bs-toggle="tab" data-bs-target="#tableView" type="button" role="tab" aria-controls="tableView" aria-selected="true" data-testid="traceability-table-tab">
               Table View
             </button>
           </li>
           <li class="nav-item" role="presentation">
-            <button class="nav-link" id="sankey-tab" data-bs-toggle="tab" data-bs-target="#sankeyView" type="button" role="tab" aria-controls="sankeyView" aria-selected="false">
+            <button class="nav-link" id="sankey-tab" data-bs-toggle="tab" data-bs-target="#sankeyView" type="button" role="tab" aria-controls="sankeyView" aria-selected="false" data-testid="traceability-sankey-tab">
               Sankey Diagram
             </button>
           </li>
@@ -108,36 +108,38 @@ export async function renderTraceabilityStep() {
           <!-- Table View Tab -->
           <div class="tab-pane fade show active" id="tableView" role="tabpanel" aria-labelledby="table-tab">
             <div class="d-flex flex-wrap gap-2 mb-3 align-items-center">
-              <select class="form-select form-select-sm" id="traceFilterStatus" style="width:auto;">
+              <label for="traceFilterStatus" class="visually-hidden">Filter by status</label>
+              <select class="form-select form-select-sm" id="traceFilterStatus" style="width:auto;" aria-label="Filter by status" data-testid="traceability-filter-status">
                 <option value="all">All statuses</option>
                 <option value="ok">Covered only</option>
                 <option value="warning">Assessment gaps</option>
                 <option value="gap">PLO/MIMLO gaps</option>
                 <option value="uncovered">Uncovered standards</option>
               </select>
-              <select class="form-select form-select-sm" id="traceFilterModule" style="width:auto;">
+              <label for="traceFilterModule" class="visually-hidden">Filter by module</label>
+              <select class="form-select form-select-sm" id="traceFilterModule" style="width:auto;" aria-label="Filter by module" data-testid="traceability-filter-module">
                 <option value="all">All modules</option>
                 ${moduleOptions}
               </select>
-              <button class="btn btn-outline-secondary btn-sm" id="traceExportCsv">Export CSV</button>
+              <button class="btn btn-outline-secondary btn-sm" id="traceExportCsv" aria-label="Export traceability matrix as CSV" data-testid="traceability-export-csv">Export CSV</button>
             </div>
 
             ${traceRows.length > 0 ? `
               <div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
-                <table class="table table-sm table-hover table-bordered align-middle mb-0" id="traceabilityTable">
+                <table class="table table-sm table-hover table-bordered align-middle mb-0" id="traceabilityTable" aria-label="Traceability matrix showing alignment from award standards to assessments" data-testid="traceability-table">
                   <thead class="sticky-top" style="background: var(--bs-body-bg);">
                     <tr>
-                      <th style="min-width:140px;">Award Standard</th>
-                      <th style="min-width:60px;">PLO</th>
-                      <th style="min-width:150px;">PLO Text</th>
-                      <th style="min-width:80px;">Module</th>
-                      <th style="min-width:120px;">Module Title</th>
-                      <th style="min-width:70px;">MIMLO</th>
-                      <th style="min-width:140px;">MIMLO Text</th>
-                      <th style="min-width:100px;">Assessment</th>
-                      <th style="min-width:100px;">Type</th>
-                      <th style="min-width:60px;">Weight</th>
-                      <th style="min-width:80px;">Status</th>
+                      <th style="min-width:140px;" scope="col">Award Standard</th>
+                      <th style="min-width:60px;" scope="col">PLO</th>
+                      <th style="min-width:150px;" scope="col">PLO Text</th>
+                      <th style="min-width:80px;" scope="col">Module</th>
+                      <th style="min-width:120px;" scope="col">Module Title</th>
+                      <th style="min-width:70px;" scope="col">MIMLO</th>
+                      <th style="min-width:140px;" scope="col">MIMLO Text</th>
+                      <th style="min-width:100px;" scope="col">Assessment</th>
+                      <th style="min-width:100px;" scope="col">Type</th>
+                      <th style="min-width:60px;" scope="col">Weight</th>
+                      <th style="min-width:80px;" scope="col">Status</th>
                     </tr>
                   </thead>
                   <tbody>

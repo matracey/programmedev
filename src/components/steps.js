@@ -20,10 +20,18 @@ export function renderSteps(onStepChange) {
   if (state.stepIndex >= aSteps.length) state.stepIndex = 0;
 
   aSteps.forEach((s, idx) => {
+    const isActive = idx === state.stepIndex;
     const btn = document.createElement("button");
     btn.type = "button";
-    btn.className = "list-group-item list-group-item-action " + (idx === state.stepIndex ? "active" : "");
+    btn.className = "list-group-item list-group-item-action " + (isActive ? "active" : "");
     btn.textContent = `${idx + 1}. ${s.title}`;
+    btn.setAttribute("role", "tab");
+    btn.setAttribute("aria-selected", isActive ? "true" : "false");
+    btn.setAttribute("aria-controls", "content");
+    btn.setAttribute("data-testid", `step-${s.key}`);
+    if (isActive) {
+      btn.setAttribute("aria-current", "step");
+    }
     btn.onclick = () => {
       state.stepIndex = idx;
       if (onStepChange) onStepChange();

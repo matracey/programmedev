@@ -28,8 +28,8 @@ export function renderMimlosStep() {
   const modulePicker = canPickModule ? `
     <div class="row g-3 mb-3">
       <div class="col-md-6">
-        <label class="form-label fw-semibold">Assigned module</label>
-        <select class="form-select" id="modulePicker">
+        <label class="form-label fw-semibold" for="modulePicker">Assigned module</label>
+        <select class="form-select" id="modulePicker" data-testid="mimlo-module-picker">
           ${modulesForEdit.map(m => `<option value="${m.id}" ${m.id === selectedId ? "selected" : ""}>${escapeHtml(m.code || "")} — ${escapeHtml(m.title || "")}</option>`).join("")}
         </select>
       </div>
@@ -51,10 +51,11 @@ export function renderMimlosStep() {
       return `
         <div class="mb-2">
           <div class="input-group d-flex gap-2">
-            <input class="form-control" data-mimlo-module="${m.id}" data-mimlo-index="${i}" value="${escapeHtml(mimloTxt)}">
-            <button class="btn btn-outline-danger" data-remove-mimlo="${m.id}" data-remove-mimlo-index="${i}">Remove</button>
+            <label class="visually-hidden" for="mimlo-${m.id}-${i}">MIMLO ${i + 1} for ${escapeHtml(m.title || 'module')}</label>
+            <input class="form-control" id="mimlo-${m.id}-${i}" data-mimlo-module="${m.id}" data-mimlo-index="${i}" data-testid="mimlo-input-${m.id}-${i}" value="${escapeHtml(mimloTxt)}">
+            <button type="button" class="btn btn-outline-danger" data-remove-mimlo="${m.id}" data-remove-mimlo-index="${i}" aria-label="Remove MIMLO ${i + 1}" data-testid="remove-mimlo-${m.id}-${i}">Remove</button>
           </div>
-          <div class="mimlo-lint-warnings mt-1">${lintWarnings}</div>
+          <div class="mimlo-lint-warnings mt-1" role="status" aria-live="polite">${lintWarnings}</div>
         </div>
       `;
     }).join("");
@@ -66,9 +67,9 @@ export function renderMimlosStep() {
     const countBadge = `<span class="badge text-bg-secondary">${(m.mimlos || []).length} item${(m.mimlos || []).length !== 1 ? 's' : ''}</span>`;
 
     return `
-      <div class="accordion-item bg-body" ${isHidden ? 'style="display:none"' : ''} data-module-card="${m.id}">
+      <div class="accordion-item bg-body" ${isHidden ? 'style="display:none"' : ''} data-module-card="${m.id}" data-testid="mimlo-module-${m.id}">
         <h2 class="accordion-header" id="${headingId}">
-          <button class="accordion-button ${isActive ? '' : 'collapsed'}" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="${isActive}" aria-controls="${collapseId}">
+          <button class="accordion-button ${isActive ? '' : 'collapsed'}" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="${isActive}" aria-controls="${collapseId}" data-testid="mimlo-accordion-${m.id}">
             <div class="d-flex w-100 justify-content-between align-items-center">
               <div class="fw-semibold">${escapeHtml((m.code ? m.code + " — " : "") + m.title)}</div>
               <div class="d-flex align-items-center gap-2">
@@ -79,9 +80,9 @@ export function renderMimlosStep() {
         </h2>
         <div id="${collapseId}" class="accordion-collapse collapse ${isActive ? 'show' : ''}" aria-labelledby="${headingId}">
           <div class="accordion-body">
-            <div class="small-muted mb-3">Add 3–6 MIMLOs per module to start.</div>
+            <div class="small-muted mb-3" role="note">Add 3–6 MIMLOs per module to start.</div>
             ${items || `<div class="small text-secondary mb-2">No MIMLOs yet.</div>`}
-            <button class="btn btn-outline-secondary btn-sm" data-add-mimlo="${m.id}">+ Add MIMLO</button>
+            <button type="button" class="btn btn-outline-secondary btn-sm" data-add-mimlo="${m.id}" aria-label="Add MIMLO to ${escapeHtml(m.title || 'module')}" data-testid="add-mimlo-${m.id}">+ Add MIMLO</button>
           </div>
         </div>
       </div>
@@ -91,11 +92,11 @@ export function renderMimlosStep() {
   content.innerHTML = devModeToggleHtml + `
     <div class="card shadow-sm">
       <div class="card-body">
-        <h5 class="card-title mb-3">MIMLOs (Minimum Intended Module Learning Outcomes)</h5>
+        <h5 class="card-title mb-3" id="mimlos-heading">MIMLOs (Minimum Intended Module Learning Outcomes)</h5>
         ${bloomsGuidanceHtml(p.nfqLevel, "MIMLOs")}
         ${modulePicker}
         ${accordionControlsHtml('mimloAccordion')}
-        <div class="accordion" id="mimloAccordion">
+        <div class="accordion" id="mimloAccordion" aria-labelledby="mimlos-heading" data-testid="mimlo-accordion">
           ${modulesForEdit.length ? blocks : `<div class="small text-secondary">Add modules first (Credits & Modules step).</div>`}
         </div>
       </div>

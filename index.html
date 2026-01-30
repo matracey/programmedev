@@ -8,53 +8,55 @@
   </head>
   <body>
     <!-- Top Navbar -->
-    <nav class="navbar navbar-expand-lg bg-body border-bottom sticky-top">
+    <nav class="navbar navbar-expand-lg bg-body border-bottom sticky-top" aria-label="Main navigation">
       <div class="container-fluid">
         <div class="d-flex flex-column">
           <span class="small text-secondary fw-semibold">NCI Programme Design Studio v2</span>
-          <span class="h5 mb-0" id="programmeTitleNav">New Programme (Draft)</span>
+          <span class="h5 mb-0" id="programmeTitleNav" aria-live="polite">New Programme (Draft)</span>
         </div>
-        <div class="d-flex align-items-center gap-2 flex-wrap">
-          <span class="badge text-bg-secondary" id="completionBadge">0% complete</span>
-          <span class="small text-secondary" id="saveStatus">Not saved yet</span>
-          <button class="btn btn-outline-secondary btn-sm" id="exportBtn">Export JSON</button>
+        <div class="d-flex align-items-center gap-2 flex-wrap" role="toolbar" aria-label="Programme actions">
+          <span class="badge text-bg-secondary" id="completionBadge" role="status" aria-live="polite" data-testid="completion-badge">0% complete</span>
+          <span class="small text-secondary" id="saveStatus" role="status" aria-live="polite" data-testid="save-status">Not saved yet</span>
+          <button class="btn btn-outline-secondary btn-sm" id="exportBtn" data-testid="export-btn" aria-label="Export programme as JSON">Export JSON</button>
           <label class="btn btn-outline-secondary btn-sm mb-0">
-            Import JSON <input accept="application/json" hidden id="importInput" type="file" />
+            Import JSON <input accept="application/json" hidden id="importInput" type="file" data-testid="import-input" aria-label="Import programme from JSON file" />
           </label>
-          <button class="btn btn-outline-danger btn-sm" id="resetBtn">Reset</button>
-          <button class="btn btn-outline-secondary btn-sm" id="themeToggle" title="Toggle dark/light mode">
-            <span id="themeIcon">🌙</span>
+          <button class="btn btn-outline-danger btn-sm" id="resetBtn" data-testid="reset-btn" aria-label="Reset programme to defaults">Reset</button>
+          <button class="btn btn-outline-secondary btn-sm" id="themeToggle" data-testid="theme-toggle" aria-label="Toggle dark/light mode" aria-pressed="false">
+            <span id="themeIcon" aria-hidden="true">🌙</span>
           </button>
         </div>
       </div>
     </nav>
 
     <!-- Main Content Area -->
-    <main class="container-fluid py-3">
+    <main class="container-fluid py-3" id="main-content">
       <div class="row g-3">
         <!-- Sidebar -->
-        <aside class="col-12 col-lg-3">
+        <aside class="col-12 col-lg-3" aria-label="Workflow navigation">
           <div class="card shadow-sm">
             <div class="card-body">
-              <div class="fw-semibold mb-2">Workflow</div>
-              <div class="list-group" id="stepList"></div>
-              <div class="d-flex justify-content-between mt-3">
-                <button class="btn btn-outline-secondary btn-sm" id="backBtn">Back</button>
-                <button class="btn btn-dark btn-sm" id="nextBtn">Next</button>
+              <div class="fw-semibold mb-2" id="workflow-heading">Workflow</div>
+              <nav aria-labelledby="workflow-heading">
+                <div class="list-group" id="stepList" role="tablist" aria-label="Programme design steps"></div>
+              </nav>
+              <div class="d-flex justify-content-between mt-3" role="group" aria-label="Step navigation">
+                <button class="btn btn-outline-secondary btn-sm" id="backBtn" data-testid="back-btn" aria-label="Go to previous step">Back</button>
+                <button class="btn btn-dark btn-sm" id="nextBtn" data-testid="next-btn" aria-label="Go to next step">Next</button>
               </div>
             </div>
           </div>
           <div class="card shadow-sm mt-3">
             <div class="card-body">
-              <div class="fw-semibold mb-2">QQI Flags</div>
-              <div class="d-flex flex-column gap-2" id="flagsBox"></div>
+              <div class="fw-semibold mb-2" id="flags-heading">QQI Flags</div>
+              <div class="d-flex flex-column gap-2" id="flagsBox" role="log" aria-labelledby="flags-heading" aria-live="polite" data-testid="flags-box"></div>
             </div>
           </div>
         </aside>
 
         <!-- Content Panel -->
-        <section class="col-12 col-lg-9">
-          <div id="content"></div>
+        <section class="col-12 col-lg-9" aria-label="Step content">
+          <div id="content" role="tabpanel" data-testid="content-panel"></div>
         </section>
       </div>
     </main>
