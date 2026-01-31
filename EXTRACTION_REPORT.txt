@@ -1,0 +1,320 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║                                                                            ║
+║           QQI PROGRAMME SCHEDULE TEMPLATE - EXTRACTION COMPLETE            ║
+║                                                                            ║
+║                              FINAL REPORT                                 ║
+║                                                                            ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+SOURCE DOCUMENT
+═══════════════
+File:          Programme Schedule Template.doc
+Location:      M:\programmedev\public\assets\
+File Size:     119,220 bytes
+Format:        Office Open XML (.docx stored as .doc)
+Extraction:    31 January 2026 22:27 UTC
+Tool:          Word Document XML Parser
+
+
+TABLE ANALYSIS SUMMARY
+══════════════════════
+
+Total Tables:           1
+Total Rows:             15
+Column Grid Width:      29 columns
+Data Entry Rows:        2 (expandable template)
+Nested Tables:          0
+Merged Cells:           14 total
+  - Vertical Merges:    3 (rowspan=2)
+  - Horizontal Merges:  Multiple (colspan 1-29)
+
+
+TABLE STRUCTURE BREAKDOWN
+═════════════════════════
+
+SECTION 1: FORM HEADER (Rows 1-4)
+  • Row 1:  Title & instructions (1 cell, colspan=29)
+  • Row 2:  Provider name field
+  • Row 3:  Programme title and ECTS information
+  • Row 4:  Stage and exit award information
+
+SECTION 2: SELECTION MATRICES (Rows 5-10)
+  • Rows 5-6:   Delivery Mode (4 options, with rowspan=2)
+  • Rows 7-8:   Teaching & Learning Modalities (6 options, with rowspan=2)
+  • Rows 9-10:  Assessment Techniques (6 options, with rowspan=2)
+  
+  All rows have checkbox-enabled cells for marking selections with ✔
+
+SECTION 3: MODULE ENTRY HEADER (Row 11)
+  • Section title: "Modules in this stage (add rows as required)"
+  • Separates form section from data table
+
+SECTION 4: MODULE DATA TABLE (Rows 12-15)
+  • Row 12:  Grouped headers (Effort + Assessment)
+  • Row 13:  16 column headers (module information, effort hours, assessment marks)
+  • Rows 14-15: Empty data template (users fill these in)
+
+
+MAIN MODULES TABLE - COMPLETE COLUMN REFERENCE
+════════════════════════════════════════════════
+
+COLUMN HEADERS (Row 13 - 16 columns total)
+
+SECTION A: MODULE INFORMATION (Columns 1-5)
+┌─────────────────────────────────────────────────────────┐
+│ Column # │ Header Text                 │ Colspan │ Notes │
+├─────────────────────────────────────────────────────────┤
+│ 1        │ Module Title                │ 1       │       │
+│ 2        │ Semester                    │ 1       │       │
+│ 3        │ Mandatory (M) or Elective   │ 2       │       │
+│ 4        │ Credits (ECTS)              │ 2       │       │
+│ 5        │ Total Hours                 │ 2       │       │
+└─────────────────────────────────────────────────────────┘
+
+SECTION B: EFFORT HOURS (Columns 6-10)
+Grouped under: "Total Student Effort Module (hours)"
+┌─────────────────────────────────────────────────────────┐
+│ Column # │ Header Text                 │ Colspan │ Notes │
+├─────────────────────────────────────────────────────────┤
+│ 6        │ On-site Face-to-Face        │ 1       │       │
+│ 7        │ Synchronous                 │ 3       │       │
+│ 8        │ Asynchronous                │ 1       │       │
+│ 9        │ Independent                 │ 3       │       │
+│ 10       │ Work Based                  │ 2       │       │
+└─────────────────────────────────────────────────────────┘
+
+SECTION C: ASSESSMENT MARKS (Columns 11-16)
+Grouped under: "Assessment – Allocation of Marks (from the module assessment strategy)"
+┌─────────────────────────────────────────────────────────┐
+│ Column # │ Header Text                 │ Colspan │ Notes │
+├─────────────────────────────────────────────────────────┤
+│ 11       │ Continuous Assessment %     │ 2       │       │
+│ 12       │ Invigilated Exam – in %     │ 2       │       │
+│ 13       │ Proctored Exam – online %   │ 1       │       │
+│ 14       │ Project                     │ 2       │       │
+│ 15       │ Practical Skills Demo. %    │ 2       │       │
+│ 16       │ Work Based %                │ 2       │       │
+└─────────────────────────────────────────────────────────┘
+
+
+MERGED CELLS - EXACT MAPPING
+═════════════════════════════
+
+ROWSPAN MERGES (Vertical Merges):
+┌─────────────────────────────────────────────────────────┐
+│ Location        │ Content                              │ Rows │
+├─────────────────────────────────────────────────────────┤
+│ Row 5, Column 1 │ "Programme Delivery Mode – ✔ one"   │ 5-6  │
+│ Row 7, Column 1 │ "Teaching & Learning Modalities – ✔" │ 7-8  │
+│ Row 9, Column 1 │ "Assessment Techniques – ✔"         │ 9-10 │
+└─────────────────────────────────────────────────────────┘
+
+COLSPAN MERGES (Horizontal Merges):
+  Row 1:   1 cell spanning 29 columns
+  Row 2:   [3] + [26]
+  Row 3:   [3] [7] [5] [11] [2] [1]
+  Row 4:   [3] [2] [5] [16] [2] [1]
+  Row 5:   [3 w/ rs=2] [5] [6] [6] [9]
+  Row 6:   [3 w/ rs=2] [5] [6] [6] [9]
+  Row 7:   [3 w/ rs=2] [4] [4] [6] [4] [3] [5]
+  Row 8:   [3 w/ rs=2] [4] [4] [6] [4] [3] [5]
+  Row 9:   [3 w/ rs=2] [4] [4] [6] [4] [3] [5]
+  Row 10:  [3 w/ rs=2] [4] [4] [6] [4] [3] [5]
+  Row 11:  1 cell spanning 29 columns
+  Row 12:  [8] [11] [10]
+  Rows 13-15: 16 cells each (1,1,2,2,2,1,3,1,3,2,2,2,1,2,2,2)
+
+
+GENERATED OUTPUT FILES
+══════════════════════
+
+All files have been generated and placed in: M:\programmedev\
+
+┌────────────────────────────────────────────────────────────┐
+│ 1. Programme_Schedule_Template.html                        │
+│    ├─ Size: 9.9 KB                                         │
+│    ├─ Type: HTML document                                  │
+│    ├─ Purpose: Word paste-ready table                      │
+│    └─ Features:                                            │
+│       • Full colspan/rowspan attributes preserved          │
+│       • Matching colors and styling                        │
+│       • Copy-paste ready into Word                         │
+│       • All cell content included                          │
+│       • No external dependencies                           │
+└────────────────────────────────────────────────────────────┘
+
+┌────────────────────────────────────────────────────────────┐
+│ 2. TABLE_ANALYSIS.md                                       │
+│    ├─ Size: 10.8 KB                                        │
+│    ├─ Type: Markdown document                              │
+│    ├─ Purpose: Complete structural reference               │
+│    └─ Contains:                                            │
+│       • Full table breakdown by section                    │
+│       • All 16 column headers enumerated                   │
+│       • Merged cells mapping                               │
+│       • Exact cell content list                            │
+│       • Formatting and styling notes                       │
+│       • Usage instructions                                 │
+│       • Development guidelines                             │
+└────────────────────────────────────────────────────────────┘
+
+┌────────────────────────────────────────────────────────────┐
+│ 3. TABLE_STRUCTURE_VISUAL.txt                              │
+│    ├─ Size: 16.9 KB                                        │
+│    ├─ Type: Text document with ASCII diagrams              │
+│    ├─ Purpose: Visual reference for developers             │
+│    └─ contains:                                            │
+│       • ASCII art table diagrams                           │
+│       • Visual column mapping                              │
+│       • Merged cells clearly shown                         │
+│       • Row-by-row breakdown                               │
+│       • Formatting specification                           │
+│       • Column sequence reference                          │
+└────────────────────────────────────────────────────────────┘
+
+┌────────────────────────────────────────────────────────────┐
+│ 4. QUICK_REFERENCE.txt                                     │
+│    ├─ Size: 13.4 KB                                        │
+│    ├─ Type: Text document                                  │
+│    ├─ Purpose: Fast lookup guide                           │
+│    └─ Contains:                                            │
+│       • Table overview and sections                        │
+│       • Column headers quick list                          │
+│       • Grouped headers structure                          │
+│       • HTML recreation instructions                       │
+│       • Troubleshooting guide                              │
+│       • Usage patterns (single/multi-stage/versions)       │
+└────────────────────────────────────────────────────────────┘
+
+
+SPECIAL ELEMENTS
+════════════════
+
+CHECKBOX SYMBOL:
+  Character: ✔ (Unicode U+2714, "Check Mark")
+  Appears: 3 times (Rows 5, 7, 9)
+  Context: "– ✔ one as appropriate." and "– ✔ one or more as appropriate."
+
+EXPANDABLE STRUCTURE:
+  Template Rows: 14-15 (both empty, ready for data)
+  Expansion Method: Copy rows 14-15 and paste to add more modules
+  No Limit: Unlimited rows can be added
+
+EDITABLE FIELDS:
+  • Name of Provider (Row 2)
+  • Programme Title (Row 3)
+  • Stage designation (Row 4)
+  • Exit Award Title (Row 4)
+  • All module data fields (Rows 14+)
+  • All checkpoint cells (Rows 6, 8, 10)
+
+
+FORMATTING & STYLING
+═════════════════════
+
+Colors Used:
+  • Header background: #d9e1f2 (light blue)
+  • Form labels: #e7e6e6 (light gray)
+  • Checkbox rows: #f2f2f2 (very light gray)
+  • Data cells: #ffffff (white)
+  • Borders: 1px solid #000000 (black)
+
+Typography:
+  • Font family: Calibri
+  • Body text: 11pt
+  • Instructions: 10pt
+  • Headers: Bold weight
+  • Cell padding: 6px all sides
+
+Layout:
+  • Border style: Solid 1px on all cells
+  • Border collapse: Enabled
+  • Text alignment: Left (default)
+  • Vertical alignment: Top (default)
+
+
+QUALITY ASSURANCE
+═════════════════
+
+✓ Document parsed successfully from Office Open XML format
+✓ All 15 rows extracted and analyzed
+✓ All 29 columns mapped correctly
+✓ All merged cells (colspan/rowspan) identified
+✓ All cell contents extracted with exact text
+✓ Special characters preserved (✔ symbol)
+✓ HTML structure validated and tested
+✓ Column headers verified against original
+✓ Formatting colors and styles matched
+✓ Styling attributes applied consistently
+✓ File integrity confirmed
+
+
+USAGE INSTRUCTIONS
+═══════════════════
+
+IMMEDIATE USE IN WORD:
+  1. Open "Programme_Schedule_Template.html" in any web browser
+  2. Select All content (Ctrl+A)
+  3. Copy to clipboard (Ctrl+C)
+  4. Open your Word document
+  5. Position cursor where you want the table
+  6. Paste (Ctrl+V)
+  7. Table will appear with full formatting intact
+  8. Adjust column widths if needed (Table → AutoFit → AutoFit Window)
+
+ADDING MODULE ROWS:
+  1. Position cursor at end of row 15
+  2. Select rows 14-15 entirely
+  3. Copy (Ctrl+C)
+  4. Click after row 15
+  5. Paste (Ctrl+V)
+  6. Repeat as needed for additional modules
+  7. Fill in module data in new rows
+
+CREATING MULTI-VERSION SCHEDULES:
+  1. For each programme version (f/t, p/t, blended, online):
+  2. Copy the entire table structure (rows 1-15)
+  3. Paste below existing table
+  4. Update delivery mode/modality/assessment checkboxes for that version
+  5. Fill in appropriate modules for that version
+
+DOCUMENT REFERENCE:
+  • For quick lookup: See "QUICK_REFERENCE.txt"
+  • For detailed structure: See "TABLE_ANALYSIS.md"
+  • For visual diagrams: See "TABLE_STRUCTURE_VISUAL.txt"
+  • For HTML code: See "Programme_Schedule_Template.html"
+
+
+FILES LOCATION
+═══════════════
+
+All files are located in: M:\programmedev\
+
+  • Programme_Schedule_Template.html
+  • TABLE_ANALYSIS.md
+  • TABLE_STRUCTURE_VISUAL.txt
+  • QUICK_REFERENCE.txt
+
+
+COMPLETION STATUS
+═══════════════════
+
+✅ XML Structure Extracted
+✅ Table Analysis Complete
+✅ All 15 Rows Analyzed
+✅ All 16 Column Headers Mapped
+✅ All Merged Cells Identified
+✅ Cell Content Enumerated
+✅ HTML Recreation Generated
+✅ Visual Diagrams Created
+✅ Documentation Complete
+✅ Quality Assurance Passed
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+ANALYSIS COMPLETED: 31 January 2026 22:27 UTC
+EXTRACTION TOOL: Word Document XML Parser
+DOCUMENT STATUS: ✅ COMPLETE & READY FOR USE
+
+═══════════════════════════════════════════════════════════════════════════════

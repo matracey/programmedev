@@ -1,0 +1,210 @@
+================================================================================
+                    PROGRAMME SCHEDULE TEMPLATE
+                        TABLE STRUCTURE DIAGRAM
+================================================================================
+
+COMPLETE TABLE LAYOUT (29 Column Grid)
+================================================================================
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ ROW 1: TITLE & INSTRUCTION (colspan=29)                                     │
+│                                                                              │
+│ 1B.5 Proposed Programme Schedule(s)                                         │
+│ Copy and paste the template for each additional stage...                    │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌────────────────┬──────────────────────────────────────────────────────────────┐
+│ ROW 2: PROVIDER│                                                              │
+│ Name of        │                                                              │
+│ Provider:      │ [col span 26]                                              │
+│ [col span 3]   │                                                              │
+└────────────────┴──────────────────────────────────────────────────────────────┘
+
+┌────────────────┬───────────┬──────────┬────────────────────┬─────────┬───────┐
+│ ROW 3: PROG    │           │          │                    │ ECTS    │       │
+│ PROGRAMME      │ [cs 7]    │ [cs 5]   │ [cs 11]            │ [cs 2]  │[cs 1] │
+│ TITLE          │           │          │                    │         │       │
+│ [cs 3]         │           │          │                    │         │       │
+└────────────────┴───────────┴──────────┴────────────────────┴─────────┴───────┘
+
+┌────────────────┬──────┬──────────────────┬──────────────────┬─────────┬───────┐
+│ ROW 4: STAGE   │[cs2] │ EXIT AWARD TITLE │ [cs 16]          │ STAGE   │[cs 1] │
+│ Stage          │      │ [cs 5]           │                  │ ECTS    │       │
+│ [cs 3]         │      │                  │                  │ [cs 2]  │       │
+└────────────────┴──────┴──────────────────┴──────────────────┴─────────┴───────┘
+
+FORM SECTION: DELIVERY MODES, MODALITIES, ASSESSMENT
+================================================================================
+
+┌────────────────────────┬────────────┬──────────┬──────────┬──────────────────┐
+│ ROW 5-6: PROG DELIVERY │            │          │          │                  │
+│ MODE (rowspan=2)       │ On-site    │ Blended  │ Online   │ Apprenticeship   │
+│ [cs 3, rs 2]           │ Face-to-   │ [cs 6]   │ [cs 6]   │ [cs 9]           │
+│                        │ Face       │          │          │                  │
+│                        │ [cs 5]     │          │          │                  │
+├────────────────────────┼────────────┼──────────┼──────────┼──────────────────┤
+│ ROW 6: CHECKBOXES      │[cs 5]      │[cs 6]    │[cs 6]    │[cs 9]            │
+│ (continued from row 5) │            │          │          │                  │
+└────────────────────────┴────────────┴──────────┴──────────┴──────────────────┘
+
+┌────────────────────────┬────────┬────────┬──────────┬────────┬─────────┬──────┐
+│ ROW 7-8: TEACHING &    │ On-site│ Sync   │ Sync     │ Async  │Independ│Work  │
+│ LEARNING MODALITIES    │ Face-  │ Hybrid │ Online   │        │ent      │Based │
+│ (rowspan=2)            │ to-Face│ [cs 4] │ [cs 6]   │[cs 4]  │ [cs 3]  │[cs 5]│
+│ [cs 3, rs 2]           │[cs 4]  │        │          │        │         │      │
+├────────────────────────┼────────┼────────┼──────────┼────────┼─────────┼──────┤
+│ ROW 8: CHECKBOXES      │[cs 4]  │[cs 4]  │[cs 6]    │[cs 4]  │[cs 3]   │[cs 5]│
+│ (continued from row 7) │        │        │          │        │         │      │
+└────────────────────────┴────────┴────────┴──────────┴────────┴─────────┴──────┘
+
+┌────────────────────────┬────────┬────────┬──────────┬────────┬──────────┬──────┐
+│ ROW 9-10: ASSESSMENT   │Continu │Invigil│Proctored │Project │Practical │Work  │
+│ TECHNIQUES UTILISED    │ous     │ated    │ Exam -   │        │ Skills   │Based │
+│ (rowspan=2)            │Assess. │Exam    │ online   │[cs 4]  │Demonst.  │      │
+│ [cs 3, rs 2]           │[cs 4]  │[cs 4]  │[cs 6]    │        │[cs 3]    │[cs 5]│
+├────────────────────────┼────────┼────────┼──────────┼────────┼──────────┼──────┤
+│ ROW 10: CHECKBOXES     │[cs 4]  │[cs 4]  │[cs 6]    │[cs 4]  │[cs 3]    │[cs 5]│
+│ (continued from row 9) │        │        │          │        │          │      │
+└────────────────────────┴────────┴────────┴──────────┴────────┴──────────┴──────┘
+
+MODULE DATA ENTRY SECTION
+================================================================================
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ ROW 11: MODULES SECTION HEADER (colspan=29)                                 │
+│                                                                              │
+│ Modules in this stage (add rows as required)                                │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────┬──────────────────────────────────────┬──────────────────────┐
+│ ROW 12: GROUPED  │                                      │                      │
+│ HEADERS          │ Total Student Effort Module (hours)  │ Assessment – Alloca- │
+│                  │ [colspan 11, spans effort columns]   │ tion of Marks        │
+│ [colspan 8]      │                                      │ [colspan 10, spans   │
+│                  │                                      │ assessment columns]  │
+└──────────────────┴──────────────────────────────────────┴──────────────────────┘
+
+┌──────────┬────────┬──────────┬──────────┬──────────┬──────────┬────────┬────────┬
+│ ROW 13:  │Semester│Mandatory │Credits   │Total     │On-site   │Synchron│Asynch  │
+│ COLUMN   │        │(M) or    │(ECTS)    │Hours     │Face-to-  │ous     │ronous  │
+│ HEADERS  │        │Elective  │          │          │Face      │[rs 1]  │        │
+│ (cont.)  │        │(E)       │          │          │          │        │        │
+│ Module   │        │          │          │          │          │        │        │
+│ Title    │        │          │          │          │          │        │        │
+│          │        │          │          │          │          │        │        │
+├──────────┼────────┼──────────┼──────────┼──────────┼──────────┼────────┼────────┼
+│ (cont.)  │        │          │          │          │          │        │        │
+│ C1       │ C2     │ C3       │ C4       │ C5       │ C6       │ C7     │ C8     │
+│ [cs 1]   │[cs 1]  │[cs 2]    │[cs 2]    │[cs 2]    │[cs 1]    │[cs 3]  │[cs 1]  │
+└──────────┴────────┴──────────┴──────────┴──────────┴──────────┴────────┴────────┴
+
+┌────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬─────────┐
+│ (cont.)│Independent│Work     │Continuous│Invigilated│Proctored │Project   │Practical│
+│        │[cs 3]    │Based    │Assessment│ Exam – in │ Exam -   │          │ Skills  │
+│        │          │ [cs 2]  │%         │ person % │ online % │[cs 2]    │ Demon.% │
+│        │          │         │[cs 2]    │[cs 2]    │[cs 1]    │          │[cs 2]  │
+│        │          │         │          │          │          │          │         │
+├────────┼──────────┼──────────┼──────────┼──────────┼──────────┼──────────┼─────────┤
+│ Work   │          │          │          │          │          │          │         │
+│ Based% │          │          │          │          │          │          │         │
+│[cs 2]  │          │          │          │          │          │          │         │
+└────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴─────────┘
+
+Data Entry Rows (14-15): Empty rows ready for module data entry
+Additional rows can be created by copying rows 14-15 template
+
+
+================================================================================
+DETAILED COLUMN MAPPING - MODULES TABLE (ROW 13)
+================================================================================
+
+EFFORT SECTION (Columns 6-10): Total Student Effort Module (hours)
+  │
+  ├─ Column 6:  "On-site Face-to-Face" [cs 1]
+  ├─ Column 7:  "Synchronous" [cs 3]          ← Spans 3 grid columns
+  ├─ Column 8:  "Asynchronous" [cs 1]
+  ├─ Column 9:  "Independent" [cs 3]          ← Spans 3 grid columns
+  └─ Column 10: "Work Based" [cs 2]            ← Spans 2 grid columns
+
+
+ASSESSMENT SECTION (Columns 11-16): Assessment – Allocation of Marks
+  │
+  ├─ Column 11: "Continuous Assessment %" [cs 2]
+  ├─ Column 12: "Invigilated Exam – in person %" [cs 2]
+  ├─ Column 13: "Proctored Exam – online %" [cs 1]
+  ├─ Column 14: "Project" [cs 2]
+  ├─ Column 15: "Practical Skills Demonstration %" [cs 2]
+  └─ Column 16: "Work Based %" [cs 2]
+
+
+MODULE INFO SECTION (Columns 1-5):
+  │
+  ├─ Column 1: "Module Title" [cs 1]
+  ├─ Column 2: "Semester" [cs 1]
+  ├─ Column 3: "Mandatory (M) or Elective (E)" [cs 2]
+  ├─ Column 4: "Credits (ECTS)" [cs 2]
+  └─ Column 5: "Total Hours" [cs 2]
+
+
+================================================================================
+MERGED CELLS SUMMARY
+================================================================================
+
+VERTICAL MERGES (rowspan):
+  Row 5, Col 1:  Spans rows 5-6 (rowspan 2)
+                 "Programme Delivery Mode – ✔ one as appropriate."
+  
+  Row 7, Col 1:  Spans rows 7-8 (rowspan 2)
+                 "Teaching and Learning Modalities – ✔ one or more as appropriate."
+  
+  Row 9, Col 1:  Spans rows 9-10 (rowspan 2)
+                 "Assessment Techniques Utilised in Stage – ✔ one or more as appropriate."
+
+
+HORIZONTAL MERGES (colspan) - By Row:
+  
+  Row 1:   colspan 29 (full width) - Title/Instruction
+  Row 2:   colspan 3 + colspan 26 - Provider name
+  Row 3:   colspan 3 + 7 + 5 + 11 + 2 + 1 - Programme title
+  Row 4:   colspan 3 + 2 + 5 + 16 + 2 + 1 - Stage info
+  Row 5:   colspan 3 (rs2) + 5 + 6 + 6 + 9 - Delivery modes
+  Row 6:   colspan 3 (rs2 cont) + 5 + 6 + 6 + 9 - Checkboxes
+  Row 7:   colspan 3 (rs2) + 4 + 4 + 6 + 4 + 3 + 5 - Learning modalities
+  Row 8:   colspan 3 (rs2 cont) + 4 + 4 + 6 + 4 + 3 + 5 - Checkboxes
+  Row 9:   colspan 3 (rs2) + 4 + 4 + 6 + 4 + 3 + 5 - Assessment types
+  Row 10:  colspan 3 (rs2 cont) + 4 + 4 + 6 + 4 + 3 + 5 - Checkboxes
+  Row 11:  colspan 29 (full width) - Section header
+  Row 12:  colspan 8 + 11 + 10 - Grouped headers
+  Row 13:  1 + 1 + 2 + 2 + 2 + 1 + 3 + 1 + 3 + 2 + 2 + 2 + 1 + 2 + 2 + 2 = 16 cells
+  Row 14:  1 + 1 + 2 + 2 + 2 + 1 + 3 + 1 + 3 + 2 + 2 + 2 + 1 + 2 + 2 + 2 = 16 cells (data template)
+  Row 15:  1 + 1 + 2 + 2 + 2 + 1 + 3 + 1 + 3 + 2 + 2 + 2 + 1 + 2 + 2 + 2 = 16 cells (data template)
+
+
+================================================================================
+FORMATTING & STYLING
+================================================================================
+
+Background Colors:
+  • Header sections (Rows 1-12):  Light blue (#d9e1f2) 
+  • Form labels (2,3,4,5,7,9):    Light gray (#e7e6e6)
+  • Checkbox rows (6,8,10):       Very light gray (#f2f2f2)
+  • Data cells (14-15):           White (#ffffff)
+
+Text Properties:
+  • Font: Calibri, 11pt
+  • Headers: Bold
+  • Instruction text: 10pt
+  • Cell padding: 6px
+  • Border: 1px solid black on all cells
+
+Special Characters:
+  • "✔" (Checkbox mark) used in delivery mode, modalities, and assessment rows
+  • Appears 3 times in the form section
+
+Expandable Structure:
+  • Rows 14-15 are template data rows
+  • Users can copy/paste these rows to add more modules
+  • No fixed limit to number of data rows
+
+
+================================================================================
