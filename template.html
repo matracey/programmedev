@@ -7,21 +7,21 @@
     <style>
       body {
         font-family: Calibri, sans-serif;
-        margin: 20px;
+        margin: 15pt;
         background-color: #f5f5f5;
       }
       table {
         width: 100%;
         border-collapse: collapse;
         background-color: white;
-        margin-bottom: 20px;
+        margin-bottom: 15pt;
       }
       th,
       td {
-        border: 1px solid #000;
-        padding: 6px;
+        border: 1pt solid #000;
+        padding: 4.5pt;
         text-align: left;
-        font-size: 11px;
+        font-size: 8pt;
       }
       th {
         background-color: #d9e1f2;
@@ -40,235 +40,299 @@
         font-weight: bold;
       }
       .instruction-text {
-        font-size: 10px;
+        font-size: 7.5pt;
         color: #333;
       }
       .empty-data {
         background-color: #ffffff;
-        min-height: 20px;
+        min-height: 15pt;
       }
       h1 {
         color: #333;
-        font-size: 18px;
-        margin-bottom: 20px;
+        font-size: 14pt;
+        margin-bottom: 15pt;
+      }
+      #upload-section {
+        background-color: white;
+        padding: 11pt;
+        margin-bottom: 15pt;
+        border: 1pt solid #ccc;
+        border-radius: 3pt;
+      }
+      #upload-section label {
+        font-weight: bold;
+        margin-right: 7.5pt;
+      }
+      #upload-status {
+        margin-left: 11pt;
+        font-style: italic;
+      }
+      .success {
+        color: green;
+      }
+      .error {
+        color: red;
+      }
+      .checked::after {
+        content: " ✔";
+      }
+      #schedules-container {
+        max-width: 260mm; /* A4 landscape width */
+      }
+      .page-break {
+        page-break-after: always;
+        margin-top: 30pt;
+      }
+      .vertical-header {
+        vertical-align: middle;
+        text-align: center;
+        padding: 0;
+        height: 75pt;
+      }
+      .vertical-header span {
+        writing-mode: vertical-rl;
+        transform: rotate(180deg);
+        display: inline-block;
+        height: 70pt;
+        overflow: hidden;
+        padding: 2pt;
+        font-size: 7pt;
+        line-height: 1.2;
+        text-align: left;
       }
     </style>
   </head>
   <body>
     <h1>QQI Programme Schedule Template</h1>
 
-    <table>
-      <!-- ROW 1: Title and Instructions -->
-      <tr>
-        <td colspan="29" class="form-section-title">
-          <strong>Proposed Programme Schedule(s)</strong>
-          <br />
-          <span class="instruction-text"
-            >Copy and paste the template for each additional stage of the programme. Create a
-            version of the schedule for each different version of the programme also i.e. f/t, p/t,
-            blended etc</span
-          >
-        </td>
-      </tr>
+    <div id="upload-section">
+      <label for="file-upload">Upload Programme JSON:</label>
+      <input type="file" id="file-upload" accept=".json" />
+      <button
+        type="button"
+        id="copy-btn"
+        style="margin-left: 11pt; padding: 4.5pt 9pt; cursor: pointer"
+      >
+        Copy All
+      </button>
+      <span id="upload-status"></span>
+    </div>
 
-      <!-- ROW 2: Provider Name -->
-      <tr>
-        <td colspan="3" class="label-cell">Name of Provider:</td>
-        <td colspan="26" class="empty-data"></td>
-      </tr>
+    <div id="schedules-container">
+      <table>
+        <!-- ROW 1: Title and Instructions -->
+        <tr>
+          <td colspan="29" class="form-section-title">
+            <strong>Proposed Programme Schedule(s)</strong>
+            <br />
+            <span class="instruction-text"
+              >Copy and paste the template for each additional stage of the programme. Create a
+              version of the schedule for each different version of the programme also i.e. f/t,
+              p/t, blended etc</span
+            >
+          </td>
+        </tr>
 
-      <!-- ROW 3: Programme Title and ECTS -->
-      <tr>
-        <td colspan="3" class="label-cell">Programme Title (Principal)</td>
-        <td colspan="7" class="empty-data"></td>
-        <td colspan="5" class="empty-data"></td>
-        <td colspan="11" class="empty-data"></td>
-        <td colspan="2" class="label-cell">ECTS</td>
-        <td colspan="1" class="empty-data"></td>
-      </tr>
+        <!-- ROW 2: Provider Name -->
+        <tr>
+          <td colspan="3" class="label-cell">Name of Provider:</td>
+          <td colspan="26" class="empty-data"></td>
+        </tr>
 
-      <!-- ROW 4: Stage Info -->
-      <tr>
-        <td colspan="3" class="label-cell">Stage (1,2,3, Award etc)</td>
-        <td colspan="2" class="empty-data"></td>
-        <td colspan="5" class="label-cell">Exit Award Title (if relevant)</td>
-        <td colspan="16" class="empty-data"></td>
-        <td colspan="2" class="label-cell">Stage ECTS</td>
-        <td colspan="1" class="empty-data"></td>
-      </tr>
+        <!-- ROW 3: Programme Title and ECTS -->
+        <tr>
+          <td colspan="3" class="label-cell">Programme Title (Principal)</td>
+          <td colspan="7" class="empty-data"></td>
+          <td colspan="5" class="empty-data"></td>
+          <td colspan="11" class="empty-data"></td>
+          <td colspan="2" class="label-cell">ECTS</td>
+          <td colspan="1" class="empty-data"></td>
+        </tr>
 
-      <!-- ROW 5: Programme Delivery Mode Header -->
-      <tr>
-        <td rowspan="2" colspan="3" class="label-cell checkbox-label">
-          Programme Delivery Mode<br />✔ one as appropriate.
-        </td>
-        <td colspan="5" class="form-section-title">On-site Face-to-Face</td>
-        <td colspan="6" class="form-section-title">Blended</td>
-        <td colspan="6" class="form-section-title">Online</td>
-        <td colspan="9" class="form-section-title">Apprenticeship</td>
-      </tr>
+        <!-- ROW 4: Stage Info -->
+        <tr>
+          <td colspan="3" class="label-cell">Stage (1,2,3, Award etc)</td>
+          <td colspan="2" class="empty-data"></td>
+          <td colspan="5" class="label-cell">Exit Award Title (if relevant)</td>
+          <td colspan="16" class="empty-data"></td>
+          <td colspan="2" class="label-cell">Stage ECTS</td>
+          <td colspan="1" class="empty-data"></td>
+        </tr>
 
-      <!-- ROW 6: Programme Delivery Mode Checkboxes -->
-      <tr>
-        <td colspan="5" class="empty-data"></td>
-        <td colspan="6" class="empty-data"></td>
-        <td colspan="6" class="empty-data"></td>
-        <td colspan="9" class="empty-data"></td>
-      </tr>
+        <!-- ROW 5: Programme Delivery Mode Header -->
+        <tr>
+          <td rowspan="2" colspan="3" class="label-cell checkbox-label">
+            Programme Delivery Mode<br />✔ one as appropriate.
+          </td>
+          <td colspan="5" class="form-section-title">On-site Face-to-Face</td>
+          <td colspan="6" class="form-section-title">Blended</td>
+          <td colspan="6" class="form-section-title">Online</td>
+          <td colspan="9" class="form-section-title">Apprenticeship</td>
+        </tr>
 
-      <!-- ROW 7: Teaching and Learning Modalities Header -->
-      <tr>
-        <td rowspan="2" colspan="3" class="label-cell checkbox-label">
-          Teaching and Learning Modalities<br />✔ one or more as appropriate.
-        </td>
-        <td colspan="4" class="form-section-title">On-site Face-to-Face</td>
-        <td colspan="4" class="form-section-title">Synchronous Hybrid</td>
-        <td colspan="6" class="form-section-title">Synchronous Online</td>
-        <td colspan="4" class="form-section-title">Asynchronous</td>
-        <td colspan="3" class="form-section-title">Independent</td>
-        <td colspan="5" class="form-section-title">Work Based</td>
-      </tr>
+        <!-- ROW 6: Programme Delivery Mode Checkboxes -->
+        <tr>
+          <td colspan="5" class="empty-data"></td>
+          <td colspan="6" class="empty-data"></td>
+          <td colspan="6" class="empty-data"></td>
+          <td colspan="9" class="empty-data"></td>
+        </tr>
 
-      <!-- ROW 8: Teaching and Learning Modalities Checkboxes -->
-      <tr>
-        <td colspan="4" class="empty-data"></td>
-        <td colspan="4" class="empty-data"></td>
-        <td colspan="6" class="empty-data"></td>
-        <td colspan="4" class="empty-data"></td>
-        <td colspan="3" class="empty-data"></td>
-        <td colspan="5" class="empty-data"></td>
-      </tr>
+        <!-- ROW 7: Teaching and Learning Modalities Header -->
+        <tr>
+          <td rowspan="2" colspan="3" class="label-cell checkbox-label">
+            Teaching and Learning Modalities<br />✔ one or more as appropriate.
+          </td>
+          <td colspan="4" class="form-section-title">On-site Face-to-Face</td>
+          <td colspan="4" class="form-section-title">Synchronous Hybrid</td>
+          <td colspan="6" class="form-section-title">Synchronous Online</td>
+          <td colspan="4" class="form-section-title">Asynchronous</td>
+          <td colspan="3" class="form-section-title">Independent</td>
+          <td colspan="5" class="form-section-title">Work Based</td>
+        </tr>
 
-      <!-- ROW 9: Assessment Techniques Header -->
-      <tr>
-        <td rowspan="2" colspan="3" class="label-cell checkbox-label">
-          Assessment Techniques Utilised in Stage<br />✔ one or more as appropriate.
-        </td>
-        <td colspan="4" class="form-section-title">Continuous Assessment</td>
-        <td colspan="4" class="form-section-title">Invigilated Exam – in person</td>
-        <td colspan="6" class="form-section-title">Proctored Exam - online</td>
-        <td colspan="4" class="form-section-title">Project</td>
-        <td colspan="3" class="form-section-title">Practical Skills Demonstration</td>
-        <td colspan="5" class="form-section-title">Work Based</td>
-      </tr>
+        <!-- ROW 8: Teaching and Learning Modalities Checkboxes -->
+        <tr>
+          <td colspan="4" class="empty-data"></td>
+          <td colspan="4" class="empty-data"></td>
+          <td colspan="6" class="empty-data"></td>
+          <td colspan="4" class="empty-data"></td>
+          <td colspan="3" class="empty-data"></td>
+          <td colspan="5" class="empty-data"></td>
+        </tr>
 
-      <!-- ROW 10: Assessment Techniques Checkboxes -->
-      <tr>
-        <td colspan="4" class="empty-data"></td>
-        <td colspan="4" class="empty-data"></td>
-        <td colspan="6" class="empty-data"></td>
-        <td colspan="4" class="empty-data"></td>
-        <td colspan="3" class="empty-data"></td>
-        <td colspan="5" class="empty-data"></td>
-      </tr>
+        <!-- ROW 9: Assessment Techniques Header -->
+        <tr>
+          <td rowspan="2" colspan="3" class="label-cell checkbox-label">
+            Assessment Techniques Utilised in Stage<br />✔ one or more as appropriate.
+          </td>
+          <td colspan="4" class="form-section-title">Continuous Assessment</td>
+          <td colspan="4" class="form-section-title">Invigilated Exam – in person</td>
+          <td colspan="6" class="form-section-title">Proctored Exam - online</td>
+          <td colspan="4" class="form-section-title">Project</td>
+          <td colspan="3" class="form-section-title">Practical Skills Demonstration</td>
+          <td colspan="5" class="form-section-title">Work Based</td>
+        </tr>
 
-      <!-- ROW 11: Modules Section Header -->
-      <tr>
-        <td colspan="29" class="form-section-title">
-          <strong>Modules in this stage (add rows as required)</strong>
-        </td>
-      </tr>
+        <!-- ROW 10: Assessment Techniques Checkboxes -->
+        <tr>
+          <td colspan="4" class="empty-data"></td>
+          <td colspan="4" class="empty-data"></td>
+          <td colspan="6" class="empty-data"></td>
+          <td colspan="4" class="empty-data"></td>
+          <td colspan="3" class="empty-data"></td>
+          <td colspan="5" class="empty-data"></td>
+        </tr>
 
-      <!-- ROW 12: Grouped Headers for Modules Table -->
-      <tr>
-        <td colspan="8" class="label-cell"></td>
-        <td colspan="10" class="form-section-title">
-          <strong>Total Student Effort Module (hours)</strong>
-        </td>
-        <td colspan="11" class="form-section-title">
-          <strong
-            >Assessment – Allocation of Marks<br />(from the module assessment strategy)</strong
-          >
-        </td>
-      </tr>
+        <!-- ROW 11: Modules Section Header -->
+        <tr>
+          <td colspan="29" class="form-section-title">
+            <strong>Modules in this stage (add rows as required)</strong>
+          </td>
+        </tr>
 
-      <!-- ROW 13: Column Headers for Modules -->
-      <tr>
-        <th>Module Title</th>
-        <th>Semester</th>
-        <th colspan="2">Mandatory (M) or Elective (E)</th>
-        <th colspan="2">Credits (ECTS)</th>
-        <th colspan="2">Total Hours</th>
-        <th>On-site Face-to-Face</th>
-        <th colspan="3">Synchronous</th>
-        <th>Asynchronous</th>
-        <th colspan="3">Independent</th>
-        <th colspan="2">Work Based</th>
-        <th colspan="2">Continuous Assessment %</th>
-        <th colspan="2">Invigilated Exam – in person %</th>
-        <th>Proctored Exam – online %</th>
-        <th colspan="2">Project</th>
-        <th colspan="2">Practical Skills Demonstration %</th>
-        <th colspan="2">Work Based %</th>
-      </tr>
+        <!-- ROW 12: Grouped Headers for Modules Table -->
+        <tr>
+          <td colspan="8" class="label-cell"></td>
+          <td colspan="10" class="form-section-title">
+            <strong>Total Student Effort Module (hours)</strong>
+          </td>
+          <td colspan="11" class="form-section-title">
+            <strong
+              >Assessment – Allocation of Marks<br />(from the module assessment strategy)</strong
+            >
+          </td>
+        </tr>
 
-      <!-- ROW 14: Empty Data Row 1 -->
-      <tr>
-        <td class="empty-data"></td>
-        <td class="empty-data"></td>
-        <td colspan="2" class="empty-data"></td>
-        <td colspan="2" class="empty-data"></td>
-        <td colspan="2" class="empty-data"></td>
-        <td class="empty-data"></td>
-        <td colspan="3" class="empty-data"></td>
-        <td class="empty-data"></td>
-        <td colspan="3" class="empty-data"></td>
-        <td colspan="2" class="empty-data"></td>
-        <td colspan="2" class="empty-data"></td>
-        <td colspan="2" class="empty-data"></td>
-        <td class="empty-data"></td>
-        <td colspan="2" class="empty-data"></td>
-        <td colspan="2" class="empty-data"></td>
-        <td colspan="2" class="empty-data"></td>
-      </tr>
+        <!-- ROW 13: Column Headers for Modules -->
+        <tr>
+          <th>Module Title</th>
+          <th class="vertical-header"><span>Semester</span></th>
+          <th colspan="2" class="vertical-header"><span>Mandatory (M) or Elective (E)</span></th>
+          <th colspan="2" class="vertical-header"><span>Credits (ECTS)</span></th>
+          <th colspan="2" class="vertical-header"><span>Total Hours</span></th>
+          <th class="vertical-header"><span>On-site Face-to-Face</span></th>
+          <th colspan="3" class="vertical-header"><span>Synchronous</span></th>
+          <th class="vertical-header"><span>Asynchronous</span></th>
+          <th colspan="3" class="vertical-header"><span>Independent</span></th>
+          <th colspan="2" class="vertical-header"><span>Work Based</span></th>
+          <th colspan="2" class="vertical-header"><span>Continuous Assessment %</span></th>
+          <th colspan="2" class="vertical-header"><span>Invigilated Exam – in person %</span></th>
+          <th class="vertical-header"><span>Proctored Exam – online %</span></th>
+          <th colspan="2" class="vertical-header"><span>Project</span></th>
+          <th colspan="2" class="vertical-header"><span>Practical Skills Demonstration %</span></th>
+          <th colspan="2" class="vertical-header"><span>Work Based %</span></th>
+        </tr>
 
-      <!-- ROW 15: Empty Data Row 2 -->
-      <tr>
-        <td class="empty-data"></td>
-        <td class="empty-data"></td>
-        <td colspan="2" class="empty-data"></td>
-        <td colspan="2" class="empty-data"></td>
-        <td colspan="2" class="empty-data"></td>
-        <td class="empty-data"></td>
-        <td colspan="3" class="empty-data"></td>
-        <td class="empty-data"></td>
-        <td colspan="3" class="empty-data"></td>
-        <td colspan="2" class="empty-data"></td>
-        <td colspan="2" class="empty-data"></td>
-        <td colspan="2" class="empty-data"></td>
-        <td class="empty-data"></td>
-        <td colspan="2" class="empty-data"></td>
-        <td colspan="2" class="empty-data"></td>
-        <td colspan="2" class="empty-data"></td>
-      </tr>
-    </table>
+        <!-- ROW 14: Empty Data Row 1 -->
+        <tr>
+          <td class="empty-data"></td>
+          <td class="empty-data"></td>
+          <td colspan="2" class="empty-data"></td>
+          <td colspan="2" class="empty-data"></td>
+          <td colspan="2" class="empty-data"></td>
+          <td class="empty-data"></td>
+          <td colspan="3" class="empty-data"></td>
+          <td class="empty-data"></td>
+          <td colspan="3" class="empty-data"></td>
+          <td colspan="2" class="empty-data"></td>
+          <td colspan="2" class="empty-data"></td>
+          <td colspan="2" class="empty-data"></td>
+          <td class="empty-data"></td>
+          <td colspan="2" class="empty-data"></td>
+          <td colspan="2" class="empty-data"></td>
+          <td colspan="2" class="empty-data"></td>
+        </tr>
+
+        <!-- ROW 15: Empty Data Row 2 -->
+        <tr>
+          <td class="empty-data"></td>
+          <td class="empty-data"></td>
+          <td colspan="2" class="empty-data"></td>
+          <td colspan="2" class="empty-data"></td>
+          <td colspan="2" class="empty-data"></td>
+          <td class="empty-data"></td>
+          <td colspan="3" class="empty-data"></td>
+          <td class="empty-data"></td>
+          <td colspan="3" class="empty-data"></td>
+          <td colspan="2" class="empty-data"></td>
+          <td colspan="2" class="empty-data"></td>
+          <td colspan="2" class="empty-data"></td>
+          <td class="empty-data"></td>
+          <td colspan="2" class="empty-data"></td>
+          <td colspan="2" class="empty-data"></td>
+          <td colspan="2" class="empty-data"></td>
+        </tr>
+      </table>
+    </div>
 
     <!-- NOTES -->
     <div
       style="
-        font-size: 11px;
+        font-size: 8pt;
         color: #666;
-        margin-top: 20px;
-        padding: 10px;
+        margin-top: 15pt;
+        padding: 7.5pt;
         background-color: #f9f9f9;
-        border: 1px solid #ddd;
+        border: 1pt solid #ddd;
       "
     >
       <strong>INSTRUCTIONS FOR USE:</strong>
       <ul>
-        <li>Copy rows 14-15 and paste below to add additional module data rows</li>
+        <li>Upload a programme JSON file to automatically populate the schedule tables</li>
+        <li>
+          A separate schedule table will be generated for each stage in each programme version
+        </li>
+        <li>Copy rows and paste below to add additional module data rows</li>
         <li>
           Copy the entire table to create schedules for different stages or programme versions
         </li>
         <li>
-          Mark checkboxes (✔) in rows 5-6, 7-8, and 9-10 to indicate applicable delivery modes,
-          teaching modalities, and assessment techniques
-        </li>
-        <li>
-          All colspan and rowspan attributes are preserved to match the original Word document
-          template
+          Mark checkboxes (✔) in delivery modes, teaching modalities, and assessment techniques rows
         </li>
       </ul>
     </div>
+
+    <script type="module" src="/src/template.js"></script>
   </body>
 </html>
