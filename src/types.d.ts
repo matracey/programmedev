@@ -12,12 +12,12 @@ interface Window {
   /** Bootstrap library */
   bootstrap?: {
     Popover: {
-      new(element: Element, options?: object): { dispose(): void };
+      new (element: Element, options?: object): { dispose(): void };
       getInstance(element: Element): { dispose(): void } | null;
       getOrCreateInstance(element: Element, options?: object): { show(): void; hide(): void };
     };
     Collapse: {
-      new(element: Element, options?: object): { show(): void; hide(): void };
+      new (element: Element, options?: object): { show(): void; hide(): void };
       getInstance(element: Element): { show(): void; hide(): void } | null;
       getOrCreateInstance(element: Element, options?: object): { show(): void; hide(): void };
     };

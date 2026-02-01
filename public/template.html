@@ -1,209 +1,215 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Programme Schedule Template</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        #controls {
-            margin-bottom: 30px;
-        }
-        select {
-            padding: 8px;
-            font-size: 14px;
-        }
-        .schedule-section {
-            margin-bottom: 40px;
-            page-break-inside: avoid;
-        }
-        .schedule-header {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        .schedule-header td {
-            border: 1px solid black;
-            padding: 8px;
-            font-size: 13px;
-        }
-        .schedule-header .header-label {
-            font-weight: bold;
-            background-color: #f0f0f0;
-            width: 25%;
-        }
-        .schedule-header .header-value {
-            width: 25%;
-        }
-        .checkbox-group {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .modules-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-        .modules-table th,
-        .modules-table td {
-            border: 1px solid black;
-            padding: 6px;
-            font-size: 12px;
-            text-align: left;
-        }
-        .modules-table th {
-            background-color: #e8e8e8;
-            font-weight: bold;
-        }
-        .modules-table thead {
-            background-color: #e8e8e8;
-        }
-        .effort-header {
-            text-align: center;
-            font-weight: bold;
-        }
-        .page-break {
-            page-break-after: always;
-        }
-        .section-title {
-            font-weight: bold;
-            margin-top: 15px;
-            margin-bottom: 5px;
-        }
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      #controls {
+        margin-bottom: 30px;
+      }
+      select {
+        padding: 8px;
+        font-size: 14px;
+      }
+      .schedule-section {
+        margin-bottom: 40px;
+        page-break-inside: avoid;
+      }
+      .schedule-header {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+      }
+      .schedule-header td {
+        border: 1px solid black;
+        padding: 8px;
+        font-size: 13px;
+      }
+      .schedule-header .header-label {
+        font-weight: bold;
+        background-color: #f0f0f0;
+        width: 25%;
+      }
+      .schedule-header .header-value {
+        width: 25%;
+      }
+      .checkbox-group {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+      }
+      .checkbox-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .modules-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+      }
+      .modules-table th,
+      .modules-table td {
+        border: 1px solid black;
+        padding: 6px;
+        font-size: 12px;
+        text-align: left;
+      }
+      .modules-table th {
+        background-color: #e8e8e8;
+        font-weight: bold;
+      }
+      .modules-table thead {
+        background-color: #e8e8e8;
+      }
+      .effort-header {
+        text-align: center;
+        font-weight: bold;
+      }
+      .page-break {
+        page-break-after: always;
+      }
+      .section-title {
+        font-weight: bold;
+        margin-top: 15px;
+        margin-bottom: 5px;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div id="app">
-        <div id="controls">
-            <label for="programmeSelect">Select Programme:</label>
-            <select id="programmeSelect">
-                <option value="">-- Choose a programme --</option>
-                <option value="samples/higher-diploma-computing.json">Higher Diploma in Computing</option>
-                <option value="samples/higher-diploma-computing-with-errors.json">Higher Diploma in Computing (with errors)</option>
-                <option value="samples/microcredential-data-analytics.json">Microcredential in Data Analytics</option>
-            </select>
-        </div>
-        <div id="content"></div>
+      <div id="controls">
+        <label for="programmeSelect">Select Programme:</label>
+        <select id="programmeSelect">
+          <option value="">-- Choose a programme --</option>
+          <option value="samples/higher-diploma-computing.json">Higher Diploma in Computing</option>
+          <option value="samples/higher-diploma-computing-with-errors.json">
+            Higher Diploma in Computing (with errors)
+          </option>
+          <option value="samples/microcredential-data-analytics.json">
+            Microcredential in Data Analytics
+          </option>
+        </select>
+      </div>
+      <div id="content"></div>
     </div>
 
     <script>
-        const programmeSelect = document.getElementById('programmeSelect');
-        const contentDiv = document.getElementById('content');
+      const programmeSelect = document.getElementById("programmeSelect");
+      const contentDiv = document.getElementById("content");
 
-        programmeSelect.addEventListener('change', async (e) => {
-            if (!e.target.value) {
-                contentDiv.innerHTML = '';
-                return;
-            }
-
-            try {
-                const response = await fetch(e.target.value);
-                const data = await response.json();
-                renderSchedules(data);
-            } catch (error) {
-                contentDiv.innerHTML = `<p style="color: red;">Error loading programme: ${error.message}</p>`;
-            }
-        });
-
-        function renderSchedules(data) {
-            let html = '';
-
-            if (!data.versions || data.versions.length === 0) {
-                contentDiv.innerHTML = '<p>No versions available.</p>';
-                return;
-            }
-
-            // Render each version with its stages
-            data.versions.forEach((version, versionIdx) => {
-                if (version.stages && version.stages.length > 0) {
-                    version.stages.forEach((stage, stageIdx) => {
-                        // Add page break between schedules (except first)
-                        if (versionIdx > 0 || stageIdx > 0) {
-                            html += '<div class="page-break"></div>';
-                        }
-
-                        html += createScheduleSection(
-                            data,
-                            version,
-                            stage,
-                            `${versionIdx + 1}.${stageIdx + 1}`
-                        );
-                    });
-                }
-            });
-
-            contentDiv.innerHTML = html;
+      programmeSelect.addEventListener("change", async (e) => {
+        if (!e.target.value) {
+          contentDiv.innerHTML = "";
+          return;
         }
 
-        function createScheduleSection(programme, version, stage, scheduleId) {
-            let html = '<div class="schedule-section">';
+        try {
+          const response = await fetch(e.target.value);
+          const data = await response.json();
+          renderSchedules(data);
+        } catch (error) {
+          contentDiv.innerHTML = `<p style="color: red;">Error loading programme: ${error.message}</p>`;
+        }
+      });
 
-            // Header section
-            html += '<table class="schedule-header">';
-            html += `<tr>
+      function renderSchedules(data) {
+        let html = "";
+
+        if (!data.versions || data.versions.length === 0) {
+          contentDiv.innerHTML = "<p>No versions available.</p>";
+          return;
+        }
+
+        // Render each version with its stages
+        data.versions.forEach((version, versionIdx) => {
+          if (version.stages && version.stages.length > 0) {
+            version.stages.forEach((stage, stageIdx) => {
+              // Add page break between schedules (except first)
+              if (versionIdx > 0 || stageIdx > 0) {
+                html += '<div class="page-break"></div>';
+              }
+
+              html += createScheduleSection(
+                data,
+                version,
+                stage,
+                `${versionIdx + 1}.${stageIdx + 1}`,
+              );
+            });
+          }
+        });
+
+        contentDiv.innerHTML = html;
+      }
+
+      function createScheduleSection(programme, version, stage, scheduleId) {
+        let html = '<div class="schedule-section">';
+
+        // Header section
+        html += '<table class="schedule-header">';
+        html += `<tr>
                 <td class="header-label">18.5 Proposed Programme Schedule(s)</td>
                 <td class="header-value" colspan="3"><em>Copy and paste the template for each additional stage of the programme. Create a version of the schedule for each different version of the programme also i.e. f/t, p/t, blended etc</em></td>
             </tr>`;
-            html += `<tr>
+        html += `<tr>
                 <td class="header-label">Name of Provider:</td>
                 <td class="header-value" colspan="3"></td>
             </tr>`;
-            html += `<tr>
+        html += `<tr>
                 <td class="header-label">Programme Title (Principal)</td>
-                <td class="header-value">${programme.title || ''}</td>
+                <td class="header-value">${programme.title || ""}</td>
                 <td class="header-label">ECTS</td>
-                <td class="header-value">${programme.totalCredits || ''}</td>
+                <td class="header-value">${programme.totalCredits || ""}</td>
             </tr>`;
-            html += `<tr>
+        html += `<tr>
                 <td class="header-label">Stage (1,2,3, Award etc)</td>
-                <td class="header-value">${stage.name || ''}</td>
+                <td class="header-value">${stage.name || ""}</td>
                 <td class="header-label">Stage ECTS</td>
-                <td class="header-value">${stage.creditsTarget || ''}</td>
+                <td class="header-value">${stage.creditsTarget || ""}</td>
             </tr>`;
-            html += '</table>';
+        html += "</table>";
 
-            // Programme Delivery Mode
-            html += '<div class="section-title">Programme Delivery Mode - ✓ one as appropriate.</div>';
-            html += '<table class="schedule-header">';
-            html += `<tr>
+        // Programme Delivery Mode
+        html += '<div class="section-title">Programme Delivery Mode - ✓ one as appropriate.</div>';
+        html += '<table class="schedule-header">';
+        html += `<tr>
                 <td style="width: 25%;">On-site Face-to-Face</td>
-                <td style="width: 25%;"><input type="checkbox" ${version.deliveryModality === 'F2F' ? 'checked' : ''}></td>
+                <td style="width: 25%;"><input type="checkbox" ${version.deliveryModality === "F2F" ? "checked" : ""}></td>
                 <td style="width: 25%;">Blended</td>
-                <td style="width: 25%;"><input type="checkbox" ${version.deliveryModality === 'BLENDED' ? 'checked' : ''}></td>
+                <td style="width: 25%;"><input type="checkbox" ${version.deliveryModality === "BLENDED" ? "checked" : ""}></td>
             </tr>`;
-            html += `<tr>
+        html += `<tr>
                 <td>Online</td>
-                <td><input type="checkbox" ${version.deliveryModality === 'ONLINE' ? 'checked' : ''}></td>
+                <td><input type="checkbox" ${version.deliveryModality === "ONLINE" ? "checked" : ""}></td>
                 <td>Apprenticeship</td>
-                <td><input type="checkbox" ${version.deliveryModality === 'APPRENTICESHIP' ? 'checked' : ''}></td>
+                <td><input type="checkbox" ${version.deliveryModality === "APPRENTICESHIP" ? "checked" : ""}></td>
             </tr>`;
-            html += '</table>';
+        html += "</table>";
 
-            // Teaching and Learning Modalities
-            html += '<div class="section-title">Teaching and Learning Modalities - ✓ one or more as appropriate.</div>';
-            html += '<table class="schedule-header">';
-            html += `<tr>
+        // Teaching and Learning Modalities
+        html +=
+          '<div class="section-title">Teaching and Learning Modalities - ✓ one or more as appropriate.</div>';
+        html += '<table class="schedule-header">';
+        html += `<tr>
                 <td style="width: 20%;"><label><input type="checkbox"> On-site Face-to-Face</label></td>
                 <td style="width: 20%;"><label><input type="checkbox"> Synchronous Hybrid</label></td>
                 <td style="width: 20%;"><label><input type="checkbox"> Synchronous Online</label></td>
                 <td style="width: 20%;"><label><input type="checkbox"> Asynchronous</label></td>
                 <td style="width: 20%;"><label><input type="checkbox"> Independent</label></td>
             </tr>`;
-            html += '</table>';
+        html += "</table>";
 
-            // Assessment Techniques
-            html += '<div class="section-title">Assessment Techniques Utilised in Stage - ✓ one or more as appropriate.</div>';
-            html += '<table class="schedule-header">';
-            html += `<tr>
+        // Assessment Techniques
+        html +=
+          '<div class="section-title">Assessment Techniques Utilised in Stage - ✓ one or more as appropriate.</div>';
+        html += '<table class="schedule-header">';
+        html += `<tr>
                 <td style="width: 16.6%;"><label><input type="checkbox"> Continuous Assessment</label></td>
                 <td style="width: 16.6%;"><label><input type="checkbox"> Invigilated Exam – in person</label></td>
                 <td style="width: 16.6%;"><label><input type="checkbox"> Proctored Exam - online</label></td>
@@ -211,96 +217,97 @@
                 <td style="width: 16.6%;"><label><input type="checkbox"> Practical Skills Demonstration</label></td>
                 <td style="width: 16.6%;"><label><input type="checkbox"> Work Based</label></td>
             </tr>`;
-            html += '</table>';
+        html += "</table>";
 
-            // Modules table
-            html += '<div class="section-title">Modules in this stage (add rows as required)</div>';
-            html += createModulesTable(stage, programme.modules);
+        // Modules table
+        html += '<div class="section-title">Modules in this stage (add rows as required)</div>';
+        html += createModulesTable(stage, programme.modules);
 
-            html += '</div>';
-            return html;
+        html += "</div>";
+        return html;
+      }
+
+      function createModulesTable(stage, allModules) {
+        let html = '<table class="modules-table">';
+
+        // Header rows
+        html += "<thead>";
+        html += "<tr>";
+        html += '<th rowspan="2">Module Title</th>';
+        html += '<th rowspan="2">Semester</th>';
+        html += '<th rowspan="2">Mandatory/Elective (E)</th>';
+        html += '<th colspan="8" class="effort-header">Total Student Effort Module (hours)</th>';
+        html +=
+          '<th colspan="7" class="effort-header">Assessment – Allocation of Marks (from the module assessment strategy)</th>';
+        html += "</tr>";
+        html += "<tr>";
+        // Effort hours sub-headers
+        html += "<th>On-site-to-Face</th>";
+        html += "<th>Synchronous</th>";
+        html += "<th>Asynchronous</th>";
+        html += "<th>Independent</th>";
+        html += "<th>Work Based</th>";
+        html += "<th>Indirect</th>";
+        html += "<th>Total</th>";
+        html += "<th>Assessment</th>";
+        // Assessment sub-headers
+        html += "<th>Continuous Assessment %</th>";
+        html += "<th>Invigilated Exam %</th>";
+        html += "<th>Proctored Exam %</th>";
+        html += "<th>Project %</th>";
+        html += "<th>Practical Exam %</th>";
+        html += "<th>Demonstration %</th>";
+        html += "<th>Work Based %</th>";
+        html += "</tr>";
+        html += "</thead>";
+
+        html += "<tbody>";
+
+        // Add module rows
+        stage.modules.forEach((stageModule) => {
+          const module = allModules.find((m) => m.id === stageModule.moduleId);
+          if (!module) return;
+
+          html += "<tr>";
+          html += `<td>${module.title || ""}</td>`;
+          html += `<td>${stageModule.semester || ""}</td>`;
+          html += `<td>${module.elective ? "E" : "M"}</td>`;
+
+          // Effort hours - leave empty for manual entry
+          html += "<td></td>"; // On-site
+          html += "<td></td>"; // Synchronous
+          html += "<td></td>"; // Asynchronous
+          html += "<td></td>"; // Independent
+          html += "<td></td>"; // Work Based
+          html += "<td></td>"; // Indirect
+          html += "<td></td>"; // Total
+          html += "<td></td>"; // Assessment
+
+          // Assessment marks - leave empty for manual entry
+          html += "<td></td>"; // Continuous %
+          html += "<td></td>"; // Invigilated %
+          html += "<td></td>"; // Proctored %
+          html += "<td></td>"; // Project %
+          html += "<td></td>"; // Practical %
+          html += "<td></td>"; // Demonstration %
+          html += "<td></td>"; // Work Based %
+
+          html += "</tr>";
+        });
+
+        // Add empty rows for additional modules
+        for (let i = 0; i < 2; i++) {
+          html += "<tr>";
+          for (let j = 0; j < 23; j++) {
+            html += "<td></td>";
+          }
+          html += "</tr>";
         }
 
-        function createModulesTable(stage, allModules) {
-            let html = '<table class="modules-table">';
-
-            // Header rows
-            html += '<thead>';
-            html += '<tr>';
-            html += '<th rowspan="2">Module Title</th>';
-            html += '<th rowspan="2">Semester</th>';
-            html += '<th rowspan="2">Mandatory/Elective (E)</th>';
-            html += '<th colspan="8" class="effort-header">Total Student Effort Module (hours)</th>';
-            html += '<th colspan="7" class="effort-header">Assessment – Allocation of Marks (from the module assessment strategy)</th>';
-            html += '</tr>';
-            html += '<tr>';
-            // Effort hours sub-headers
-            html += '<th>On-site-to-Face</th>';
-            html += '<th>Synchronous</th>';
-            html += '<th>Asynchronous</th>';
-            html += '<th>Independent</th>';
-            html += '<th>Work Based</th>';
-            html += '<th>Indirect</th>';
-            html += '<th>Total</th>';
-            html += '<th>Assessment</th>';
-            // Assessment sub-headers
-            html += '<th>Continuous Assessment %</th>';
-            html += '<th>Invigilated Exam %</th>';
-            html += '<th>Proctored Exam %</th>';
-            html += '<th>Project %</th>';
-            html += '<th>Practical Exam %</th>';
-            html += '<th>Demonstration %</th>';
-            html += '<th>Work Based %</th>';
-            html += '</tr>';
-            html += '</thead>';
-
-            html += '<tbody>';
-
-            // Add module rows
-            stage.modules.forEach(stageModule => {
-                const module = allModules.find(m => m.id === stageModule.moduleId);
-                if (!module) return;
-
-                html += '<tr>';
-                html += `<td>${module.title || ''}</td>`;
-                html += `<td>${stageModule.semester || ''}</td>`;
-                html += `<td>${module.elective ? 'E' : 'M'}</td>`;
-
-                // Effort hours - leave empty for manual entry
-                html += '<td></td>'; // On-site
-                html += '<td></td>'; // Synchronous
-                html += '<td></td>'; // Asynchronous
-                html += '<td></td>'; // Independent
-                html += '<td></td>'; // Work Based
-                html += '<td></td>'; // Indirect
-                html += '<td></td>'; // Total
-                html += '<td></td>'; // Assessment
-
-                // Assessment marks - leave empty for manual entry
-                html += '<td></td>'; // Continuous %
-                html += '<td></td>'; // Invigilated %
-                html += '<td></td>'; // Proctored %
-                html += '<td></td>'; // Project %
-                html += '<td></td>'; // Practical %
-                html += '<td></td>'; // Demonstration %
-                html += '<td></td>'; // Work Based %
-
-                html += '</tr>';
-            });
-
-            // Add empty rows for additional modules
-            for (let i = 0; i < 2; i++) {
-                html += '<tr>';
-                for (let j = 0; j < 23; j++) {
-                    html += '<td></td>';
-                }
-                html += '</tr>';
-            }
-
-            html += '</tbody>';
-            html += '</table>';
-            return html;
-        }
+        html += "</tbody>";
+        html += "</table>";
+        return html;
+      }
     </script>
-</body>
+  </body>
 </html>

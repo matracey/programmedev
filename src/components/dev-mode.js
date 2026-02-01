@@ -6,7 +6,7 @@
  * @module components/dev-mode
  */
 
-import { state, setMode } from '../state/store.js';
+import { setMode, state } from "../state/store.js";
 
 /**
  * Checks if developer mode UI should be displayed.
@@ -29,8 +29,10 @@ export function isDevModeUI() {
  * @returns {string} HTML string for the toggle, or empty if dev mode disabled
  */
 export function getDevModeToggleHtml() {
-  if (!isDevModeUI()) return "";
-  
+  if (!isDevModeUI()) {
+    return "";
+  }
+
   return `
     <div class="d-flex justify-content-end align-items-center mb-2">
       <div class="form-check form-switch">
@@ -50,14 +52,18 @@ export function getDevModeToggleHtml() {
  */
 export function wireDevModeToggle(onModeChange) {
   const toggle = /** @type {HTMLInputElement | null} */ (document.getElementById("devModeToggle"));
-  if (!toggle) return;
-  
+  if (!toggle) {
+    return;
+  }
+
   toggle.onchange = () => {
     if (toggle.checked) {
       setMode("MODULE_EDITOR");
     } else {
       setMode("PROGRAMME_OWNER");
     }
-    if (onModeChange) onModeChange();
+    if (onModeChange) {
+      onModeChange();
+    }
   };
 }

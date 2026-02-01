@@ -5,9 +5,9 @@
  * @module state/store
  */
 
-import { uid } from '../utils/uid.js';
-import { defaultPatternFor } from '../utils/helpers.js';
-import { migrateProgramme } from '../utils/migrate-programme.js';
+import { defaultPatternFor } from "../utils/helpers.js";
+import { migrateProgramme } from "../utils/migrate-programme.js";
+import { uid } from "../utils/uid.js";
 
 // Storage key for localStorage
 const STORAGE_KEY = "nci_pds_mvp_programme_v1";
@@ -49,41 +49,42 @@ export const AWARD_TYPE_OPTIONS = [
  *
  * @returns {Programme} A new programme object initialized with default values
  */
-export const defaultProgramme = () => /** @type {Programme} */ ({
-  schemaVersion: 3,
-  id: "current",
+export const defaultProgramme = () =>
+  /** @type {Programme} */ ({
+    schemaVersion: 3,
+    id: "current",
 
-  // Identity
-  title: "",
-  awardType: "",
-  awardTypeIsOther: false,
-  nfqLevel: null,
-  school: "",
-  /** @type {string[]} */
-  awardStandardIds: [],
-  /** @type {string[]} */
-  awardStandardNames: [],
+    // Identity
+    title: "",
+    awardType: "",
+    awardTypeIsOther: false,
+    nfqLevel: null,
+    school: "",
+    /** @type {string[]} */
+    awardStandardIds: [],
+    /** @type {string[]} */
+    awardStandardNames: [],
 
-  // Programme-level structure
-  totalCredits: 0,
-  /** @type {Module[]} */
-  modules: [],
-  /** @type {PLO[]} */
-  plos: [],
-  /** @type {Record<string, string[]>} */
-  ploToModules: {},
+    // Programme-level structure
+    totalCredits: 0,
+    /** @type {Module[]} */
+    modules: [],
+    /** @type {PLO[]} */
+    plos: [],
+    /** @type {Record<string, string[]>} */
+    ploToModules: {},
 
-  // Elective definitions - each definition has a credit value and contains 1-N groups
-  // Students complete every definition, choosing one group from each
-  /** @type {ElectiveDefinition[]} */
-  electiveDefinitions: [],       // [{ id, name, code, credits, groups: [{ id, name, code, moduleIds: [] }] }]
+    // Elective definitions - each definition has a credit value and contains 1-N groups
+    // Students complete every definition, choosing one group from each
+    /** @type {ElectiveDefinition[]} */
+    electiveDefinitions: [], // [{ id, name, code, credits, groups: [{ id, name, code, moduleIds: [] }] }]
 
-  // Versions
-  /** @type {ProgrammeVersion[]} */
-  versions: [],
+    // Versions
+    /** @type {ProgrammeVersion[]} */
+    versions: [],
 
-  updatedAt: null,
-});
+    updatedAt: null,
+  });
 
 /**
  * Creates a new programme version with default values.
@@ -148,8 +149,17 @@ export const state = {
 export function activeSteps() {
   const p = state.programme;
   if (p.mode === "MODULE_EDITOR") {
-    const allowed = new Set(["mimlos", "effort-hours", "assessments", "reading-lists", "schedule", "mapping", "traceability", "snapshot"]);
-    return steps.filter(s => allowed.has(s.key));
+    const allowed = new Set([
+      "mimlos",
+      "effort-hours",
+      "assessments",
+      "reading-lists",
+      "schedule",
+      "mapping",
+      "traceability",
+      "snapshot",
+    ]);
+    return steps.filter((s) => allowed.has(s.key));
   }
   return steps;
 }
@@ -162,12 +172,14 @@ export function activeSteps() {
  */
 export function editableModuleIds() {
   const p = state.programme;
-  if (!p) return [];
+  if (!p) {
+    return [];
+  }
   if (p.mode === "MODULE_EDITOR") {
     const ids = p.moduleEditor?.assignedModuleIds ?? [];
-    return ids.length ? ids : (p.modules ?? []).map(m => m.id);
+    return ids.length ? ids : (p.modules ?? []).map((m) => m.id);
   }
-  return (p.modules ?? []).map(m => m.id);
+  return (p.modules ?? []).map((m) => m.id);
 }
 
 /**
@@ -178,7 +190,9 @@ export function editableModuleIds() {
  */
 export function getSelectedModuleId() {
   const ids = editableModuleIds();
-  if (!ids.length) return "";
+  if (!ids.length) {
+    return "";
+  }
   if (!state.selectedModuleId || !ids.includes(state.selectedModuleId)) {
     state.selectedModuleId = ids[0];
   }
@@ -192,7 +206,7 @@ export function getSelectedModuleId() {
  * @returns {ProgrammeVersion|undefined} The matching version, or undefined if not found
  */
 export function getVersionById(id) {
-  return (state.programme.versions ?? []).find(v => v.id === id);
+  return (state.programme.versions ?? []).find((v) => v.id === id);
 }
 
 /**
@@ -202,10 +216,12 @@ export function getVersionById(id) {
 export function load() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return;
-    
+    if (!raw) {
+      return;
+    }
+
     const parsed = JSON.parse(raw);
-    
+
     // Run migrations
     const migrated = migrateProgramme(parsed);
     state.programme = { ...defaultProgramme(), ...migrated };
@@ -227,7 +243,7 @@ export function load() {
     if (!state.selectedVersionId && state.programme.versions && state.programme.versions.length) {
       state.selectedVersionId = state.programme.versions[0].id;
     }
-    
+
     state.lastSaved = state.programme.updatedAt || null;
   } catch (e) {
     console.warn("Failed to load", e);
@@ -260,10 +276,14 @@ let saveTimer = null;
  * @param {Function} [onSaved] - Optional callback invoked after save completes
  */
 export function saveDebounced(onSaved) {
-  if (saveTimer) clearTimeout(saveTimer);
+  if (saveTimer) {
+    clearTimeout(saveTimer);
+  }
   saveTimer = setTimeout(() => {
     saveNow();
-    if (onSaved) onSaved();
+    if (onSaved) {
+      onSaved();
+    }
   }, 400);
 }
 
@@ -301,19 +321,29 @@ export function setMode(mode, assignedModuleIds = []) {
   p.mode = mode;
 
   if (mode === "MODULE_EDITOR") {
-    const defaultAssigned = (p.modules ?? []).map(m => m.id);
+    const defaultAssigned = (p.modules ?? []).map((m) => m.id);
     /** @type {any} */
-    const editor = p.moduleEditor ?? { assignedModuleIds: [], locks: undefined };
+    const editor = p.moduleEditor ?? {
+      assignedModuleIds: [],
+      locks: undefined,
+    };
     editor.assignedModuleIds = assignedModuleIds.length ? assignedModuleIds : defaultAssigned;
-    editor.locks ??= { programme: true, modulesMeta: true, versions: true, plos: true };
+    editor.locks ??= {
+      programme: true,
+      modulesMeta: true,
+      versions: true,
+      plos: true,
+    };
     p.moduleEditor = editor;
 
     // Jump to appropriate step if needed
     const currentKey = steps[state.stepIndex]?.key;
     const allowed = new Set(["mimlos", "mapping", "snapshot", "assessments"]);
     if (!allowed.has(currentKey)) {
-      const idx = steps.findIndex(s => s.key === "mimlos");
-      if (idx >= 0) state.stepIndex = idx;
+      const idx = steps.findIndex((s) => s.key === "mimlos");
+      if (idx >= 0) {
+        state.stepIndex = idx;
+      }
     }
   } else {
     delete p.moduleEditor;
@@ -331,14 +361,21 @@ let _standardsPromise = null;
  * @private
  */
 async function loadStandardsFile() {
-  if (_standardsPromise) return _standardsPromise;
+  if (_standardsPromise) {
+    return _standardsPromise;
+  }
   _standardsPromise = (async () => {
     const res = await fetch("./assets/standards.json", { cache: "no-store" });
-    if (!res.ok) throw new Error("Failed to load standards.json");
+    if (!res.ok) {
+      throw new Error("Failed to load standards.json");
+    }
     const data = await res.json();
     // New format: { schemaVersion, generatedFrom, awardStandards: [...] }
-    return Array.isArray(data?.awardStandards) ? data.awardStandards : 
-           Array.isArray(data?.standards) ? data.standards : [data];
+    return Array.isArray(data?.awardStandards)
+      ? data.awardStandards
+      : Array.isArray(data?.standards)
+        ? data.standards
+        : [data];
   })();
   return _standardsPromise;
 }
@@ -360,17 +397,18 @@ export async function getAwardStandards() {
  */
 export async function getAwardStandard(standardId) {
   const list = await loadStandardsFile();
-  if (!standardId) return list[0] || null;
-  return list.find(s => s && s.id === standardId) || list[0] || null;
+  if (!standardId) {
+    return list[0] || null;
+  }
+  return list.find((s) => s && s.id === standardId) || list[0] || null;
 }
 
 // Export helper functions from migrate-programme for convenience
-export { 
-  getStandardIndicators, 
-  getCriteriaList, 
-  getThreadList, 
+export {
+  getCriteriaList,
   getDescriptor,
+  getStandardIndicators,
+  getThreadList,
   migrateProgramme,
-  validateStandardMappings
-} from '../utils/migrate-programme.js';
-
+  validateStandardMappings,
+} from "../utils/migrate-programme.js";

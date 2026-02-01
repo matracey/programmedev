@@ -5,7 +5,7 @@
  * @module components/steps/shared
  */
 
-import { escapeHtml } from '../../utils/dom.js';
+import { escapeHtml } from "../../utils/dom.js";
 
 /**
  * Generates Bloom's taxonomy guidance HTML with NFQ-level-appropriate verbs.
@@ -16,32 +16,83 @@ import { escapeHtml } from '../../utils/dom.js';
  */
 export function bloomsGuidanceHtml(level, contextLabel) {
   const lvl = Number(level ?? 0);
-  const title = lvl ? `Bloom helper (aligned to NFQ level ${lvl})` : "Bloom helper (choose NFQ level first)";
+  const title = lvl
+    ? `Bloom helper (aligned to NFQ level ${lvl})`
+    : "Bloom helper (choose NFQ level first)";
 
   let focus = "Use measurable action verbs. Avoid: understand, know, learn about, be aware of.";
   let verbs = ["describe", "explain", "apply", "analyse", "evaluate", "design"];
 
   if (!lvl) {
-    focus = "Pick the programme NFQ level in Identity, then come back here for tailored verb suggestions.";
+    focus =
+      "Pick the programme NFQ level in Identity, then come back here for tailored verb suggestions.";
     verbs = ["describe", "explain", "apply", "analyse", "evaluate", "design"];
   } else if (lvl <= 6) {
-    focus = "Emphasise foundational knowledge and applied skills (remember/understand/apply), with some analysis.";
-    verbs = ["identify", "describe", "explain", "apply", "demonstrate", "use", "outline", "compare"];
+    focus =
+      "Emphasise foundational knowledge and applied skills (remember/understand/apply), with some analysis.";
+    verbs = [
+      "identify",
+      "describe",
+      "explain",
+      "apply",
+      "demonstrate",
+      "use",
+      "outline",
+      "compare",
+    ];
   } else if (lvl === 7) {
     focus = "Balance application and analysis. Show problem-solving and autonomy.";
-    verbs = ["apply", "analyse", "interpret", "solve", "integrate", "evaluate", "justify", "develop"];
+    verbs = [
+      "apply",
+      "analyse",
+      "interpret",
+      "solve",
+      "integrate",
+      "evaluate",
+      "justify",
+      "develop",
+    ];
   } else if (lvl === 8) {
     focus = "Push beyond application: critical analysis, evaluation, and creation/design.";
-    verbs = ["analyse", "evaluate", "synthesise", "design", "develop", "critique", "justify", "implement"];
+    verbs = [
+      "analyse",
+      "evaluate",
+      "synthesise",
+      "design",
+      "develop",
+      "critique",
+      "justify",
+      "implement",
+    ];
   } else if (lvl === 9) {
     focus = "Emphasise advanced evaluation and creation: originality, research-informed practice.";
-    verbs = ["critically evaluate", "synthesise", "design", "develop", "formulate", "lead", "innovate", "apply research to"];
+    verbs = [
+      "critically evaluate",
+      "synthesise",
+      "design",
+      "develop",
+      "formulate",
+      "lead",
+      "innovate",
+      "apply research to",
+    ];
   } else {
     focus = "Emphasise original contribution, research leadership, and creation.";
-    verbs = ["originate", "advance", "formulate", "innovate", "lead", "produce", "contribute", "critically appraise"];
+    verbs = [
+      "originate",
+      "advance",
+      "formulate",
+      "innovate",
+      "lead",
+      "produce",
+      "contribute",
+      "critically appraise",
+    ];
   }
 
-  const verbChips = verbs.map(v => `<span class="badge text-bg-light border me-1 mb-1">${escapeHtml(v)}</span>`).join("");
+  const verbChips = verbs
+    .map((v) => `<span class="badge text-bg-light border me-1 mb-1">${escapeHtml(v)}</span>`)
+    .join("");
 
   return `
     <div class="p-3 bg-light border rounded-4 mb-3">
@@ -79,25 +130,27 @@ export function wireAccordionControls(accordionId) {
 
   /** @param {boolean} shouldExpand */
   const toggleAll = (shouldExpand) => {
-    if (!accordion) return;
-    accordion.querySelectorAll('.accordion-collapse').forEach(el => {
+    if (!accordion) {
+      return;
+    }
+    accordion.querySelectorAll(".accordion-collapse").forEach((el) => {
       const ctor = window.bootstrap?.Collapse;
-      if (ctor && typeof ctor.getOrCreateInstance === 'function') {
+      if (ctor && typeof ctor.getOrCreateInstance === "function") {
         const inst = ctor.getOrCreateInstance(el, { toggle: false });
         shouldExpand ? inst.show() : inst.hide();
       } else if (ctor) {
         const inst = new ctor(el, { toggle: false });
         shouldExpand ? inst.show() : inst.hide();
       } else {
-        el.classList.toggle('show', shouldExpand);
+        el.classList.toggle("show", shouldExpand);
       }
     });
   };
 
-  document.querySelectorAll(`[data-accordion-expand-all="${accordionId}"]`).forEach(btn => {
+  document.querySelectorAll(`[data-accordion-expand-all="${accordionId}"]`).forEach((btn) => {
     /** @type {HTMLElement} */ (btn).onclick = () => toggleAll(true);
   });
-  document.querySelectorAll(`[data-accordion-collapse-all="${accordionId}"]`).forEach(btn => {
+  document.querySelectorAll(`[data-accordion-collapse-all="${accordionId}"]`).forEach((btn) => {
     /** @type {HTMLElement} */ (btn).onclick = () => toggleAll(false);
   });
 }
@@ -112,9 +165,13 @@ export function wireAccordionControls(accordionId) {
 export function captureOpenCollapseIds(accordionId) {
   const set = new Set();
   const accordion = document.getElementById(accordionId);
-  if (!accordion) return set;
-  accordion.querySelectorAll('.accordion-collapse.show').forEach(el => {
-    if (el.id) set.add(el.id);
+  if (!accordion) {
+    return set;
+  }
+  accordion.querySelectorAll(".accordion-collapse.show").forEach((el) => {
+    if (el.id) {
+      set.add(el.id);
+    }
   });
   return set;
 }
@@ -130,14 +187,20 @@ export function captureOpenCollapseIds(accordionId) {
  */
 export function updateAccordionHeader(headingId, { title, subtitle }) {
   const header = document.getElementById(headingId);
-  if (!header) return;
-  
+  if (!header) {
+    return;
+  }
+
   if (title !== undefined) {
-    const titleEl = header.querySelector('.fw-semibold');
-    if (titleEl) titleEl.innerHTML = title;
+    const titleEl = header.querySelector(".fw-semibold");
+    if (titleEl) {
+      titleEl.innerHTML = title;
+    }
   }
   if (subtitle !== undefined) {
-    const subtitleEl = header.querySelector('.small.text-secondary');
-    if (subtitleEl) subtitleEl.textContent = subtitle;
+    const subtitleEl = header.querySelector(".small.text-secondary");
+    if (subtitleEl) {
+      subtitleEl.textContent = subtitle;
+    }
   }
 }

@@ -5,11 +5,16 @@
  * @module components/steps/assessments
  */
 
-import { state, saveDebounced, editableModuleIds, getSelectedModuleId } from '../../state/store.js';
-import { escapeHtml } from '../../utils/dom.js';
-import { getDevModeToggleHtml, wireDevModeToggle } from '../dev-mode.js';
-import { accordionControlsHtml, wireAccordionControls, captureOpenCollapseIds, updateAccordionHeader } from './shared.js';
-import { ensureMimloObjects, mimloText, formatPct } from '../../utils/helpers.js';
+import { editableModuleIds, getSelectedModuleId, saveDebounced, state } from "../../state/store.js";
+import { escapeHtml } from "../../utils/dom.js";
+import { ensureMimloObjects, formatPct, mimloText } from "../../utils/helpers.js";
+import { getDevModeToggleHtml, wireDevModeToggle } from "../dev-mode.js";
+import {
+  accordionControlsHtml,
+  captureOpenCollapseIds,
+  updateAccordionHeader,
+  wireAccordionControls,
+} from "./shared.js";
 
 // Assessment types matching legacy
 const ASSESSMENT_TYPES = [
@@ -21,7 +26,7 @@ const ASSESSMENT_TYPES = [
   "Exam (On campus)",
   "Exam (Online)",
   "Reflective Journal",
-  "Other"
+  "Other",
 ];
 
 // Assessment modes
@@ -33,14 +38,14 @@ const INTEGRITY_CONTROLS = [
   { key: "viva", label: "Viva/oral" },
   { key: "inClass", label: "In-class component" },
   { key: "originalityCheck", label: "Originality check" },
-  { key: "aiDeclaration", label: "AI declaration" }
+  { key: "aiDeclaration", label: "AI declaration" },
 ];
 
 // Assessment report types
 const ASSESSMENT_REPORT_TYPES = [
   { id: "byStageType", label: "By stage: assessment types + weighting" },
   { id: "byModule", label: "By module: assessment types + weighting" },
-  { id: "coverage", label: "MIMLO coverage (unassessed outcomes)" }
+  { id: "coverage", label: "MIMLO coverage (unassessed outcomes)" },
 ];
 
 /**
@@ -49,7 +54,7 @@ const ASSESSMENT_REPORT_TYPES = [
  * @param {string} versionId
  */
 function getVersionById(p, versionId) {
-  return (p.versions ?? []).find(v => v.id === versionId) ?? (p.versions ?? [])[0] ?? null;
+  return (p.versions ?? []).find((v) => v.id === versionId) ?? (p.versions ?? [])[0] ?? null;
 }
 
 /**
@@ -59,7 +64,9 @@ function getVersionById(p, versionId) {
  */
 function reportByStageType(p, versionId) {
   const v = getVersionById(p, versionId);
-  if (!v) return `<div class="alert alert-warning mb-0">No versions found.</div>`;
+  if (!v) {
+    return `<div class="alert alert-warning mb-0">No versions found.</div>`;
+  }
 
   const modMap = new Map((p.modules ?? []).map((/** @type {Module} */ m) => [m.id, m]));
 
@@ -69,7 +76,9 @@ function reportByStageType(p, versionId) {
     const typeMap = new Map();
     (stg.modules ?? []).forEach((/** @type {any} */ ref) => {
       const m = modMap.get(ref.moduleId);
-      if (!m) return;
+      if (!m) {
+        return;
+      }
       (m.assessments ?? []).forEach((/** @type {any} */ a) => {
         const t = a.type || "Unspecified";
         const rec = typeMap.get(t) ?? { weight: 0, count: 0 };
@@ -79,15 +88,20 @@ function reportByStageType(p, versionId) {
       });
     });
 
-    const rows = Array.from(typeMap.entries())
-      .sort((a, b) => (b[1].weight - a[1].weight))
-      .map(([type, rec]) => `
+    const rows =
+      Array.from(typeMap.entries())
+        .sort((a, b) => b[1].weight - a[1].weight)
+        .map(
+          ([type, rec]) => `
         <tr>
           <td>${escapeHtml(type)}</td>
           <td>${rec.count}</td>
           <td>${formatPct(rec.weight)}</td>
         </tr>
-      `).join("") || `<tr><td colspan="3" class="text-muted">No assessments found in this stage.</td></tr>`;
+      `,
+        )
+        .join("") ||
+      `<tr><td colspan="3" class="text-muted">No assessments found in this stage.</td></tr>`;
 
     stageAgg.push(`
       <div class="card border-0 bg-white shadow-sm mb-3">
@@ -118,29 +132,32 @@ function reportByStageType(p, versionId) {
  * @param {Programme} p
  */
 function reportByModule(p) {
-  const rows = (p.modules ?? []).map((/** @type {Module} */ m) => {
-    const typeMap = new Map();
-    (m.assessments ?? []).forEach((/** @type {any} */ a) => {
-      const t = a.type || "Unspecified";
-      const rec = typeMap.get(t) ?? { weight: 0, count: 0 };
-      rec.weight += Number(a.weighting ?? 0);
-      rec.count += 1;
-      typeMap.set(t, rec);
-    });
+  const rows =
+    (p.modules ?? [])
+      .map((/** @type {Module} */ m) => {
+        const typeMap = new Map();
+        (m.assessments ?? []).forEach((/** @type {any} */ a) => {
+          const t = a.type || "Unspecified";
+          const rec = typeMap.get(t) ?? { weight: 0, count: 0 };
+          rec.weight += Number(a.weighting ?? 0);
+          rec.count += 1;
+          typeMap.set(t, rec);
+        });
 
-    const summary = Array.from(typeMap.entries())
-      .sort((a, b) => b[1].weight - a[1].weight)
-      .map(([t, rec]) => `${t} (${rec.count}, ${rec.weight}%)`)
-      .join("; ");
+        const summary = Array.from(typeMap.entries())
+          .sort((a, b) => b[1].weight - a[1].weight)
+          .map(([t, rec]) => `${t} (${rec.count}, ${rec.weight}%)`)
+          .join("; ");
 
-    return `
+        return `
       <tr>
         <td class="text-nowrap">${escapeHtml(m.code || "")}</td>
         <td>${escapeHtml(m.title || "")}</td>
         <td class="text-nowrap">${escapeHtml(summary || "—")}</td>
       </tr>
     `;
-  }).join("") || `<tr><td colspan="3" class="text-muted">No modules.</td></tr>`;
+      })
+      .join("") || `<tr><td colspan="3" class="text-muted">No modules.</td></tr>`;
 
   return `
     <div class="card border-0 bg-white shadow-sm">
@@ -168,15 +185,18 @@ function reportByModule(p) {
  * @param {Programme} p
  */
 function reportCoverage(p) {
-  const items = (p.modules ?? []).map((/** @type {Module} */ m) => {
-    ensureMimloObjects(m);
-    const mimlos = m.mimlos ?? [];
-    const assessed = new Set();
-    (m.assessments ?? []).forEach((/** @type {any} */ a) => (a.mimloIds ?? []).forEach((/** @type {string} */ id) => assessed.add(id)));
+  const items = (p.modules ?? [])
+    .map((/** @type {Module} */ m) => {
+      ensureMimloObjects(m);
+      const mimlos = m.mimlos ?? [];
+      const assessed = new Set();
+      (m.assessments ?? []).forEach((/** @type {any} */ a) =>
+        (a.mimloIds ?? []).forEach((/** @type {string} */ id) => assessed.add(id)),
+      );
 
-    const unassessed = mimlos.filter((/** @type {MIMLO} */ mi) => !assessed.has(mi.id));
-    if (!unassessed.length) {
-      return `
+      const unassessed = mimlos.filter((/** @type {MIMLO} */ mi) => !assessed.has(mi.id));
+      if (!unassessed.length) {
+        return `
         <div class="card border-0 bg-white shadow-sm mb-2">
           <div class="card-body">
             <div class="fw-semibold">${escapeHtml(m.code || "")} — ${escapeHtml(m.title || "")}</div>
@@ -184,8 +204,8 @@ function reportCoverage(p) {
           </div>
         </div>
       `;
-    }
-    return `
+      }
+      return `
       <div class="card border-0 bg-white shadow-sm mb-2">
         <div class="card-body">
           <div class="fw-semibold">${escapeHtml(m.code || "")} — ${escapeHtml(m.title || "")}</div>
@@ -196,7 +216,8 @@ function reportCoverage(p) {
         </div>
       </div>
     `;
-  }).join("");
+    })
+    .join("");
 
   return items || `<div class="text-muted">No modules.</div>`;
 }
@@ -209,10 +230,14 @@ function reportCoverage(p) {
  */
 function buildAssessmentReportHtml(p, reportId, versionId) {
   switch (reportId) {
-    case "byStageType": return reportByStageType(p, versionId);
-    case "byModule": return reportByModule(p);
-    case "coverage": return reportCoverage(p);
-    default: return `<div class="text-muted">Select a report.</div>`;
+    case "byStageType":
+      return reportByStageType(p, versionId);
+    case "byModule":
+      return reportByModule(p);
+    case "coverage":
+      return reportCoverage(p);
+    default:
+      return `<div class="text-muted">Select a report.</div>`;
   }
 }
 
@@ -223,7 +248,9 @@ function buildAssessmentReportHtml(p, reportId, versionId) {
  */
 function openReportInNewTab(html, title = "Report") {
   const w = window.open("", "_blank");
-  if (!w) return alert("Popup blocked. Allow popups to open report in a new tab.");
+  if (!w) {
+    return alert("Popup blocked. Allow popups to open report in a new tab.");
+  }
   w.document.open();
   w.document.write(`
     <!doctype html>
@@ -248,64 +275,73 @@ function openReportInNewTab(html, title = "Report") {
 export function renderAssessmentsStep() {
   const p = state.programme;
   const content = document.getElementById("content");
-  if (!content) return;
+  if (!content) {
+    return;
+  }
 
   const devModeToggleHtml = getDevModeToggleHtml();
-  const openCollapseIds = captureOpenCollapseIds('assessmentsAccordion');
+  const openCollapseIds = captureOpenCollapseIds("assessmentsAccordion");
 
   const editableIds = editableModuleIds();
   const selectedId = getSelectedModuleId();
-  const canPickModule = (p.mode === "MODULE_EDITOR" && editableIds.length > 1);
-  const modulesForEdit = (p.modules ?? []).filter(m => editableIds.includes(m.id));
+  const canPickModule = p.mode === "MODULE_EDITOR" && editableIds.length > 1;
+  const modulesForEdit = (p.modules ?? []).filter((m) => editableIds.includes(m.id));
 
   // Module picker for MODULE_EDITOR mode
-  const modulePicker = canPickModule ? `
+  const modulePicker = canPickModule
+    ? `
     <div class="row g-3 mb-3">
       <div class="col-md-6">
         <label class="form-label fw-semibold">Assigned module</label>
         <select class="form-select" id="assessmentModulePicker">
-          ${modulesForEdit.map(m => `<option value="${m.id}" ${m.id === selectedId ? "selected" : ""}>${escapeHtml(m.code || "")} — ${escapeHtml(m.title || "")}</option>`).join("")}
+          ${modulesForEdit.map((m) => `<option value="${m.id}" ${m.id === selectedId ? "selected" : ""}>${escapeHtml(m.code || "")} — ${escapeHtml(m.title || "")}</option>`).join("")}
         </select>
       </div>
     </div>
-  ` : "";
+  `
+    : "";
 
   // Type options for assessment type select
   const typeOpts = ASSESSMENT_TYPES;
 
   // Build module cards with assessments
-  const cards = modulesForEdit.map((m, idx) => {
-    ensureMimloObjects(m);
-    m.assessments ??= [];
-    const total = m.assessments.reduce((acc, a) => acc + (Number(a.weighting) ?? 0), 0);
-    const totalBadge = (total === 100)
-      ? `<span class="badge text-bg-success">Total ${total}%</span>`
-      : `<span class="badge text-bg-warning">Total ${total}% (should be 100)</span>`;
+  const cards = modulesForEdit
+    .map((m, idx) => {
+      ensureMimloObjects(m);
+      m.assessments ??= [];
+      const total = m.assessments.reduce((acc, a) => acc + (Number(a.weighting) ?? 0), 0);
+      const totalBadge =
+        total === 100
+          ? `<span class="badge text-bg-success">Total ${total}%</span>`
+          : `<span class="badge text-bg-warning">Total ${total}% (should be 100)</span>`;
 
-    // Build assessment accordion items for this module
-    const asmItems = (m.assessments ?? []).map((a, asmIdx) => {
-      const mode = a.mode ?? "Online";
-      const integ = a.integrity ?? {};
-      const asmHeadingId = `asm_${m.id}_${a.id}_heading`;
-      const asmCollapseId = `asm_${m.id}_${a.id}_collapse`;
-      const asmActive = openCollapseIds.has(asmCollapseId) ? true : (openCollapseIds.size === 0 && asmIdx === 0);
+      // Build assessment accordion items for this module
+      const asmItems = (m.assessments ?? [])
+        .map((a, asmIdx) => {
+          const mode = a.mode ?? "Online";
+          const integ = a.integrity ?? {};
+          const asmHeadingId = `asm_${m.id}_${a.id}_heading`;
+          const asmCollapseId = `asm_${m.id}_${a.id}_collapse`;
+          const asmActive = openCollapseIds.has(asmCollapseId)
+            ? true
+            : openCollapseIds.size === 0 && asmIdx === 0;
 
-      return `
+          return `
         <div class="accordion-item bg-body" data-testid="assessment-item-${a.id}">
           <h2 class="accordion-header" id="${asmHeadingId}">
-            <button class="accordion-button ${asmActive ? '' : 'collapsed'} w-100" type="button" data-bs-toggle="collapse" data-bs-target="#${asmCollapseId}" aria-expanded="${asmActive}" aria-controls="${asmCollapseId}" data-testid="assessment-accordion-${a.id}">
+            <button class="accordion-button ${asmActive ? "" : "collapsed"} w-100" type="button" data-bs-toggle="collapse" data-bs-target="#${asmCollapseId}" aria-expanded="${asmActive}" aria-controls="${asmCollapseId}" data-testid="assessment-accordion-${a.id}">
               <div class="d-flex w-100 align-items-center gap-2">
                 <div class="flex-grow-1 text-start">
                   <div class="fw-semibold">${escapeHtml(a.title || "Assessment")}</div>
                   <div class="small text-nowrap text-secondary">${escapeHtml(a.type || "")} • ${a.weighting ?? 0}%</div>
                 </div>
                 <div class="header-actions d-flex align-items-center gap-2 me-2">
-                  <span class="btn btn-sm btn-outline-danger" role="button" tabindex="0" data-remove-asm="${m.id}" data-asm-id="${a.id}" aria-label="Remove assessment ${escapeHtml(a.title || '')}" data-testid="remove-asm-${a.id}"><i class="ph ph-trash" aria-hidden="true"></i> Remove</span>
+                  <span class="btn btn-sm btn-outline-danger" role="button" tabindex="0" data-remove-asm="${m.id}" data-asm-id="${a.id}" aria-label="Remove assessment ${escapeHtml(a.title || "")}" data-testid="remove-asm-${a.id}"><i class="ph ph-trash" aria-hidden="true"></i> Remove</span>
                 </div>
               </div>
             </button>
           </h2>
-          <div id="${asmCollapseId}" class="accordion-collapse collapse ${asmActive ? 'show' : ''}" aria-labelledby="${asmHeadingId}">
+          <div id="${asmCollapseId}" class="accordion-collapse collapse ${asmActive ? "show" : ""}" aria-labelledby="${asmHeadingId}">
             <div class="accordion-body">
               <fieldset class="row g-2">
                 <legend class="visually-hidden">Assessment details</legend>
@@ -316,7 +352,7 @@ export function renderAssessmentsStep() {
                 <div class="col-md-3">
                   <label class="form-label small fw-semibold" for="asm-type-${a.id}">Type</label>
                   <select class="form-select" id="asm-type-${a.id}" data-asm-type="${m.id}" data-asm-id="${a.id}" data-testid="asm-type-${a.id}">
-                    ${typeOpts.map(t => `<option value="${escapeHtml(t)}" ${(a.type || "") === t ? "selected" : ""}>${escapeHtml(t)}</option>`).join("")}
+                    ${typeOpts.map((t) => `<option value="${escapeHtml(t)}" ${(a.type || "") === t ? "selected" : ""}>${escapeHtml(t)}</option>`).join("")}
                   </select>
                 </div>
                 <div class="col-md-2">
@@ -327,7 +363,7 @@ export function renderAssessmentsStep() {
                 <div class="col-md-3">
                   <label class="form-label small fw-semibold" for="asm-mode-${a.id}">Mode</label>
                   <select class="form-select" id="asm-mode-${a.id}" data-asm-mode="${m.id}" data-asm-id="${a.id}" data-testid="asm-mode-${a.id}">
-                    ${ASSESSMENT_MODES.map(x => `<option value="${x}" ${mode === x ? "selected" : ""}>${x}</option>`).join("")}
+                    ${ASSESSMENT_MODES.map((x) => `<option value="${x}" ${mode === x ? "selected" : ""}>${x}</option>`).join("")}
                   </select>
                 </div>
               </fieldset>
@@ -336,29 +372,35 @@ export function renderAssessmentsStep() {
                 <div class="col-md-6">
                   <div class="fw-semibold small mb-1" id="mimlo-map-heading-${a.id}">Map to MIMLOs</div>
                   <div class="border rounded p-2" data-asm-mimlo-box="${m.id}" data-asm-id="${a.id}" role="group" aria-labelledby="mimlo-map-heading-${a.id}">
-                    ${(m.mimlos ?? []).map((mi, miIdx) => {
-                      const checked = (a.mimloIds ?? []).includes(mi.id);
-                      return `
+                    ${
+                      (m.mimlos ?? [])
+                        .map((mi, miIdx) => {
+                          const checked = (a.mimloIds ?? []).includes(mi.id);
+                          return `
                         <div class="form-check">
                           <input class="form-check-input" type="checkbox" id="asm-mimlo-${a.id}-${mi.id}"
                             data-asm-mimlo="${m.id}" data-asm-id="${a.id}" data-mimlo-id="${mi.id}" data-testid="asm-mimlo-${a.id}-${mi.id}" ${checked ? "checked" : ""}>
                           <label class="form-check-label small" for="asm-mimlo-${a.id}-${mi.id}">${escapeHtml(mimloText(mi))}</label>
                         </div>
                       `;
-                    }).join("") || '<span class="text-muted small">Add MIMLOs first</span>'}
+                        })
+                        .join("") || '<span class="text-muted small">Add MIMLOs first</span>'
+                    }
                   </div>
                 </div>
 
                 <div class="col-md-6">
                   <div class="fw-semibold small mb-1" id="integrity-heading-${a.id}">Integrity controls</div>
                   <div class="border rounded p-2" role="group" aria-labelledby="integrity-heading-${a.id}">
-                    ${INTEGRITY_CONTROLS.map(({ key, label }) => `
+                    ${INTEGRITY_CONTROLS.map(
+                      ({ key, label }) => `
                       <div class="form-check">
                         <input class="form-check-input" type="checkbox" id="asm-int-${a.id}-${key}"
                           data-integrity-option="${m.id}" data-asm-id="${a.id}" data-int-key="${key}" data-testid="asm-integrity-${a.id}-${key}" ${integ[key] ? "checked" : ""}>
                         <label class="form-check-label small" for="asm-int-${a.id}-${key}">${label}</label>
                       </div>
-                    `).join("")}
+                    `,
+                    ).join("")}
                   </div>
                 </div>
               </div>
@@ -371,36 +413,40 @@ export function renderAssessmentsStep() {
           </div>
         </div>
       `;
-    }).join("");
+        })
+        .join("");
 
-    const isHidden = (p.mode === "MODULE_EDITOR" && editableIds.length > 1 && m.id !== selectedId);
-    const headingId = `asm_${m.id}_heading`;
-    const collapseId = `asm_${m.id}_collapse`;
-    const modActive = openCollapseIds.has(collapseId) ? true : (openCollapseIds.size === 0 && idx === 0);
-    return `
-      <div class="accordion-item bg-body" ${isHidden ? 'style="display:none"' : ''} data-module-card="${m.id}" data-testid="asm-module-${m.id}">
+      const isHidden = p.mode === "MODULE_EDITOR" && editableIds.length > 1 && m.id !== selectedId;
+      const headingId = `asm_${m.id}_heading`;
+      const collapseId = `asm_${m.id}_collapse`;
+      const modActive = openCollapseIds.has(collapseId)
+        ? true
+        : openCollapseIds.size === 0 && idx === 0;
+      return `
+      <div class="accordion-item bg-body" ${isHidden ? 'style="display:none"' : ""} data-module-card="${m.id}" data-testid="asm-module-${m.id}">
         <h2 class="accordion-header" id="${headingId}">
-          <button class="accordion-button ${modActive ? '' : 'collapsed'} w-100" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="${modActive}" aria-controls="${collapseId}" data-testid="asm-module-accordion-${m.id}">
+          <button class="accordion-button ${modActive ? "" : "collapsed"} w-100" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="${modActive}" aria-controls="${collapseId}" data-testid="asm-module-accordion-${m.id}">
             <div class="d-flex w-100 align-items-center gap-2">
               <div class="flex-grow-1 text-start">
                 <div class="fw-semibold">${escapeHtml(m.code || "")} — ${escapeHtml(m.title || "")}</div>
-                <div class="small text-secondary">${m.assessments.length} assessment${m.assessments.length !== 1 ? 's' : ''}</div>
+                <div class="small text-secondary">${m.assessments.length} assessment${m.assessments.length !== 1 ? "s" : ""}</div>
               </div>
               <div class="header-actions d-flex align-items-center gap-2 me-2">
                 ${totalBadge}
-                <span class="btn btn-sm btn-outline-primary" role="button" tabindex="0" data-add-asm="${m.id}" aria-label="Add assessment to ${escapeHtml(m.title || 'module')}" data-testid="add-asm-${m.id}"><i class="ph ph-plus" aria-hidden="true"></i> Add</span>
+                <span class="btn btn-sm btn-outline-primary" role="button" tabindex="0" data-add-asm="${m.id}" aria-label="Add assessment to ${escapeHtml(m.title || "module")}" data-testid="add-asm-${m.id}"><i class="ph ph-plus" aria-hidden="true"></i> Add</span>
               </div>
             </div>
           </button>
         </h2>
-        <div id="${collapseId}" class="accordion-collapse collapse ${modActive ? 'show' : ''}" aria-labelledby="${headingId}">
+        <div id="${collapseId}" class="accordion-collapse collapse ${modActive ? "show" : ""}" aria-labelledby="${headingId}">
           <div class="accordion-body">
             ${asmItems || `<div class="text-muted small">No assessments yet. Click "+ Add" to create one.</div>`}
           </div>
         </div>
       </div>
     `;
-  }).join("");
+    })
+    .join("");
 
   // Report controls section
   const reportSection = `
@@ -411,13 +457,13 @@ export function renderAssessmentsStep() {
           <div class="col-md-4">
             <label class="form-label small fw-semibold" for="reportTypeSelect">Report type</label>
             <select class="form-select" id="reportTypeSelect" data-testid="report-type-select">
-              ${ASSESSMENT_REPORT_TYPES.map(r => `<option value="${r.id}" ${(state.reportTypeId || "byStageType") === r.id ? "selected" : ""}>${escapeHtml(r.label)}</option>`).join("")}
+              ${ASSESSMENT_REPORT_TYPES.map((r) => `<option value="${r.id}" ${(state.reportTypeId || "byStageType") === r.id ? "selected" : ""}>${escapeHtml(r.label)}</option>`).join("")}
             </select>
           </div>
           <div class="col-md-4">
             <label class="form-label small fw-semibold" for="reportVersionSelect">Version</label>
             <select class="form-select" id="reportVersionSelect" data-testid="report-version-select">
-              ${(p.versions ?? []).map(v => `<option value="${v.id}" ${(state.reportVersionId ?? (p.versions?.[0]?.id)) === v.id ? "selected" : ""}>${escapeHtml(v.label || v.code || "Version")}</option>`).join("")}
+              ${(p.versions ?? []).map((v) => `<option value="${v.id}" ${(state.reportVersionId ?? p.versions?.[0]?.id) === v.id ? "selected" : ""}>${escapeHtml(v.label || v.code || "Version")}</option>`).join("")}
             </select>
           </div>
           <div class="col-md-4 d-flex gap-2">
@@ -430,7 +476,9 @@ export function renderAssessmentsStep() {
     </div>
   `;
 
-  content.innerHTML = devModeToggleHtml + `
+  content.innerHTML =
+    devModeToggleHtml +
+    `
     <div class="d-flex align-items-center justify-content-between mb-3">
       <div>
         <div class="h5 mb-0" id="assessments-heading"><i class="ph ph-exam me-2" aria-hidden="true"></i>Assessments</div>
@@ -440,14 +488,14 @@ export function renderAssessmentsStep() {
 
     ${reportSection}
     ${modulePicker}
-    ${accordionControlsHtml('assessmentsAccordion')}
+    ${accordionControlsHtml("assessmentsAccordion")}
     <div class="accordion" id="assessmentsAccordion" aria-labelledby="assessments-heading" data-testid="assessments-accordion">
       ${modulesForEdit.length ? cards : `<div class="alert alert-warning" role="alert"><i class="ph ph-warning me-2" aria-hidden="true"></i>No modules available to edit.</div>`}
     </div>
   `;
 
   wireDevModeToggle(() => window.render?.());
-  wireAccordionControls('assessmentsAccordion');
+  wireAccordionControls("assessmentsAccordion");
   wireAssessmentsStep();
 }
 
@@ -458,7 +506,7 @@ export function renderAssessmentsStep() {
 function updateAssessmentHeader(a) {
   updateAccordionHeader(`asm_${a.id}_heading`, {
     title: escapeHtml(a.title || "Assessment"),
-    subtitle: `${escapeHtml(a.type || "")} • ${a.weighting ?? 0}%`
+    subtitle: `${escapeHtml(a.type || "")} • ${a.weighting ?? 0}%`,
   });
 }
 
@@ -467,11 +515,17 @@ function updateAssessmentHeader(a) {
  */
 function wireAssessmentsStep() {
   const p = state.programme;
-  if (!p.modules) p.modules = [];
+  if (!p.modules) {
+    p.modules = [];
+  }
 
   // Report controls
-  const reportTypeSelect = /** @type {HTMLSelectElement | null} */ (document.getElementById("reportTypeSelect"));
-  const reportVersionSelect = /** @type {HTMLSelectElement | null} */ (document.getElementById("reportVersionSelect"));
+  const reportTypeSelect = /** @type {HTMLSelectElement | null} */ (
+    document.getElementById("reportTypeSelect")
+  );
+  const reportVersionSelect = /** @type {HTMLSelectElement | null} */ (
+    document.getElementById("reportVersionSelect")
+  );
   const runInline = document.getElementById("runReportInlineBtn");
   const runNewTab = document.getElementById("runReportNewTabBtn");
   const out = document.getElementById("reportOutput");
@@ -490,7 +544,7 @@ function wireAssessmentsStep() {
 
   function getReportState() {
     const rid = state.reportTypeId || "byStageType";
-    const vid = state.reportVersionId || (p.versions?.[0]?.id) || "";
+    const vid = state.reportVersionId || p.versions?.[0]?.id || "";
     return { rid, vid };
   }
 
@@ -507,13 +561,15 @@ function wireAssessmentsStep() {
     runNewTab.onclick = () => {
       const { rid, vid } = getReportState();
       const html = buildAssessmentReportHtml(p, rid, vid);
-      const label = (ASSESSMENT_REPORT_TYPES.find(x => x.id === rid)?.label) || "Report";
+      const label = ASSESSMENT_REPORT_TYPES.find((x) => x.id === rid)?.label || "Report";
       openReportInNewTab(html, label);
     };
   }
 
   // Module picker
-  const picker = /** @type {HTMLSelectElement | null} */ (document.getElementById("assessmentModulePicker"));
+  const picker = /** @type {HTMLSelectElement | null} */ (
+    document.getElementById("assessmentModulePicker")
+  );
   if (picker) {
     picker.onchange = () => {
       state.selectedModuleId = picker.value;
@@ -522,13 +578,17 @@ function wireAssessmentsStep() {
   }
 
   // Add assessment
-  document.querySelectorAll("[data-add-asm]").forEach(btn => {
+  document.querySelectorAll("[data-add-asm]").forEach((btn) => {
     const handler = (/** @type {any} */ e) => {
       e.stopPropagation();
       const mid = btn.getAttribute("data-add-asm");
-      if (!p.modules) return;
-      const m = p.modules.find(x => x.id === mid);
-      if (!m) return;
+      if (!p.modules) {
+        return;
+      }
+      const m = p.modules.find((x) => x.id === mid);
+      if (!m) {
+        return;
+      }
       ensureMimloObjects(m);
       m.assessments ??= [];
       m.assessments.push({
@@ -537,16 +597,22 @@ function wireAssessmentsStep() {
         type: "Report/Essay",
         weighting: 0,
         mode: "Online",
-        integrity: { proctored: false, viva: false, inClass: false, originalityCheck: true, aiDeclaration: true },
+        integrity: {
+          proctored: false,
+          viva: false,
+          inClass: false,
+          originalityCheck: true,
+          aiDeclaration: true,
+        },
         mimloIds: [],
-        notes: ""
+        notes: "",
       });
       saveDebounced();
       window.render?.();
     };
     /** @type {HTMLElement} */ (btn).onclick = handler;
     /** @type {HTMLElement} */ (btn).onkeydown = (/** @type {KeyboardEvent} */ e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
+      if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
         handler(e);
       }
@@ -554,16 +620,20 @@ function wireAssessmentsStep() {
   });
 
   // Remove assessment
-  document.querySelectorAll("[data-remove-asm]").forEach(btn => {
+  document.querySelectorAll("[data-remove-asm]").forEach((btn) => {
     /** @type {HTMLElement} */ (btn).onclick = (/** @type {any} */ e) => {
       e.stopPropagation();
       const mid = btn.getAttribute("data-remove-asm");
       const aid = btn.getAttribute("data-asm-id");
-      if (!p.modules) return;
-      const m = p.modules.find(x => x.id === mid);
-      if (!m) return;
+      if (!p.modules) {
+        return;
+      }
+      const m = p.modules.find((x) => x.id === mid);
+      if (!m) {
+        return;
+      }
       m.assessments ??= [];
-      m.assessments = m.assessments.filter(a => a.id !== aid);
+      m.assessments = m.assessments.filter((a) => a.id !== aid);
       saveDebounced();
       window.render?.();
     };
@@ -575,21 +645,27 @@ function wireAssessmentsStep() {
    * @param {string | null} aid
    */
   function findAsm(mid, aid) {
-    if (!p.modules) return null;
-    const m = p.modules.find(x => x.id === mid);
-    if (!m) return null;
+    if (!p.modules) {
+      return null;
+    }
+    const m = p.modules.find((x) => x.id === mid);
+    if (!m) {
+      return null;
+    }
     m.assessments ??= [];
-    const a = m.assessments.find(x => x.id === aid);
+    const a = m.assessments.find((x) => x.id === aid);
     return { m, a };
   }
 
   // Assessment title
-  document.querySelectorAll("[data-asm-title]").forEach(inp => {
+  document.querySelectorAll("[data-asm-title]").forEach((inp) => {
     /** @type {HTMLInputElement} */ (inp).oninput = () => {
       const mid = inp.getAttribute("data-asm-title");
       const aid = inp.getAttribute("data-asm-id");
       const found = findAsm(mid, aid);
-      if (!found || !found.a) return;
+      if (!found || !found.a) {
+        return;
+      }
       found.a.title = /** @type {HTMLInputElement} */ (inp).value;
       saveDebounced();
       updateAssessmentHeader(found.a);
@@ -597,12 +673,14 @@ function wireAssessmentsStep() {
   });
 
   // Assessment type
-  document.querySelectorAll("[data-asm-type]").forEach(sel => {
+  document.querySelectorAll("[data-asm-type]").forEach((sel) => {
     /** @type {HTMLSelectElement} */ (sel).onchange = () => {
       const mid = sel.getAttribute("data-asm-type");
       const aid = sel.getAttribute("data-asm-id");
       const found = findAsm(mid, aid);
-      if (!found || !found.a) return;
+      if (!found || !found.a) {
+        return;
+      }
       found.a.type = /** @type {HTMLSelectElement} */ (sel).value;
       saveDebounced();
       updateAssessmentHeader(found.a);
@@ -610,12 +688,14 @@ function wireAssessmentsStep() {
   });
 
   // Assessment weight
-  document.querySelectorAll("[data-asm-weight]").forEach(inp => {
+  document.querySelectorAll("[data-asm-weight]").forEach((inp) => {
     /** @type {HTMLInputElement} */ (inp).oninput = () => {
       const mid = inp.getAttribute("data-asm-weight");
       const aid = inp.getAttribute("data-asm-id");
       const found = findAsm(mid, aid);
-      if (!found || !found.a) return;
+      if (!found || !found.a) {
+        return;
+      }
       found.a.weighting = Number(/** @type {HTMLInputElement} */ (inp).value ?? 0);
       saveDebounced();
       updateAssessmentHeader(found.a);
@@ -623,37 +703,43 @@ function wireAssessmentsStep() {
   });
 
   // Assessment mode
-  document.querySelectorAll("[data-asm-mode]").forEach(sel => {
+  document.querySelectorAll("[data-asm-mode]").forEach((sel) => {
     /** @type {HTMLSelectElement} */ (sel).onchange = () => {
       const mid = sel.getAttribute("data-asm-mode");
       const aid = sel.getAttribute("data-asm-id");
       const found = findAsm(mid, aid);
-      if (!found || !found.a) return;
+      if (!found || !found.a) {
+        return;
+      }
       found.a.mode = /** @type {HTMLSelectElement} */ (sel).value;
       saveDebounced();
     };
   });
 
   // Assessment notes
-  document.querySelectorAll("[data-asm-notes]").forEach(area => {
+  document.querySelectorAll("[data-asm-notes]").forEach((area) => {
     /** @type {HTMLTextAreaElement} */ (area).oninput = () => {
       const mid = area.getAttribute("data-asm-notes");
       const aid = area.getAttribute("data-asm-id");
       const found = findAsm(mid, aid);
-      if (!found || !found.a) return;
+      if (!found || !found.a) {
+        return;
+      }
       found.a.notes = /** @type {HTMLTextAreaElement} */ (area).value;
       saveDebounced();
     };
   });
 
   // Integrity controls
-  document.querySelectorAll("[data-integrity-option]").forEach(chk => {
+  document.querySelectorAll("[data-integrity-option]").forEach((chk) => {
     /** @type {HTMLInputElement} */ (chk).onchange = () => {
       const mid = chk.getAttribute("data-integrity-option");
       const aid = chk.getAttribute("data-asm-id");
       const key = chk.getAttribute("data-int-key");
       const found = findAsm(mid, aid);
-      if (!found || !found.a || !key) return;
+      if (!found || !found.a || !key) {
+        return;
+      }
       found.a.integrity ??= {};
       found.a.integrity[key] = /** @type {HTMLInputElement} */ (chk).checked;
       saveDebounced();
@@ -661,18 +747,22 @@ function wireAssessmentsStep() {
   });
 
   // MIMLO mapping
-  document.querySelectorAll("[data-asm-mimlo]").forEach(chk => {
+  document.querySelectorAll("[data-asm-mimlo]").forEach((chk) => {
     /** @type {HTMLInputElement} */ (chk).onchange = () => {
       const mid = chk.getAttribute("data-asm-mimlo");
       const aid = chk.getAttribute("data-asm-id");
       const mimloId = chk.getAttribute("data-mimlo-id");
       const found = findAsm(mid, aid);
-      if (!found || !found.a || !mimloId) return;
+      if (!found || !found.a || !mimloId) {
+        return;
+      }
       found.a.mimloIds ??= [];
       if (/** @type {HTMLInputElement} */ (chk).checked) {
-        if (!found.a.mimloIds.includes(mimloId)) found.a.mimloIds.push(mimloId);
+        if (!found.a.mimloIds.includes(mimloId)) {
+          found.a.mimloIds.push(mimloId);
+        }
       } else {
-        found.a.mimloIds = found.a.mimloIds.filter(x => x !== mimloId);
+        found.a.mimloIds = found.a.mimloIds.filter((x) => x !== mimloId);
       }
       saveDebounced();
     };

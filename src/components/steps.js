@@ -5,27 +5,27 @@
  * @module components/steps
  */
 
-import { state, activeSteps } from '../state/store.js';
+import { activeSteps, state } from "../state/store.js";
 
 /**
  * Icon mapping for each step key.
  * @type {Record<string, string>}
  */
 const STEP_ICONS = {
-  identity: 'ph-identification-card',
-  outcomes: 'ph-list-checks',
-  versions: 'ph-git-branch',
-  stages: 'ph-stairs',
-  structure: 'ph-cube',
-  electives: 'ph-path',
-  mimlos: 'ph-graduation-cap',
-  'effort-hours': 'ph-clock',
-  assessments: 'ph-exam',
-  'reading-lists': 'ph-books',
-  schedule: 'ph-calendar',
-  mapping: 'ph-graph',
-  traceability: 'ph-flow-arrow',
-  snapshot: 'ph-file-doc',
+  identity: "ph-identification-card",
+  outcomes: "ph-list-checks",
+  versions: "ph-git-branch",
+  stages: "ph-stairs",
+  structure: "ph-cube",
+  electives: "ph-path",
+  mimlos: "ph-graduation-cap",
+  "effort-hours": "ph-clock",
+  assessments: "ph-exam",
+  "reading-lists": "ph-books",
+  schedule: "ph-calendar",
+  mapping: "ph-graph",
+  traceability: "ph-flow-arrow",
+  snapshot: "ph-file-doc",
 };
 
 /**
@@ -36,18 +36,24 @@ const STEP_ICONS = {
  */
 export function renderSteps(onStepChange) {
   const box = document.getElementById("stepList");
-  if (!box) return;
+  if (!box) {
+    return;
+  }
 
   const aSteps = activeSteps();
   box.innerHTML = "";
 
   // Clamp index if steps changed
-  if (state.stepIndex < 0) state.stepIndex = 0;
-  if (state.stepIndex >= aSteps.length) state.stepIndex = 0;
+  if (state.stepIndex < 0) {
+    state.stepIndex = 0;
+  }
+  if (state.stepIndex >= aSteps.length) {
+    state.stepIndex = 0;
+  }
 
   aSteps.forEach((s, idx) => {
     const isActive = idx === state.stepIndex;
-    const iconClass = STEP_ICONS[s.key] ?? 'ph-circle';
+    const iconClass = STEP_ICONS[s.key] ?? "ph-circle";
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "list-group-item list-group-item-action " + (isActive ? "active" : "");
@@ -61,13 +67,21 @@ export function renderSteps(onStepChange) {
     }
     btn.onclick = () => {
       state.stepIndex = idx;
-      if (onStepChange) onStepChange();
+      if (onStepChange) {
+        onStepChange();
+      }
     };
     box.appendChild(btn);
   });
 
-  const backBtn = /** @type {HTMLButtonElement | null} */ (document.getElementById("backBtn") || document.getElementById("prevBtn"));
+  const backBtn = /** @type {HTMLButtonElement | null} */ (
+    document.getElementById("backBtn") || document.getElementById("prevBtn")
+  );
   const nextBtn = /** @type {HTMLButtonElement | null} */ (document.getElementById("nextBtn"));
-  if (backBtn) backBtn.disabled = state.stepIndex === 0;
-  if (nextBtn) nextBtn.disabled = state.stepIndex === aSteps.length - 1;
+  if (backBtn) {
+    backBtn.disabled = state.stepIndex === 0;
+  }
+  if (nextBtn) {
+    nextBtn.disabled = state.stepIndex === aSteps.length - 1;
+  }
 }

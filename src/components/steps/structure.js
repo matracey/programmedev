@@ -5,11 +5,16 @@
  * @module components/steps/structure
  */
 
-import { state, saveDebounced } from '../../state/store.js';
-import { escapeHtml } from '../../utils/dom.js';
-import { uid } from '../../utils/uid.js';
-import { getDevModeToggleHtml, wireDevModeToggle } from '../dev-mode.js';
-import { accordionControlsHtml, wireAccordionControls, captureOpenCollapseIds, updateAccordionHeader } from './shared.js';
+import { saveDebounced, state } from "../../state/store.js";
+import { escapeHtml } from "../../utils/dom.js";
+import { uid } from "../../utils/uid.js";
+import { getDevModeToggleHtml, wireDevModeToggle } from "../dev-mode.js";
+import {
+  accordionControlsHtml,
+  captureOpenCollapseIds,
+  updateAccordionHeader,
+  wireAccordionControls,
+} from "./shared.js";
 
 /**
  * Renders the Credits & Modules step UI.
@@ -18,34 +23,42 @@ import { accordionControlsHtml, wireAccordionControls, captureOpenCollapseIds, u
 export function renderStructureStep() {
   const p = state.programme;
   const content = document.getElementById("content");
-  if (!content) return;
+  if (!content) {
+    return;
+  }
 
   const devModeToggleHtml = getDevModeToggleHtml();
-  const openCollapseIds = captureOpenCollapseIds('modulesAccordion');
+  const openCollapseIds = captureOpenCollapseIds("modulesAccordion");
 
   // Calculate credit summaries
-  const mandatoryModules = (p.modules ?? []).filter(m => !m.isElective);
-  const electiveModules = (p.modules ?? []).filter(m => m.isElective === true);
+  const mandatoryModules = (p.modules ?? []).filter((m) => !m.isElective);
+  const electiveModules = (p.modules ?? []).filter((m) => m.isElective === true);
   const mandatoryCredits = mandatoryModules.reduce((acc, m) => acc + (Number(m.credits) ?? 0), 0);
   const electiveCredits = electiveModules.reduce((acc, m) => acc + (Number(m.credits) ?? 0), 0);
   const totalModuleCredits = mandatoryCredits + electiveCredits;
   // Sum credits across all definitions (each definition has its own credit value)
-  const electiveDefinitionsCredits = (p.electiveDefinitions ?? []).reduce((acc, def) => acc + (Number(def.credits) ?? 0), 0);
+  const electiveDefinitionsCredits = (p.electiveDefinitions ?? []).reduce(
+    (acc, def) => acc + (Number(def.credits) ?? 0),
+    0,
+  );
   const numDefinitions = (p.electiveDefinitions ?? []).length;
 
-  const moduleRows = (p.modules ?? []).map((m, idx) => {
-    const headingId = `module_${m.id}_heading`;
-    const collapseId = `module_${m.id}_collapse`;
-    const titlePreview = (m.title ?? "").trim() || "Module";
-    const codePreview = (m.code ?? "").trim();
-    const creditsPreview = Number(m.credits ?? 0);
-    const isElective = m.isElective === true;
-    const typeBadge = isElective 
-      ? `<span class="badge text-bg-info me-2" title="Elective" aria-label="Elective module">E</span>`
-      : `<span class="badge text-bg-primary me-2" title="Mandatory" aria-label="Mandatory module">M</span>`;
+  const moduleRows = (p.modules ?? [])
+    .map((m, idx) => {
+      const headingId = `module_${m.id}_heading`;
+      const collapseId = `module_${m.id}_collapse`;
+      const titlePreview = (m.title ?? "").trim() || "Module";
+      const codePreview = (m.code ?? "").trim();
+      const creditsPreview = Number(m.credits ?? 0);
+      const isElective = m.isElective === true;
+      const typeBadge = isElective
+        ? `<span class="badge text-bg-info me-2" title="Elective" aria-label="Elective module">E</span>`
+        : `<span class="badge text-bg-primary me-2" title="Mandatory" aria-label="Mandatory module">M</span>`;
 
-    const isActive = openCollapseIds.has(collapseId) ? true : (openCollapseIds.size === 0 && idx === 0);
-    return `
+      const isActive = openCollapseIds.has(collapseId)
+        ? true
+        : openCollapseIds.size === 0 && idx === 0;
+      return `
       <div class="accordion-item bg-body" data-testid="module-item-${m.id}">
         <h2 class="accordion-header" id="${headingId}">
           <button class="accordion-button ${isActive ? "" : "collapsed"} w-100" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="${isActive}" aria-controls="${collapseId}" data-testid="module-accordion-${m.id}">
@@ -88,9 +101,12 @@ export function renderStructureStep() {
         </div>
       </div>
     `;
-  }).join("");
+    })
+    .join("");
 
-  content.innerHTML = devModeToggleHtml + `
+  content.innerHTML =
+    devModeToggleHtml +
+    `
     <div class="card shadow-sm">
       <div class="card-body">
         <div class="d-flex justify-content-between align-items-center mb-3">
@@ -108,8 +124,8 @@ export function renderStructureStep() {
             <div class="d-flex gap-3 flex-wrap align-items-center" style="min-height: 38px;">
               <span class="badge text-bg-primary fs-6"><span class="badge text-bg-light text-primary me-1">M</span> ${mandatoryCredits} cr (${mandatoryModules.length} modules)</span>
               <span class="badge text-bg-info fs-6"><span class="badge text-bg-light text-info me-1">E</span> ${electiveCredits} cr (${electiveModules.length} modules)</span>
-              ${numDefinitions > 0 ? `<span class="badge text-bg-secondary fs-6">${numDefinitions} elective def(s) = ${electiveDefinitionsCredits} cr</span>` : ''}
-              <span class="badge ${totalModuleCredits === (p.totalCredits ?? 0) ? 'text-bg-success' : 'text-bg-warning'} fs-6">Sum: ${totalModuleCredits} / ${p.totalCredits ?? 0}</span>
+              ${numDefinitions > 0 ? `<span class="badge text-bg-secondary fs-6">${numDefinitions} elective def(s) = ${electiveDefinitionsCredits} cr</span>` : ""}
+              <span class="badge ${totalModuleCredits === (p.totalCredits ?? 0) ? "text-bg-success" : "text-bg-warning"} fs-6">Sum: ${totalModuleCredits} / ${p.totalCredits ?? 0}</span>
             </div>
           </div>
         </div>
@@ -119,7 +135,7 @@ export function renderStructureStep() {
           Elective modules are assigned to groups in the "Electives" step.
         </div>
 
-        ${accordionControlsHtml('modulesAccordion')}
+        ${accordionControlsHtml("modulesAccordion")}
         <div class="accordion" id="modulesAccordion" aria-labelledby="modules-heading" data-testid="modules-accordion">
           ${moduleRows || `<div class="alert alert-info mb-0" role="status"><i class="ph ph-info me-2" aria-hidden="true"></i>No modules added yet.</div>`}
         </div>
@@ -128,7 +144,7 @@ export function renderStructureStep() {
   `;
 
   wireDevModeToggle(() => window.render?.());
-  wireAccordionControls('modulesAccordion');
+  wireAccordionControls("modulesAccordion");
   wireStructureStep();
 }
 
@@ -141,7 +157,7 @@ export function renderStructureStep() {
  */
 function updateModuleAccordionHeader(m, idx) {
   const isElective = m.isElective === true;
-  const typeBadge = isElective 
+  const typeBadge = isElective
     ? `<span class="badge text-bg-info me-2" title="Elective">E</span>`
     : `<span class="badge text-bg-primary me-2" title="Mandatory">M</span>`;
   const codePreview = (m.code ?? "").trim();
@@ -150,7 +166,7 @@ function updateModuleAccordionHeader(m, idx) {
 
   updateAccordionHeader(`module_${m.id}_heading`, {
     title: `${typeBadge}Module ${idx + 1}${codePreview ? `: ${escapeHtml(codePreview)}` : ""}`,
-    subtitle: `${titlePreview} • ${creditsPreview} cr`
+    subtitle: `${titlePreview} • ${creditsPreview} cr`,
   });
 }
 
@@ -162,7 +178,7 @@ function updateModuleAccordionHeader(m, idx) {
  */
 function wireStructureStep() {
   const p = state.programme;
-  p.mode ??= 'PROGRAMME_OWNER';
+  p.mode ??= "PROGRAMME_OWNER";
   p.modules ??= [];
   p.ploToModules ??= {};
   const modules = p.modules;
@@ -171,24 +187,32 @@ function wireStructureStep() {
   const addBtn = document.getElementById("addModuleBtn");
   if (addBtn) {
     addBtn.onclick = () => {
-      modules.push({ id: uid("mod"), code: "", title: "New module", credits: 0, isElective: false, mimlos: [], assessments: [] });
+      modules.push({
+        id: uid("mod"),
+        code: "",
+        title: "New module",
+        credits: 0,
+        isElective: false,
+        mimlos: [],
+        assessments: [],
+      });
       saveDebounced();
       window.render?.();
     };
   }
 
-  document.querySelectorAll("[data-remove-module]").forEach(btn => {
+  document.querySelectorAll("[data-remove-module]").forEach((btn) => {
     /** @type {HTMLElement} */ (btn).onclick = () => {
       const id = btn.getAttribute("data-remove-module");
-      p.modules = modules.filter(m => m.id !== id);
+      p.modules = modules.filter((m) => m.id !== id);
       // remove from mappings too
       for (const ploId of Object.keys(ploToModules)) {
-        ploToModules[ploId] = (ploToModules[ploId] ?? []).filter(mid => mid !== id);
+        ploToModules[ploId] = (ploToModules[ploId] ?? []).filter((mid) => mid !== id);
       }
       // remove from elective groups (nested in definitions)
-      (p.electiveDefinitions ?? []).forEach(def => {
-        (def.groups ?? []).forEach(g => {
-          g.moduleIds = (g.moduleIds ?? []).filter(mid => mid !== id);
+      (p.electiveDefinitions ?? []).forEach((def) => {
+        (def.groups ?? []).forEach((g) => {
+          g.moduleIds = (g.moduleIds ?? []).filter((mid) => mid !== id);
         });
       });
       saveDebounced();
@@ -196,13 +220,15 @@ function wireStructureStep() {
     };
   });
 
-  document.querySelectorAll("[data-module-field]").forEach(inp => {
+  document.querySelectorAll("[data-module-field]").forEach((inp) => {
     /** @param {any} e */
     const handler = (e) => {
       const id = inp.getAttribute("data-module-id");
       const field = inp.getAttribute("data-module-field");
-      const m = modules.find(x => x.id === id);
-      if (!m || !field) return;
+      const m = modules.find((x) => x.id === id);
+      if (!m || !field) {
+        return;
+      }
       if (field === "credits") {
         /** @type {any} */ (m)[field] = Number(e.target.value ?? 0);
       } else if (field === "isElective") {

@@ -16,6 +16,8 @@ Guidelines for AI coding agents working with this codebase.
 npm run dev          # Start dev server at http://localhost:5173
 npm run build        # Production build to dist/
 npm run test:e2e     # Run Playwright end-to-end tests
+npm run format       # Format code with Prettier
+npm run format:check # Check formatting without changes
 
 # TypeScript checking (run after changes)
 npx tsc -p jsconfig.json --noEmit
@@ -86,15 +88,15 @@ e2e/                     # Playwright tests
 // K&R style braces - ALWAYS use braces, even for single statements
 function example() {
   if (condition) {
-    return value;  // ✅ Correct - has braces
+    return value; // ✅ Correct - has braces
   }
   // if (condition) return value;  // ❌ Wrong - missing braces
 }
 
 // ES2022+ syntax required
-const arr = data ?? [];           // Nullish coalescing
-obj.prop ??= defaultValue;        // Nullish assignment
-value?.nested?.prop;              // Optional chaining
+const arr = data ?? []; // Nullish coalescing
+obj.prop ??= defaultValue; // Nullish assignment
+value?.nested?.prop; // Optional chaining
 
 // JSDoc for all exported functions
 /**
@@ -105,7 +107,7 @@ value?.nested?.prop;              // Optional chaining
  * @returns {Module | undefined} The found module
  */
 export function findModule(p, id) {
-  return (p.modules ?? []).find(m => m.id === id);
+  return (p.modules ?? []).find((m) => m.id === id);
 }
 
 // Inline type casts for callbacks
@@ -114,19 +116,19 @@ export function findModule(p, id) {
 });
 
 // DOM element casting
-const input = /** @type {HTMLInputElement} */ (document.getElementById('myInput'));
+const input = /** @type {HTMLInputElement} */ (document.getElementById("myInput"));
 ```
 
 ### HTML Templates
 
 ```javascript
 // Always escape user content
-import { escapeHtml } from '../utils/dom.js';
+import { escapeHtml } from "../utils/dom.js";
 
 const html = `
   <div class="card">
     <h5>${escapeHtml(module.title)}</h5>
-    <p>${escapeHtml(module.description ?? '')}</p>
+    <p>${escapeHtml(module.description ?? "")}</p>
   </div>
 `;
 
@@ -134,9 +136,9 @@ const html = `
 const button = `<button data-remove-module="${m.id}">Remove</button>`;
 
 // Wire events after rendering
-document.querySelectorAll('[data-remove-module]').forEach(btn => {
+document.querySelectorAll("[data-remove-module]").forEach((btn) => {
   /** @type {HTMLElement} */ (btn).onclick = () => {
-    const id = btn.getAttribute('data-remove-module');
+    const id = btn.getAttribute("data-remove-module");
     // handle removal
   };
 });
@@ -162,14 +164,14 @@ Types are defined in `src/types.d.ts`. Key interfaces:
 ## State Management
 
 ```javascript
-import { state, saveDebounced } from '../state/store.js';
+import { state, saveDebounced } from "../state/store.js";
 
 // Access programme data
 const p = state.programme;
 
 // Modify and save
-p.title = 'New Title';
-saveDebounced();  // Debounced save to localStorage
+p.title = "New Title";
+saveDebounced(); // Debounced save to localStorage
 
 // Trigger re-render
 window.render?.();
@@ -184,10 +186,12 @@ if (!p.modules) p.modules = [];
 p.modules ??= [];
 
 // Safe iteration
-(p.modules ?? []).forEach(m => { /* ... */ });
+(p.modules ?? []).forEach((m) => {
+  /* ... */
+});
 
 // Finding items
-const module = (p.modules ?? []).find(m => m.id === targetId);
+const module = (p.modules ?? []).find((m) => m.id === targetId);
 ```
 
 ## Testing
@@ -196,11 +200,11 @@ Tests use Playwright in `e2e/` directory.
 
 ```javascript
 // e2e/XX-feature.spec.js
-import { test, expect } from '@playwright/test';
+import { test, expect } from "@playwright/test";
 
-test('should do something', async ({ page }) => {
-  await page.goto('/');
-  
+test("should do something", async ({ page }) => {
+  await page.goto("/");
+
   // Use data-testid for selectors
   await page.click('[data-testid="add-module-btn"]');
   await expect(page.locator('[data-testid="module-item"]')).toHaveCount(1);
@@ -223,11 +227,13 @@ npm run test:e2e
 
 - Run `npm run build` after changes to verify compilation
 - Run `npx tsc -p jsconfig.json --noEmit` to check types
+- Run `npm run format` after adding or modifying code
 - Use existing helpers from `src/utils/`
 - Follow nullish coalescing patterns (`??`, `??=`)
 - Add JSDoc comments to new functions
 - Use `data-testid` attributes for testable elements
 - Escape HTML with `escapeHtml()` for user content
+- Use K&R style braces (opening brace on same line as statement)
 
 ### ❌ Don't
 
@@ -237,6 +243,7 @@ npm run test:e2e
 - Add dependencies without clear justification
 - Modify `types.d.ts` without updating affected code
 - Use inline styles (use Bootstrap utilities or CSS classes)
+- Use Allman style braces (opening brace on its own line)
 
 ## Common Tasks
 
@@ -263,21 +270,26 @@ This codebase uses Bootstrap 5 accordions extensively for expandable/collapsible
 #### Basic Accordion Structure
 
 ```javascript
-import { accordionControlsHtml, wireAccordionControls, captureOpenCollapseIds, updateAccordionHeader } from './shared.js';
+import {
+  accordionControlsHtml,
+  wireAccordionControls,
+  captureOpenCollapseIds,
+  updateAccordionHeader,
+} from "./shared.js";
 
 // Before rendering, capture which items are expanded (preserves state across re-renders)
-const openCollapseIds = captureOpenCollapseIds('myAccordionId');
+const openCollapseIds = captureOpenCollapseIds("myAccordionId");
 
 // Render accordion with expand/collapse all controls
 const html = `
-  ${accordionControlsHtml('myAccordionId')}
+  ${accordionControlsHtml("myAccordionId")}
   <div class="accordion" id="myAccordionId" aria-labelledby="my-heading">
-    ${items.map((item, idx) => renderAccordionItem(item, idx, openCollapseIds)).join('')}
+    ${items.map((item, idx) => renderAccordionItem(item, idx, openCollapseIds)).join("")}
   </div>
 `;
 
 // Wire up the expand/collapse all buttons after rendering
-wireAccordionControls('myAccordionId');
+wireAccordionControls("myAccordionId");
 ```
 
 #### Accordion Item with Header Actions
@@ -293,11 +305,11 @@ function renderAccordionItem(item, idx, openCollapseIds) {
   const headingId = `item_${item.id}_heading`;
   const collapseId = `collapse_item_${item.id}`;
   const isActive = openCollapseIds.has(collapseId) || (openCollapseIds.size === 0 && idx === 0);
-  
+
   return `
     <div class="accordion-item bg-body" data-testid="item-${item.id}">
       <h2 class="accordion-header" id="${headingId}">
-        <button class="accordion-button ${isActive ? '' : 'collapsed'} w-100" 
+        <button class="accordion-button ${isActive ? "" : "collapsed"} w-100" 
                 type="button" 
                 data-bs-toggle="collapse" 
                 data-bs-target="#${collapseId}" 
@@ -331,7 +343,7 @@ function renderAccordionItem(item, idx, openCollapseIds) {
           </div>
         </button>
       </h2>
-      <div id="${collapseId}" class="accordion-collapse collapse ${isActive ? 'show' : ''}" 
+      <div id="${collapseId}" class="accordion-collapse collapse ${isActive ? "show" : ""}" 
            aria-labelledby="${headingId}">
         <div class="accordion-body">
           <!-- Accordion content here -->
@@ -358,15 +370,15 @@ Since header actions use `<span>` instead of `<button>`, you must handle both cl
 
 ```javascript
 // Wire action buttons (use stopPropagation to prevent accordion toggle)
-document.querySelectorAll('[data-add-subitem]').forEach(btn => {
+document.querySelectorAll("[data-add-subitem]").forEach((btn) => {
   const handler = (e) => {
     e.stopPropagation(); // Prevent accordion toggle
-    const id = btn.getAttribute('data-add-subitem');
+    const id = btn.getAttribute("data-add-subitem");
     // Handle add action...
   };
   /** @type {HTMLElement} */ (btn).onclick = handler;
   /** @type {HTMLElement} */ (btn).onkeydown = (/** @type {KeyboardEvent} */ e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
+    if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       handler(e);
     }
@@ -374,15 +386,15 @@ document.querySelectorAll('[data-add-subitem]').forEach(btn => {
 });
 
 // Same pattern for remove buttons
-document.querySelectorAll('[data-remove-item]').forEach(btn => {
+document.querySelectorAll("[data-remove-item]").forEach((btn) => {
   const handler = (e) => {
     e.stopPropagation();
-    const id = btn.getAttribute('data-remove-item');
+    const id = btn.getAttribute("data-remove-item");
     // Handle removal...
   };
   /** @type {HTMLElement} */ (btn).onclick = handler;
   /** @type {HTMLElement} */ (btn).onkeydown = (/** @type {KeyboardEvent} */ e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
+    if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       handler(e);
     }
@@ -397,7 +409,7 @@ document.querySelectorAll('[data-remove-item]').forEach(btn => {
 console.log(window.__pds_state?.programme);
 
 // Or in browser console
-__pds_state.programme
+__pds_state.programme;
 ```
 
 ### Icons
@@ -406,7 +418,7 @@ This project uses [Phosphor Icons](https://phosphoricons.com/) via CSS classes. 
 
 ```javascript
 // Icon with text (decorative)
-`<button><i class="ph ph-plus" aria-hidden="true"></i> Add Item</button>`
+`<button><i class="ph ph-plus" aria-hidden="true"></i> Add Item</button>`;
 
 // Common icons used:
 // ph-plus         Add/create
@@ -423,7 +435,7 @@ This project uses [Phosphor Icons](https://phosphoricons.com/) via CSS classes. 
 The `validateProgramme()` function in `src/utils/validation.js` returns an array of validation flags:
 
 ```javascript
-import { validateProgramme } from '../utils/validation.js';
+import { validateProgramme } from "../utils/validation.js";
 
 const flags = validateProgramme(state.programme);
 // Returns: Array<{ type: "error" | "warn", msg: string, step: string }>
@@ -433,8 +445,8 @@ const flags = validateProgramme(state.programme);
 // { type: "warn", msg: "Award type is missing.", step: "identity" }
 
 // Render flags in the sidebar
-import { renderFlags } from '../components/flags.js';
-renderFlags(flags, goToStep);  // goToStep is a function(stepKey) that navigates
+import { renderFlags } from "../components/flags.js";
+renderFlags(flags, goToStep); // goToStep is a function(stepKey) that navigates
 ```
 
 Validation is re-run on each `render()` call. To update flags after field changes without full re-render, call `renderFlags()` directly.
@@ -444,7 +456,7 @@ Validation is re-run on each `render()` call. To update flags after field change
 The app supports two modes controlled by `state.programme.mode`:
 
 ```javascript
-import { setMode, activeSteps } from '../state/store.js';
+import { setMode, activeSteps } from "../state/store.js";
 
 // PROGRAMME_OWNER (default) - Full access to all steps and editing
 setMode("PROGRAMME_OWNER");
@@ -453,7 +465,7 @@ setMode("PROGRAMME_OWNER");
 setMode("MODULE_EDITOR", ["mod_abc123", "mod_def456"]);
 
 // Get currently visible steps (respects mode)
-const steps = activeSteps();  // Returns filtered step list for current mode
+const steps = activeSteps(); // Returns filtered step list for current mode
 
 // Check current mode
 if (state.programme.mode === "MODULE_EDITOR") {
@@ -462,6 +474,7 @@ if (state.programme.mode === "MODULE_EDITOR") {
 ```
 
 Module Editor mode:
+
 - Only shows steps: MIMLOs, Assessments, Mapping, Snapshot
 - Only allows editing of assigned modules
 - Locks programme-level fields (title, credits, PLOs, etc.)
@@ -471,17 +484,19 @@ Module Editor mode:
 Steps can include a toggle to switch between modes (only visible with `?dev=true` URL param):
 
 ```javascript
-import { getDevModeToggleHtml, wireDevModeToggle } from '../dev-mode.js';
+import { getDevModeToggleHtml, wireDevModeToggle } from "../dev-mode.js";
 
 export async function renderMyStep() {
   const devModeToggleHtml = getDevModeToggleHtml();
-  
-  content.innerHTML = devModeToggleHtml + `
+
+  content.innerHTML =
+    devModeToggleHtml +
+    `
     <div class="card">
       <!-- Step content -->
     </div>
   `;
-  
+
   // Wire the toggle to trigger re-render on mode change
   wireDevModeToggle(() => window.render?.());
   wireMyStep();
@@ -493,13 +508,13 @@ export async function renderMyStep() {
 Always use `uid()` for generating unique identifiers:
 
 ```javascript
-import { uid } from '../utils/uid.js';
+import { uid } from "../utils/uid.js";
 
 // Generate IDs with semantic prefixes
-const moduleId = uid("mod");      // "mod_550e8400-e29b-..."
-const ploId = uid("plo");         // "plo_550e8400-e29b-..."
-const assessmentId = uid("asm");  // "asm_550e8400-e29b-..."
-const groupId = uid("egrp");      // "egrp_550e8400-e29b-..."
+const moduleId = uid("mod"); // "mod_550e8400-e29b-..."
+const ploId = uid("plo"); // "plo_550e8400-e29b-..."
+const assessmentId = uid("asm"); // "asm_550e8400-e29b-..."
+const groupId = uid("egrp"); // "egrp_550e8400-e29b-..."
 const definitionId = uid("edef"); // "edef_550e8400-e29b-..."
 
 // Use when creating new items
@@ -516,10 +531,10 @@ p.modules.push({
 Use `saveDebounced()` for input fields (400ms debounce), with optional callback for post-save actions:
 
 ```javascript
-import { state, saveDebounced, saveNow } from '../state/store.js';
+import { state, saveDebounced, saveNow } from "../state/store.js";
 
 // For text inputs - debounced to avoid excessive saves during typing
-input.addEventListener('input', (e) => {
+input.addEventListener("input", (e) => {
   state.programme.title = e.target.value;
   saveDebounced(() => {
     // Optional: update flags or UI after save completes
@@ -530,12 +545,12 @@ input.addEventListener('input', (e) => {
 // For selects/checkboxes - can save immediately if preferred
 select.onchange = () => {
   state.programme.awardType = select.value;
-  saveDebounced();  // Still use debounced for consistency
-  window.render?.();  // Re-render to update dependent UI
+  saveDebounced(); // Still use debounced for consistency
+  window.render?.(); // Re-render to update dependent UI
 };
 
 // For critical operations - save immediately
-saveNow();  // Synchronous save to localStorage
+saveNow(); // Synchronous save to localStorage
 ```
 
 ### Playwright Test Fixtures
@@ -544,29 +559,29 @@ Tests use custom fixtures from `e2e/fixtures/test-fixtures.js`:
 
 ```javascript
 // Import custom test and helpers
-import { test, expect, loadProgrammeData, getProgrammeData } from './fixtures/test-fixtures.js';
-import { higherDiplomaComputing } from './fixtures/test-data.js';
+import { test, expect, loadProgrammeData, getProgrammeData } from "./fixtures/test-fixtures.js";
+import { higherDiplomaComputing } from "./fixtures/test-data.js";
 
-test.describe('My Feature', () => {
-  test('should load programme data', async ({ page }) => {
+test.describe("My Feature", () => {
+  test("should load programme data", async ({ page }) => {
     // Load complete test programme (auto-reloads page)
     await loadProgrammeData(page, higherDiplomaComputing);
-    
+
     // Verify data was loaded
     const data = await getProgrammeData(page);
-    expect(data.title).toBe('Higher Diploma in Computing');
+    expect(data.title).toBe("Higher Diploma in Computing");
   });
 
-  test('should start fresh', async ({ page }) => {
+  test("should start fresh", async ({ page }) => {
     // Each test starts with cleared localStorage automatically
     // Navigate to step using data-testid
-    await page.getByTestId('step-structure').click();
+    await page.getByTestId("step-structure").click();
     await page.waitForTimeout(300);
-    
+
     // Add item and wait for debounced save
-    await page.getByTestId('add-module-btn').click();
-    await page.waitForTimeout(600);  // 400ms debounce + buffer
-    
+    await page.getByTestId("add-module-btn").click();
+    await page.waitForTimeout(600); // 400ms debounce + buffer
+
     // Verify in localStorage
     const data = await getProgrammeData(page);
     expect(data.modules.length).toBe(1);
@@ -575,6 +590,7 @@ test.describe('My Feature', () => {
 ```
 
 Key testing patterns:
+
 - Use `data-testid` attributes, not labels (flags panel causes conflicts)
 - Wait 600ms after actions for debounced save to complete
 - Use `loadProgrammeData()` to set up test state

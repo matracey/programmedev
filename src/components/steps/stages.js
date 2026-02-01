@@ -5,11 +5,16 @@
  * @module components/steps/stages
  */
 
-import { state, saveDebounced, getVersionById, defaultStage } from '../../state/store.js';
-import { escapeHtml } from '../../utils/dom.js';
-import { sumStageCredits } from '../../utils/helpers.js';
-import { getDevModeToggleHtml, wireDevModeToggle } from '../dev-mode.js';
-import { accordionControlsHtml, wireAccordionControls, captureOpenCollapseIds, updateAccordionHeader } from './shared.js';
+import { defaultStage, getVersionById, saveDebounced, state } from "../../state/store.js";
+import { escapeHtml } from "../../utils/dom.js";
+import { sumStageCredits } from "../../utils/helpers.js";
+import { getDevModeToggleHtml, wireDevModeToggle } from "../dev-mode.js";
+import {
+  accordionControlsHtml,
+  captureOpenCollapseIds,
+  updateAccordionHeader,
+  wireAccordionControls,
+} from "./shared.js";
 
 /**
  * Renders the Stage Structure step UI.
@@ -18,32 +23,46 @@ import { accordionControlsHtml, wireAccordionControls, captureOpenCollapseIds, u
 export function renderStagesStep() {
   const p = state.programme;
   const content = document.getElementById("content");
-  if (!content) return;
+  if (!content) {
+    return;
+  }
 
   const devModeToggleHtml = getDevModeToggleHtml();
-  const openCollapseIds = captureOpenCollapseIds('stagesAccordion');
+  const openCollapseIds = captureOpenCollapseIds("stagesAccordion");
   const versions = Array.isArray(p.versions) ? p.versions : [];
 
   if (!versions.length) {
-    content.innerHTML = devModeToggleHtml + `<div class="alert alert-warning">Add at least one Programme Version first.</div>`;
+    content.innerHTML =
+      devModeToggleHtml +
+      `<div class="alert alert-warning">Add at least one Programme Version first.</div>`;
     wireDevModeToggle(() => window.render?.());
     return;
   }
 
-  if (!state.selectedVersionId) state.selectedVersionId = versions[0].id;
-  const v = versions.find(x => x.id === state.selectedVersionId) || versions[0];
+  if (!state.selectedVersionId) {
+    state.selectedVersionId = versions[0].id;
+  }
+  const v = versions.find((x) => x.id === state.selectedVersionId) || versions[0];
 
-  const vSelect = versions.map(x => `<option value="${escapeHtml(x.id)}" ${x.id === v.id ? "selected" : ""}>${escapeHtml(x.code || "")}${x.code ? " — " : ""}${escapeHtml(x.label || "")}</option>`).join("");
+  const vSelect = versions
+    .map(
+      (x) =>
+        `<option value="${escapeHtml(x.id)}" ${x.id === v.id ? "selected" : ""}>${escapeHtml(x.code || "")}${x.code ? " — " : ""}${escapeHtml(x.label || "")}</option>`,
+    )
+    .join("");
 
-  const stageCards = (v.stages ?? []).sort((a, b) => Number(a.sequence ?? 0) - Number(b.sequence ?? 0)).map((s, idx) => {
-    const exitOn = s.exitAward && s.exitAward.enabled;
-    const exitWrapClass = exitOn ? "" : "d-none";
+  const stageCards = (v.stages ?? [])
+    .sort((a, b) => Number(a.sequence ?? 0) - Number(b.sequence ?? 0))
+    .map((s, idx) => {
+      const exitOn = s.exitAward && s.exitAward.enabled;
+      const exitWrapClass = exitOn ? "" : "d-none";
 
-    const moduleChecks = (p.modules ?? []).map(m => {
-      const picked = (s.modules ?? []).find((/** @type {any} */ x) => x.moduleId === m.id);
-      const checked = !!picked;
-      const semVal = picked ? (picked.semester ?? "") : "";
-      return `
+      const moduleChecks = (p.modules ?? [])
+        .map((m) => {
+          const picked = (s.modules ?? []).find((/** @type {any} */ x) => x.moduleId === m.id);
+          const checked = !!picked;
+          const semVal = picked ? (picked.semester ?? "") : "";
+          return `
         <div class="border rounded p-2 mb-2">
           <div class="form-check">
             <input class="form-check-input" type="checkbox" id="st_${s.id}_mod_${m.id}" data-testid="stage-module-${s.id}-${m.id}" ${checked ? "checked" : ""}>
@@ -57,15 +76,18 @@ export function renderStagesStep() {
           </div>
         </div>
       `;
-    }).join("");
+        })
+        .join("");
 
-    const stageCreditSum = sumStageCredits(p.modules ?? [], s.modules ?? []);
+      const stageCreditSum = sumStageCredits(p.modules ?? [], s.modules ?? []);
 
-    const headingId = `stage_${s.id}_heading`;
-    const collapseId = `stage_${s.id}_collapse`;
-    const isActive = openCollapseIds.has(collapseId) ? true : (openCollapseIds.size === 0 && idx === 0);
-    const summaryName = s.name || `Stage ${s.sequence || ""}`;
-    return `
+      const headingId = `stage_${s.id}_heading`;
+      const collapseId = `stage_${s.id}_collapse`;
+      const isActive = openCollapseIds.has(collapseId)
+        ? true
+        : openCollapseIds.size === 0 && idx === 0;
+      const summaryName = s.name || `Stage ${s.sequence || ""}`;
+      return `
       <div class="accordion-item bg-body" data-testid="stage-item-${s.id}">
         <h2 class="accordion-header" id="${headingId}">
           <button class="accordion-button ${isActive ? "" : "collapsed"} w-100" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="${isActive}" aria-controls="${collapseId}" data-testid="stage-accordion-${s.id}">
@@ -118,9 +140,12 @@ export function renderStagesStep() {
         </div>
       </div>
     `;
-  }).join("");
+    })
+    .join("");
 
-  content.innerHTML = devModeToggleHtml + `
+  content.innerHTML =
+    devModeToggleHtml +
+    `
     <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
       <div>
         <h4 class="mb-1" id="stages-heading"><i class="ph ph-stairs me-2" aria-hidden="true"></i>Stage Structure</h4>
@@ -135,14 +160,14 @@ export function renderStagesStep() {
       </div>
     </div>
 
-    ${accordionControlsHtml('stagesAccordion')}
+    ${accordionControlsHtml("stagesAccordion")}
     <div class="mt-2 accordion" id="stagesAccordion" aria-labelledby="stages-heading" data-testid="stages-accordion">
       ${stageCards || `<div class="alert alert-info mb-0" role="status"><i class="ph ph-info me-2" aria-hidden="true"></i>No stages yet for this version. Add a stage to begin.</div>`}
     </div>
   `;
 
   wireDevModeToggle(() => window.render?.());
-  wireAccordionControls('stagesAccordion');
+  wireAccordionControls("stagesAccordion");
   wireStagesStep();
 }
 
@@ -156,10 +181,10 @@ export function renderStagesStep() {
 function updateStageAccordionHeader(s, modules) {
   const summaryName = s.name || `Stage ${s.sequence || ""}`;
   const stageCreditSum = sumStageCredits(modules, s.modules ?? []);
-  
+
   updateAccordionHeader(`stage_${s.id}_heading`, {
     title: escapeHtml(summaryName),
-    subtitle: `Sequence ${Number(s.sequence ?? 1)} • Target ${Number(s.creditsTarget ?? 0)}cr • Assigned ${stageCreditSum}cr`
+    subtitle: `Sequence ${Number(s.sequence ?? 1)} • Target ${Number(s.creditsTarget ?? 0)}cr • Assigned ${stageCreditSum}cr`,
   });
 }
 
@@ -171,8 +196,10 @@ function updateStageAccordionHeader(s, modules) {
  */
 function wireStagesStep() {
   const p = state.programme;
-  p.mode ??= 'PROGRAMME_OWNER';
-  if (!Array.isArray(p.versions)) p.versions = [];
+  p.mode ??= "PROGRAMME_OWNER";
+  if (!Array.isArray(p.versions)) {
+    p.versions = [];
+  }
   const versions = p.versions;
 
   const select = document.getElementById("stageVersionSelect");
@@ -184,9 +211,13 @@ function wireStagesStep() {
     };
   }
 
-  const v = getVersionById(state.selectedVersionId || '') || versions[0];
-  if (!v) return;
-  if (!Array.isArray(v.stages)) v.stages = [];
+  const v = getVersionById(state.selectedVersionId || "") || versions[0];
+  if (!v) {
+    return;
+  }
+  if (!Array.isArray(v.stages)) {
+    v.stages = [];
+  }
 
   const addStageBtn = document.getElementById("addStageBtn");
   if (addStageBtn) {
@@ -194,7 +225,7 @@ function wireStagesStep() {
       const nextSeq = (v.stages ?? []).length + 1;
       const s = defaultStage(nextSeq);
       if ((p.totalCredits ?? 0) > 0 && (v.stages ?? []).length === 0) {
-        s.creditsTarget = (p.totalCredits % 60 === 0) ? 60 : 0;
+        s.creditsTarget = p.totalCredits % 60 === 0 ? 60 : 0;
       }
       v.stages ??= [];
       v.stages.push(s);
@@ -205,55 +236,73 @@ function wireStagesStep() {
 
   (v.stages ?? []).forEach((s) => {
     const name = document.getElementById(`stname_${s.id}`);
-    if (name) name.oninput = (/** @type {any} */ e) => { 
-      s.name = e.target?.value || ''; 
-      saveDebounced();
-      updateStageAccordionHeader(s, p.modules ?? []);
-    };
+    if (name) {
+      name.oninput = (/** @type {any} */ e) => {
+        s.name = e.target?.value || "";
+        saveDebounced();
+        updateStageAccordionHeader(s, p.modules ?? []);
+      };
+    }
 
     const seq = document.getElementById(`stseq_${s.id}`);
-    if (seq) seq.oninput = (/** @type {any} */ e) => { 
-      s.sequence = Number(e.target?.value ?? 1); 
-      saveDebounced();
-      updateStageAccordionHeader(s, p.modules ?? []);
-    };
+    if (seq) {
+      seq.oninput = (/** @type {any} */ e) => {
+        s.sequence = Number(e.target?.value ?? 1);
+        saveDebounced();
+        updateStageAccordionHeader(s, p.modules ?? []);
+      };
+    }
 
     const cred = document.getElementById(`stcred_${s.id}`);
-    if (cred) cred.oninput = (/** @type {any} */ e) => { 
-      s.creditsTarget = Number(e.target?.value ?? 0); 
-      saveDebounced();
-      updateStageAccordionHeader(s, p.modules ?? []);
-    };
+    if (cred) {
+      cred.oninput = (/** @type {any} */ e) => {
+        s.creditsTarget = Number(e.target?.value ?? 0);
+        saveDebounced();
+        updateStageAccordionHeader(s, p.modules ?? []);
+      };
+    }
 
     const remove = document.getElementById(`removeStage_${s.id}`);
-    if (remove) remove.onclick = (/** @type {any} */ e) => {
-      e.stopPropagation();
-      v.stages = (v.stages ?? []).filter((/** @type {Stage} */ x) => x.id !== s.id);
-      saveDebounced();
-      window.render?.();
-    };
+    if (remove) {
+      remove.onclick = (/** @type {any} */ e) => {
+        e.stopPropagation();
+        v.stages = (v.stages ?? []).filter((/** @type {Stage} */ x) => x.id !== s.id);
+        saveDebounced();
+        window.render?.();
+      };
+    }
 
     const exit = document.getElementById(`stexit_${s.id}`);
-    if (exit) exit.onchange = (/** @type {any} */ e) => {
-      if (!s.exitAward) s.exitAward = { enabled: false, awardTitle: "" };
-      s.exitAward.enabled = !!e.target?.checked;
-      saveDebounced();
-      window.render?.();
-    };
+    if (exit) {
+      exit.onchange = (/** @type {any} */ e) => {
+        if (!s.exitAward) {
+          s.exitAward = { enabled: false, awardTitle: "" };
+        }
+        s.exitAward.enabled = !!e.target?.checked;
+        saveDebounced();
+        window.render?.();
+      };
+    }
 
     const exitTitle = document.getElementById(`stexitTitle_${s.id}`);
-    if (exitTitle) exitTitle.oninput = (/** @type {any} */ e) => {
-      if (!s.exitAward) s.exitAward = { enabled: false, awardTitle: "" };
-      s.exitAward.awardTitle = e.target?.value || '';
-      saveDebounced();
-    };
+    if (exitTitle) {
+      exitTitle.oninput = (/** @type {any} */ e) => {
+        if (!s.exitAward) {
+          s.exitAward = { enabled: false, awardTitle: "" };
+        }
+        s.exitAward.awardTitle = e.target?.value || "";
+        saveDebounced();
+      };
+    }
 
     s.modules ??= [];
     const stageModules = s.modules;
 
     (p.modules ?? []).forEach((m) => {
       const cb = document.getElementById(`st_${s.id}_mod_${m.id}`);
-      if (!cb) return;
+      if (!cb) {
+        return;
+      }
       cb.onchange = (/** @type {any} */ e) => {
         const checked = e.target?.checked;
         if (checked && !stageModules.find((/** @type {any} */ x) => x.moduleId === m.id)) {
@@ -267,11 +316,15 @@ function wireStagesStep() {
       };
 
       const sem = document.getElementById(`st_${s.id}_sem_${m.id}`);
-      if (sem) sem.oninput = (/** @type {any} */ e) => {
-        const entry = stageModules.find((/** @type {any} */ x) => x.moduleId === m.id);
-        if (entry) entry.semester = e.target?.value || '';
-        saveDebounced();
-      };
+      if (sem) {
+        sem.oninput = (/** @type {any} */ e) => {
+          const entry = stageModules.find((/** @type {any} */ x) => x.moduleId === m.id);
+          if (entry) {
+            entry.semester = e.target?.value || "";
+          }
+          saveDebounced();
+        };
+      }
     });
   });
 }

@@ -5,20 +5,20 @@
  * @module components/steps/index
  */
 
-import { renderIdentityStep } from './identity.js';
-import { renderVersionsStep } from './versions.js';
-import { renderStagesStep } from './stages.js';
-import { renderStructureStep } from './structure.js';
-import { renderElectivesStep } from './electives.js';
-import { renderOutcomesStep } from './outcomes.js';
-import { renderMimlosStep } from './mimlos.js';
-import { renderEffortHoursStep } from './effort-hours.js';
-import { renderAssessmentsStep } from './assessments.js';
-import { renderReadingListsStep } from './reading-lists.js';
-import { renderScheduleStep } from './schedule.js';
-import { renderMappingStep } from './mapping.js';
-import { renderTraceabilityStep } from './traceability.js';
-import { renderSnapshotStep } from './snapshot.js';
+import { renderAssessmentsStep } from "./assessments.js";
+import { renderEffortHoursStep } from "./effort-hours.js";
+import { renderElectivesStep } from "./electives.js";
+import { renderIdentityStep } from "./identity.js";
+import { renderMappingStep } from "./mapping.js";
+import { renderMimlosStep } from "./mimlos.js";
+import { renderOutcomesStep } from "./outcomes.js";
+import { renderReadingListsStep } from "./reading-lists.js";
+import { renderScheduleStep } from "./schedule.js";
+import { renderSnapshotStep } from "./snapshot.js";
+import { renderStagesStep } from "./stages.js";
+import { renderStructureStep } from "./structure.js";
+import { renderTraceabilityStep } from "./traceability.js";
+import { renderVersionsStep } from "./versions.js";
 
 /**
  * Returns the render function for a given workflow step key.
@@ -29,20 +29,20 @@ import { renderSnapshotStep } from './snapshot.js';
 export function getStepRenderer(stepKey) {
   /** @type {Record<string, Function>} */
   const renderers = {
-    "identity": renderIdentityStep,
-    "versions": renderVersionsStep,
-    "stages": renderStagesStep,
-    "structure": renderStructureStep,
-    "electives": renderElectivesStep,
-    "outcomes": renderOutcomesStep,
-    "mimlos": renderMimlosStep,
+    identity: renderIdentityStep,
+    versions: renderVersionsStep,
+    stages: renderStagesStep,
+    structure: renderStructureStep,
+    electives: renderElectivesStep,
+    outcomes: renderOutcomesStep,
+    mimlos: renderMimlosStep,
     "effort-hours": renderEffortHoursStep,
-    "assessments": renderAssessmentsStep,
+    assessments: renderAssessmentsStep,
     "reading-lists": renderReadingListsStep,
-    "schedule": renderScheduleStep,
-    "mapping": renderMappingStep,
-    "traceability": renderTraceabilityStep,
-    "snapshot": renderSnapshotStep,
+    schedule: renderScheduleStep,
+    mapping: renderMappingStep,
+    traceability: renderTraceabilityStep,
+    snapshot: renderSnapshotStep,
   };
   return renderers[stepKey] ?? (() => {});
 }

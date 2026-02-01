@@ -6,11 +6,16 @@
  * @module components/steps/versions
  */
 
-import { state, saveDebounced, defaultVersion } from '../../state/store.js';
-import { escapeHtml, tagHtml } from '../../utils/dom.js';
-import { defaultPatternFor, sumPattern } from '../../utils/helpers.js';
-import { getDevModeToggleHtml, wireDevModeToggle } from '../dev-mode.js';
-import { accordionControlsHtml, wireAccordionControls, captureOpenCollapseIds, updateAccordionHeader } from './shared.js';
+import { defaultVersion, saveDebounced, state } from "../../state/store.js";
+import { escapeHtml, tagHtml } from "../../utils/dom.js";
+import { defaultPatternFor, sumPattern } from "../../utils/helpers.js";
+import { getDevModeToggleHtml, wireDevModeToggle } from "../dev-mode.js";
+import {
+  accordionControlsHtml,
+  captureOpenCollapseIds,
+  updateAccordionHeader,
+  wireAccordionControls,
+} from "./shared.js";
 
 const MOD_DEFS = [
   { key: "F2F", label: "Face-to-face" },
@@ -25,32 +30,42 @@ const MOD_DEFS = [
 export function renderVersionsStep() {
   const p = state.programme;
   const content = document.getElementById("content");
-  if (!content) return;
+  if (!content) {
+    return;
+  }
 
   const devModeToggleHtml = getDevModeToggleHtml();
   const versions = Array.isArray(p.versions) ? p.versions : [];
-  const openCollapseIds = captureOpenCollapseIds('versionsAccordion');
+  const openCollapseIds = captureOpenCollapseIds("versionsAccordion");
 
-  const vCards = versions.map((v, idx) => {
-    const intakeVal = (v.intakes ?? []).join(", ");
-    const selectedMod = v.deliveryModality || "";
-    const modSummary = selectedMod ? (MOD_DEFS.find(m => m.key === selectedMod)?.label || selectedMod) : "Choose modality";
-    const collapseId = `ver_${v.id}_collapse`;
-    const headingId = `ver_${v.id}_heading`;
-    const isActive = openCollapseIds.has(collapseId)
-      ? true
-      : (state.selectedVersionId ? (state.selectedVersionId === v.id) : (openCollapseIds.size === 0 && idx === 0));
-    
-    const modRadios = MOD_DEFS.map(m => `
+  const vCards = versions
+    .map((v, idx) => {
+      const intakeVal = (v.intakes ?? []).join(", ");
+      const selectedMod = v.deliveryModality || "";
+      const modSummary = selectedMod
+        ? MOD_DEFS.find((m) => m.key === selectedMod)?.label || selectedMod
+        : "Choose modality";
+      const collapseId = `ver_${v.id}_collapse`;
+      const headingId = `ver_${v.id}_heading`;
+      const isActive = openCollapseIds.has(collapseId)
+        ? true
+        : state.selectedVersionId
+          ? state.selectedVersionId === v.id
+          : openCollapseIds.size === 0 && idx === 0;
+
+      const modRadios = MOD_DEFS.map(
+        (m) => `
       <div class="form-check form-check-inline">
         <input class="form-check-input" type="radio" name="vmod_${v.id}" id="vmod_${v.id}_${m.key}" value="${m.key}" ${selectedMod === m.key ? "checked" : ""} data-testid="version-modality-${v.id}-${m.key}">
         <label class="form-check-label" for="vmod_${v.id}_${m.key}">${escapeHtml(m.label)}</label>
       </div>
-    `).join("");
+    `,
+      ).join("");
 
-    const patternCard = selectedMod ? (() => {
-      const pat = (v.deliveryPatterns ?? {})[selectedMod] ?? defaultPatternFor(selectedMod);
-      return `
+      const patternCard = selectedMod
+        ? (() => {
+            const pat = (v.deliveryPatterns ?? {})[selectedMod] ?? defaultPatternFor(selectedMod);
+            return `
         <div class="card mt-2">
           <div class="card-body">
             <div class="d-flex align-items-center justify-content-between">
@@ -74,12 +89,13 @@ export function renderVersionsStep() {
           </div>
         </div>
       `;
-    })() : `<div class="small text-secondary mt-2">Select a delivery modality to define delivery patterns.</div>`;
+          })()
+        : `<div class="small text-secondary mt-2">Select a delivery modality to define delivery patterns.</div>`;
 
-    const proctorYes = (v.onlineProctoredExams || "TBC") === "YES";
-    const proctorNotesStyle = proctorYes ? "" : "d-none";
+      const proctorYes = (v.onlineProctoredExams || "TBC") === "YES";
+      const proctorNotesStyle = proctorYes ? "" : "d-none";
 
-    return `
+      return `
       <div class="accordion-item bg-body" data-testid="version-item-${v.id}">
         <h2 class="accordion-header" id="${headingId}">
           <button class="accordion-button ${isActive ? "" : "collapsed"} w-100" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="${isActive}" aria-controls="${collapseId}" data-testid="version-accordion-${v.id}">
@@ -151,9 +167,12 @@ export function renderVersionsStep() {
         </div>
       </div>
     `;
-  }).join("");
+    })
+    .join("");
 
-  content.innerHTML = devModeToggleHtml + `
+  content.innerHTML =
+    devModeToggleHtml +
+    `
     <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
       <div>
         <h4 class="mb-1" id="versions-heading"><i class="ph ph-git-branch me-2" aria-hidden="true"></i>Programme Versions</h4>
@@ -161,7 +180,7 @@ export function renderVersionsStep() {
       </div>
       <button class="btn btn-dark" id="addVersionBtn" data-testid="add-version-btn" aria-label="Add new version"><i class="ph ph-plus" aria-hidden="true"></i> Add version</button>
     </div>
-    ${accordionControlsHtml('versionsAccordion')}
+    ${accordionControlsHtml("versionsAccordion")}
     <div class="mt-2 accordion" id="versionsAccordion" aria-labelledby="versions-heading" data-testid="versions-accordion">
       ${vCards || `<div class="alert alert-info mb-0" role="status"><i class="ph ph-info me-2" aria-hidden="true"></i>No versions yet. Add at least one version to continue.</div>`}
     </div>
@@ -179,8 +198,10 @@ export function renderVersionsStep() {
  */
 function wireVersionsStep() {
   const p = state.programme;
-  p.mode ??= 'PROGRAMME_OWNER';
-  if (!Array.isArray(p.versions)) p.versions = [];
+  p.mode ??= "PROGRAMME_OWNER";
+  if (!Array.isArray(p.versions)) {
+    p.versions = [];
+  }
   const versions = p.versions;
 
   const addBtn = document.getElementById("addVersionBtn");
@@ -199,58 +220,104 @@ function wireVersionsStep() {
     const byId = (suffix) => document.getElementById(`${suffix}_${v.id}`);
 
     const removeBtn = document.getElementById(`removeVer_${v.id}`);
-    if (removeBtn) removeBtn.onclick = () => {
-      p.versions = (p.versions ?? []).filter(x => x.id !== v.id);
-      if (state.selectedVersionId === v.id) state.selectedVersionId = (p.versions[0] && p.versions[0].id) || null;
-      saveDebounced();
-      window.render?.();
-    };
+    if (removeBtn) {
+      removeBtn.onclick = () => {
+        p.versions = (p.versions ?? []).filter((x) => x.id !== v.id);
+        if (state.selectedVersionId === v.id) {
+          state.selectedVersionId = (p.versions[0] && p.versions[0].id) || null;
+        }
+        saveDebounced();
+        window.render?.();
+      };
+    }
 
     const label = byId("vlabel");
-    if (label) label.oninput = (/** @type {any} */ e) => {
-      v.label = e.target?.value || "";
-      const lbl = document.querySelector(`[data-version-label="${v.id}"]`);
-      if (lbl) lbl.textContent = v.label || "(untitled)";
-      saveDebounced();
-    };
+    if (label) {
+      label.oninput = (/** @type {any} */ e) => {
+        v.label = e.target?.value || "";
+        const lbl = document.querySelector(`[data-version-label="${v.id}"]`);
+        if (lbl) {
+          lbl.textContent = v.label || "(untitled)";
+        }
+        saveDebounced();
+      };
+    }
 
     const code = byId("vcode");
-    if (code) code.oninput = (/** @type {any} */ e) => {
-      v.code = e.target?.value || "";
-      const codeEl = document.querySelector(`[data-version-code="${v.id}"]`);
-      if (codeEl) codeEl.textContent = v.code || "No code";
-      saveDebounced();
-    };
+    if (code) {
+      code.oninput = (/** @type {any} */ e) => {
+        v.code = e.target?.value || "";
+        const codeEl = document.querySelector(`[data-version-code="${v.id}"]`);
+        if (codeEl) {
+          codeEl.textContent = v.code || "No code";
+        }
+        saveDebounced();
+      };
+    }
 
     const duration = byId("vduration");
-    if (duration) duration.oninput = (/** @type {any} */ e) => { /** @type {any} */ (v).duration = e.target?.value || ""; saveDebounced(); };
+    if (duration) {
+      duration.oninput = (/** @type {any} */ e) => {
+        /** @type {any} */ (v).duration = e.target?.value || "";
+        saveDebounced();
+      };
+    }
 
     const intakes = byId("vintakes");
-    if (intakes) intakes.oninput = (/** @type {any} */ e) => {
-      v.intakes = (e.target?.value || "").split(",").map((/** @type {string} */ x) => x.trim()).filter(Boolean);
-      const intakesEl = document.querySelector(`[data-version-intakes="${v.id}"]`);
-      if (intakesEl) intakesEl.textContent = (v.intakes ?? []).join(", ") || "No intakes";
-      saveDebounced();
-    };
+    if (intakes) {
+      intakes.oninput = (/** @type {any} */ e) => {
+        v.intakes = (e.target?.value || "")
+          .split(",")
+          .map((/** @type {string} */ x) => x.trim())
+          .filter(Boolean);
+        const intakesEl = document.querySelector(`[data-version-intakes="${v.id}"]`);
+        if (intakesEl) {
+          intakesEl.textContent = (v.intakes ?? []).join(", ") || "No intakes";
+        }
+        saveDebounced();
+      };
+    }
 
     const cohort = byId("vcohort");
-    if (cohort) cohort.oninput = (/** @type {any} */ e) => { /** @type {any} */ (v).targetCohortSize = Number(e.target?.value ?? 0); saveDebounced(); };
+    if (cohort) {
+      cohort.oninput = (/** @type {any} */ e) => {
+        /** @type {any} */ (v).targetCohortSize = Number(e.target?.value ?? 0);
+        saveDebounced();
+      };
+    }
 
     const groups = byId("vgroups");
-    if (groups) groups.oninput = (/** @type {any} */ e) => { /** @type {any} */ (v).numberOfGroups = Number(e.target?.value ?? 0); saveDebounced(); };
+    if (groups) {
+      groups.oninput = (/** @type {any} */ e) => {
+        /** @type {any} */ (v).numberOfGroups = Number(e.target?.value ?? 0);
+        saveDebounced();
+      };
+    }
 
     const notes = byId("vnotes");
-    if (notes) notes.oninput = (/** @type {any} */ e) => { /** @type {any} */ (v).deliveryNotes = e.target?.value || ""; saveDebounced(); };
+    if (notes) {
+      notes.oninput = (/** @type {any} */ e) => {
+        /** @type {any} */ (v).deliveryNotes = e.target?.value || "";
+        saveDebounced();
+      };
+    }
 
     const proctor = byId("vproctor");
-    if (proctor) proctor.onchange = (/** @type {any} */ e) => {
-      /** @type {any} */ (v).onlineProctoredExams = e.target?.value || "";
-      saveDebounced();
-      window.render?.();
-    };
+    if (proctor) {
+      proctor.onchange = (/** @type {any} */ e) => {
+        /** @type {any} */ (v).onlineProctoredExams = e.target?.value || "";
+        saveDebounced();
+        window.render?.();
+      };
+    }
 
     const proctorNotes = byId("vproctorNotes");
-    if (proctorNotes) proctorNotes.oninput = (/** @type {any} */ e) => { /** @type {any} */ (v).onlineProctoredExamsNotes = e.target?.value || ""; saveDebounced(); };
+    if (proctorNotes) {
+      proctorNotes.oninput = (/** @type {any} */ e) => {
+        /** @type {any} */ (v).onlineProctoredExamsNotes = e.target?.value || "";
+        saveDebounced();
+      };
+    }
 
     // Modality radio buttons & patterns
     const MOD_KEYS = ["F2F", "BLENDED", "ONLINE"];
@@ -259,14 +326,20 @@ function wireVersionsStep() {
 
     MOD_KEYS.forEach((mod) => {
       const radio = document.getElementById(`vmod_${v.id}_${mod}`);
-      if (!radio) return;
+      if (!radio) {
+        return;
+      }
       radio.onchange = (/** @type {any} */ e) => {
         if (e.target?.checked) {
           v.deliveryModality = mod;
-          if (!deliveryPatterns[mod]) deliveryPatterns[mod] = defaultPatternFor(mod);
+          if (!deliveryPatterns[mod]) {
+            deliveryPatterns[mod] = defaultPatternFor(mod);
+          }
           const modEl = document.querySelector(`[data-version-modality="${v.id}"]`);
-          const modLabel = MOD_DEFS.find(m => m.key === mod)?.label || mod;
-          if (modEl) modEl.textContent = modLabel;
+          const modLabel = MOD_DEFS.find((m) => m.key === mod)?.label || mod;
+          if (modEl) {
+            modEl.textContent = modLabel;
+          }
           saveDebounced();
           window.render?.();
         }
@@ -275,26 +348,40 @@ function wireVersionsStep() {
 
     const selectedMod = v.deliveryModality;
     if (selectedMod) {
-      if (!deliveryPatterns[selectedMod]) deliveryPatterns[selectedMod] = defaultPatternFor(selectedMod);
+      if (!deliveryPatterns[selectedMod]) {
+        deliveryPatterns[selectedMod] = defaultPatternFor(selectedMod);
+      }
 
-      const sync = /** @type {HTMLInputElement | null} */ (document.getElementById(`pat_${v.id}_${selectedMod}_sync`));
-      const async = /** @type {HTMLInputElement | null} */ (document.getElementById(`pat_${v.id}_${selectedMod}_async`));
-      const campus = /** @type {HTMLInputElement | null} */ (document.getElementById(`pat_${v.id}_${selectedMod}_campus`));
+      const sync = /** @type {HTMLInputElement | null} */ (
+        document.getElementById(`pat_${v.id}_${selectedMod}_sync`)
+      );
+      const async = /** @type {HTMLInputElement | null} */ (
+        document.getElementById(`pat_${v.id}_${selectedMod}_async`)
+      );
+      const campus = /** @type {HTMLInputElement | null} */ (
+        document.getElementById(`pat_${v.id}_${selectedMod}_campus`)
+      );
 
       const update = () => {
         const pat = deliveryPatterns[selectedMod] || defaultPatternFor(selectedMod);
-        pat.syncOnlinePct = Number(sync ? sync.value : pat.syncOnlinePct ?? 0);
-        pat.asyncDirectedPct = Number(async ? async.value : pat.asyncDirectedPct ?? 0);
-        pat.onCampusPct = Number(campus ? campus.value : pat.onCampusPct ?? 0);
+        pat.syncOnlinePct = Number(sync ? sync.value : (pat.syncOnlinePct ?? 0));
+        pat.asyncDirectedPct = Number(async ? async.value : (pat.asyncDirectedPct ?? 0));
+        pat.onCampusPct = Number(campus ? campus.value : (pat.onCampusPct ?? 0));
         deliveryPatterns[selectedMod] = pat;
         saveDebounced();
       };
 
-      if (sync) sync.oninput = update;
-      if (async) async.oninput = update;
-      if (campus) campus.oninput = update;
+      if (sync) {
+        sync.oninput = update;
+      }
+      if (async) {
+        async.oninput = update;
+      }
+      if (campus) {
+        campus.oninput = update;
+      }
     }
   });
 
-  wireAccordionControls('versionsAccordion');
+  wireAccordionControls("versionsAccordion");
 }

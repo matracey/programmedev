@@ -22,7 +22,15 @@
     "awardType": {
       "type": "string",
       "description": "Type of award (e.g., Higher Diploma, Honours Bachelor Degree)",
-      "examples": ["Higher Certificate", "Ordinary Bachelor Degree", "Honours Bachelor Degree", "Higher Diploma", "Postgraduate Diploma", "Masters", "Micro-credential"]
+      "examples": [
+        "Higher Certificate",
+        "Ordinary Bachelor Degree",
+        "Honours Bachelor Degree",
+        "Higher Diploma",
+        "Postgraduate Diploma",
+        "Masters",
+        "Micro-credential"
+      ]
     },
     "awardTypeIsOther": {
       "type": "boolean",
@@ -266,7 +274,17 @@
         "type": {
           "type": "string",
           "description": "Assessment type",
-          "examples": ["Report/Essay", "Project", "Presentation", "Portfolio", "Practical/Lab", "Exam (On campus)", "Exam (Online)", "Reflective Journal", "Other"]
+          "examples": [
+            "Report/Essay",
+            "Project",
+            "Presentation",
+            "Portfolio",
+            "Practical/Lab",
+            "Exam (On campus)",
+            "Exam (Online)",
+            "Reflective Journal",
+            "Other"
+          ]
         },
         "weighting": {
           "type": "integer",

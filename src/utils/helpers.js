@@ -4,7 +4,7 @@
  * @module utils/helpers
  */
 
-import { escapeHtml } from './dom.js';
+import { escapeHtml } from "./dom.js";
 
 /**
  * Formats a numeric value as a percentage string with the "%" suffix.
@@ -31,8 +31,12 @@ export function formatPct(n) {
  * defaultPatternFor("ONLINE");  // { syncOnlinePct: 40, asyncDirectedPct: 60, onCampusPct: 0 }
  */
 export function defaultPatternFor(mod) {
-  if (mod === "F2F") return { syncOnlinePct: 0, asyncDirectedPct: 0, onCampusPct: 100 };
-  if (mod === "ONLINE") return { syncOnlinePct: 40, asyncDirectedPct: 60, onCampusPct: 0 };
+  if (mod === "F2F") {
+    return { syncOnlinePct: 0, asyncDirectedPct: 0, onCampusPct: 100 };
+  }
+  if (mod === "ONLINE") {
+    return { syncOnlinePct: 40, asyncDirectedPct: 60, onCampusPct: 0 };
+  }
   // BLENDED default
   return { syncOnlinePct: 30, asyncDirectedPct: 40, onCampusPct: 30 };
 }
@@ -44,7 +48,11 @@ export function defaultPatternFor(mod) {
  * @returns {number} Sum of all percentage values (should equal 100 for valid patterns)
  */
 export function sumPattern(pat) {
-  return Number(pat.syncOnlinePct ?? 0) + Number(pat.asyncDirectedPct ?? 0) + Number(pat.onCampusPct ?? 0);
+  return (
+    Number(pat.syncOnlinePct ?? 0) +
+    Number(pat.asyncDirectedPct ?? 0) +
+    Number(pat.onCampusPct ?? 0)
+  );
 }
 
 /**
@@ -56,7 +64,12 @@ export function sumPattern(pat) {
  */
 export function sumStageCredits(allModules, stageModules) {
   const ids = (stageModules ?? []).map((/** @type {{moduleId: string}} */ x) => x.moduleId);
-  return (allModules ?? []).filter((/** @type {Module} */ m) => ids.includes(m.id)).reduce((/** @type {number} */ acc, /** @type {Module} */ m) => acc + Number(m.credits ?? 0), 0);
+  return (allModules ?? [])
+    .filter((/** @type {Module} */ m) => ids.includes(m.id))
+    .reduce(
+      (/** @type {number} */ acc, /** @type {Module} */ m) => acc + Number(m.credits ?? 0),
+      0,
+    );
 }
 
 /**
@@ -67,11 +80,21 @@ export function sumStageCredits(allModules, stageModules) {
  */
 export function deliveryPatternsHtml(p) {
   const mod = p.deliveryModality;
-  const patterns = (p.deliveryPatterns && typeof p.deliveryPatterns === "object") ? p.deliveryPatterns : {};
-  if (!mod) return '<span class="text-muted">—</span>';
+  const patterns =
+    p.deliveryPatterns && typeof p.deliveryPatterns === "object" ? p.deliveryPatterns : {};
+  if (!mod) {
+    return '<span class="text-muted">—</span>';
+  }
 
   /** @param {string} k */
-  const label = (k) => (k === "F2F" ? "Face-to-face" : k === "BLENDED" ? "Blended" : k === "ONLINE" ? "Fully online" : k);
+  const label = (k) =>
+    k === "F2F"
+      ? "Face-to-face"
+      : k === "BLENDED"
+        ? "Blended"
+        : k === "ONLINE"
+          ? "Fully online"
+          : k;
   const pat = patterns[mod] ?? defaultPatternFor(mod);
   const a = Number(pat.syncOnlinePct ?? 0);
   const b = Number(pat.asyncDirectedPct ?? 0);
@@ -87,7 +110,7 @@ export function deliveryPatternsHtml(p) {
  * @returns {string} The MIMLO text content
  */
 export function mimloText(x) {
-  return (typeof x === "string") ? x : (x && typeof x === "object" ? (x.text ?? "") : "");
+  return typeof x === "string" ? x : x && typeof x === "object" ? (x.text ?? "") : "";
 }
 
 /**
@@ -98,7 +121,7 @@ export function mimloText(x) {
  * @returns {string} The PLO text content
  */
 export function ploText(x) {
-  return (typeof x === "string") ? x : (x && typeof x === "object" ? (x.text ?? "") : "");
+  return typeof x === "string" ? x : x && typeof x === "object" ? (x.text ?? "") : "";
 }
 
 /**
@@ -110,9 +133,9 @@ export function ploText(x) {
 export function ensureMimloObjects(module) {
   module.mimlos ??= [];
   if (module.mimlos.length && typeof module.mimlos[0] === "string") {
-    module.mimlos = module.mimlos.map((/** @type {any} */ t) => ({ 
-      id: "mimlo_" + crypto.randomUUID(), 
-      text: String(t ?? "") 
+    module.mimlos = module.mimlos.map((/** @type {any} */ t) => ({
+      id: "mimlo_" + crypto.randomUUID(),
+      text: String(t ?? ""),
     }));
   }
 }
@@ -126,10 +149,14 @@ export function ensureMimloObjects(module) {
 export function ensurePloObjects(programme) {
   programme.plos ??= [];
   if (programme.plos.length && typeof programme.plos[0] === "string") {
-    programme.plos = /** @type {PLO[]} */ (/** @type {unknown} */ (programme.plos.map((/** @type {any} */ t) => ({ 
-      id: "plo_" + crypto.randomUUID(), 
-      text: String(t ?? ""),
-      standardId: null
-    }))));
+    programme.plos = /** @type {PLO[]} */ (
+      /** @type {unknown} */ (
+        programme.plos.map((/** @type {any} */ t) => ({
+          id: "plo_" + crypto.randomUUID(),
+          text: String(t ?? ""),
+          standardId: null,
+        }))
+      )
+    );
   }
 }

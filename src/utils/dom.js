@@ -30,7 +30,11 @@ export function escapeHtml(s) {
  * @returns {string} HTML string for the status badge with appropriate styling and icon
  */
 export function tagHtml(type) {
-  if (type === "error") return `<span class="tag tag-error"><i class="ph ph-warning" aria-hidden="true"></i> ERROR</span>`;
-  if (type === "warn") return `<span class="tag tag-warn"><i class="ph ph-warning" aria-hidden="true"></i> WARN</span>`;
+  if (type === "error") {
+    return `<span class="tag tag-error"><i class="ph ph-warning" aria-hidden="true"></i> ERROR</span>`;
+  }
+  if (type === "warn") {
+    return `<span class="tag tag-warn"><i class="ph ph-warning" aria-hidden="true"></i> WARN</span>`;
+  }
   return `<span class="tag tag-ok">OK</span>`;
 }

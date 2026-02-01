@@ -5,10 +5,10 @@
  * @module export/word
  */
 
-import PizZip from 'pizzip';
-import Docxtemplater from 'docxtemplater';
+import Docxtemplater from "docxtemplater";
 // @ts-ignore - file-saver types may not match exactly
-import { saveAs } from 'file-saver';
+import { saveAs } from "file-saver";
+import PizZip from "pizzip";
 
 /**
  * Exports programme descriptor as a Word document.
@@ -29,22 +29,26 @@ export async function exportProgrammeDescriptorWord(p) {
   const zip = new PizZip(tplBuf);
   const doc = new Docxtemplater(zip, {
     paragraphLoop: true,
-    linebreaks: true
+    linebreaks: true,
   });
 
   const plos = Array.isArray(p.plos) ? p.plos : [];
   const miplosText = plos.length
-    ? plos.map((/** @type {PLO} */ o, /** @type {number} */ i) => `${i + 1}. ${o.text || ""}`).join("\n")
+    ? plos
+        .map((/** @type {PLO} */ o, /** @type {number} */ i) => `${i + 1}. ${o.text || ""}`)
+        .join("\n")
     : "";
 
   const mappingSnapshot = plos.length
-    ? plos.map((/** @type {PLO} */ o, /** @type {number} */ i) => {
-        const mappings = o.standardMappings ?? [];
-        const mapStr = mappings.length 
-          ? mappings.map((/** @type {any} */ m) => `${m.thread}: ${m.criteria}`).join("; ")
-          : "No mappings";
-        return `PLO ${i + 1}: ${o.text ?? ""}\n  → ${mapStr}`;
-      }).join("\n\n")
+    ? plos
+        .map((/** @type {PLO} */ o, /** @type {number} */ i) => {
+          const mappings = o.standardMappings ?? [];
+          const mapStr = mappings.length
+            ? mappings.map((/** @type {any} */ m) => `${m.thread}: ${m.criteria}`).join("; ")
+            : "No mappings";
+          return `PLO ${i + 1}: ${o.text ?? ""}\n  → ${mapStr}`;
+        })
+        .join("\n\n")
     : "";
 
   const awardStandardName = (p.awardStandardNames ?? [])[0] ?? (p.awardStandardIds ?? [])[0] ?? "";
@@ -65,7 +69,7 @@ export async function exportProgrammeDescriptorWord(p) {
     assessment_integrity: "",
     resources: "",
     programme_management: "",
-    plo_standard_mapping_snapshot: mappingSnapshot
+    plo_standard_mapping_snapshot: mappingSnapshot,
   };
 
   doc.setData(data);
@@ -73,10 +77,13 @@ export async function exportProgrammeDescriptorWord(p) {
 
   const out = doc.getZip().generate({
     type: "blob",
-    mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
   });
 
-  const safeTitle = (p.title || "programme").replace(/[^a-z0-9\-\s]/gi, "").trim().replace(/\s+/g, "_");
+  const safeTitle = (p.title || "programme")
+    .replace(/[^a-z0-9\-\s]/gi, "")
+    .trim()
+    .replace(/\s+/g, "_");
   saveAs(out, `${safeTitle || "programme"}_programme_descriptor.docx`);
 }
 
@@ -89,7 +96,9 @@ export async function exportProgrammeToWord(p) {
   try {
     await exportProgrammeDescriptorWord(p);
   } catch (err) {
-    console.error('Word export failed:', err);
-    alert('Word export failed. The template file may be missing. Please ensure programme_descriptor_template.docx exists in assets folder.');
+    console.error("Word export failed:", err);
+    alert(
+      "Word export failed. The template file may be missing. Please ensure programme_descriptor_template.docx exists in assets folder.",
+    );
   }
 }

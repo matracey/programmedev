@@ -5,15 +5,15 @@
  * @module reports/assessment-reports
  */
 
-import { escapeHtml } from '../utils/dom.js';
-import { formatPct } from '../utils/helpers.js';
-import { ensureMimloObjects } from '../utils/helpers.js';
+import { escapeHtml } from "../utils/dom.js";
+import { formatPct } from "../utils/helpers.js";
+import { ensureMimloObjects } from "../utils/helpers.js";
 
 /** Available assessment report types */
 export const ASSESSMENT_REPORT_TYPES = [
   { id: "byStageType", label: "By stage: assessment types + weighting" },
   { id: "byModule", label: "By module: assessment types + weighting" },
-  { id: "coverage", label: "MIMLO coverage (unassessed outcomes)" }
+  { id: "coverage", label: "MIMLO coverage (unassessed outcomes)" },
 ];
 
 /**
@@ -25,7 +25,11 @@ export const ASSESSMENT_REPORT_TYPES = [
  * @private
  */
 function getVersionById(p, versionId) {
-  return (p.versions ?? []).find((/** @type {ProgrammeVersion} */ v) => v.id === versionId) ?? (p.versions ?? [])[0] ?? null;
+  return (
+    (p.versions ?? []).find((/** @type {ProgrammeVersion} */ v) => v.id === versionId) ??
+    (p.versions ?? [])[0] ??
+    null
+  );
 }
 
 /**
@@ -37,7 +41,9 @@ function getVersionById(p, versionId) {
  */
 export function reportByStageType(p, versionId) {
   const v = getVersionById(p, versionId);
-  if (!v) return `<div class="alert alert-warning mb-0">No versions found.</div>`;
+  if (!v) {
+    return `<div class="alert alert-warning mb-0">No versions found.</div>`;
+  }
 
   const modMap = new Map((p.modules ?? []).map((/** @type {Module} */ m) => [m.id, m]));
 
@@ -48,7 +54,9 @@ export function reportByStageType(p, versionId) {
     const typeMap = new Map();
     (stg.modules ?? []).forEach((/** @type {any} */ ref) => {
       const m = modMap.get(ref.moduleId);
-      if (!m) return;
+      if (!m) {
+        return;
+      }
       (m.assessments ?? []).forEach((/** @type {ModuleAssessment} */ a) => {
         const t = a.type || "Unspecified";
         const rec = typeMap.get(t) ?? { weight: 0, count: 0 };
@@ -58,15 +66,20 @@ export function reportByStageType(p, versionId) {
       });
     });
 
-    const rows = Array.from(typeMap.entries())
-      .sort((a, b) => (b[1].weight - a[1].weight))
-      .map(([type, rec]) => `
+    const rows =
+      Array.from(typeMap.entries())
+        .sort((a, b) => b[1].weight - a[1].weight)
+        .map(
+          ([type, rec]) => `
         <tr>
           <td>${escapeHtml(type)}</td>
           <td>${rec.count}</td>
           <td>${formatPct(rec.weight)}</td>
         </tr>
-      `).join("") || `<tr><td colspan="3" class="text-muted">No assessments found in this stage.</td></tr>`;
+      `,
+        )
+        .join("") ||
+      `<tr><td colspan="3" class="text-muted">No assessments found in this stage.</td></tr>`;
 
     stageAgg.push(`
       <div class="card border-0 bg-white shadow-sm mb-3">
@@ -98,30 +111,33 @@ export function reportByStageType(p, versionId) {
  * @returns {string} HTML string containing the report
  */
 export function reportByModule(p) {
-  const rows = (p.modules ?? []).map((/** @type {Module} */ m) => {
-    /** @type {Map<string, {weight: number, count: number}>} */
-    const typeMap = new Map();
-    (m.assessments ?? []).forEach((/** @type {ModuleAssessment} */ a) => {
-      const t = a.type || "Unspecified";
-      const rec = typeMap.get(t) ?? { weight: 0, count: 0 };
-      rec.weight += Number(a.weighting ?? 0);
-      rec.count += 1;
-      typeMap.set(t, rec);
-    });
+  const rows =
+    (p.modules ?? [])
+      .map((/** @type {Module} */ m) => {
+        /** @type {Map<string, {weight: number, count: number}>} */
+        const typeMap = new Map();
+        (m.assessments ?? []).forEach((/** @type {ModuleAssessment} */ a) => {
+          const t = a.type || "Unspecified";
+          const rec = typeMap.get(t) ?? { weight: 0, count: 0 };
+          rec.weight += Number(a.weighting ?? 0);
+          rec.count += 1;
+          typeMap.set(t, rec);
+        });
 
-    const summary = Array.from(typeMap.entries())
-      .sort((a, b) => b[1].weight - a[1].weight)
-      .map(([t, rec]) => `${t} (${rec.count}, ${rec.weight}%)`)
-      .join("; ");
+        const summary = Array.from(typeMap.entries())
+          .sort((a, b) => b[1].weight - a[1].weight)
+          .map(([t, rec]) => `${t} (${rec.count}, ${rec.weight}%)`)
+          .join("; ");
 
-    return `
+        return `
       <tr>
         <td class="text-nowrap">${escapeHtml(m.code || "")}</td>
         <td>${escapeHtml(m.title || "")}</td>
         <td class="text-nowrap">${escapeHtml(summary || "—")}</td>
       </tr>
     `;
-  }).join("") || `<tr><td colspan="3" class="text-muted">No modules.</td></tr>`;
+      })
+      .join("") || `<tr><td colspan="3" class="text-muted">No modules.</td></tr>`;
 
   return `
     <div class="card border-0 bg-white shadow-sm">
@@ -150,16 +166,19 @@ export function reportByModule(p) {
  * @returns {string} HTML string containing the report
  */
 export function reportCoverage(p) {
-  const items = (p.modules ?? []).map((/** @type {Module} */ m) => {
-    ensureMimloObjects(m);
-    const mimlos = m.mimlos ?? [];
-    /** @type {Set<string>} */
-    const assessed = new Set();
-    (m.assessments ?? []).forEach((/** @type {ModuleAssessment} */ a) => (a.mimloIds ?? []).forEach((/** @type {string} */ id) => assessed.add(id)));
+  const items = (p.modules ?? [])
+    .map((/** @type {Module} */ m) => {
+      ensureMimloObjects(m);
+      const mimlos = m.mimlos ?? [];
+      /** @type {Set<string>} */
+      const assessed = new Set();
+      (m.assessments ?? []).forEach((/** @type {ModuleAssessment} */ a) =>
+        (a.mimloIds ?? []).forEach((/** @type {string} */ id) => assessed.add(id)),
+      );
 
-    const unassessed = mimlos.filter((/** @type {any} */ mi) => !assessed.has(mi.id));
-    if (!unassessed.length) {
-      return `
+      const unassessed = mimlos.filter((/** @type {any} */ mi) => !assessed.has(mi.id));
+      if (!unassessed.length) {
+        return `
         <div class="card border-0 bg-white shadow-sm mb-2">
           <div class="card-body">
             <div class="fw-semibold">${escapeHtml(m.code || "")} — ${escapeHtml(m.title || "")}</div>
@@ -167,8 +186,8 @@ export function reportCoverage(p) {
           </div>
         </div>
       `;
-    }
-    return `
+      }
+      return `
       <div class="card border-0 bg-white shadow-sm mb-2">
         <div class="card-body">
           <div class="fw-semibold">${escapeHtml(m.code || "")} — ${escapeHtml(m.title || "")}</div>
@@ -179,7 +198,8 @@ export function reportCoverage(p) {
         </div>
       </div>
     `;
-  }).join("");
+    })
+    .join("");
 
   return items || `<div class="text-muted">No modules.</div>`;
 }
@@ -193,10 +213,14 @@ export function reportCoverage(p) {
  */
 export function buildAssessmentReportHtml(p, reportId, versionId) {
   switch (reportId) {
-    case "byStageType": return reportByStageType(p, versionId);
-    case "byModule": return reportByModule(p);
-    case "coverage": return reportCoverage(p);
-    default: return `<div class="text-muted">Select a report.</div>`;
+    case "byStageType":
+      return reportByStageType(p, versionId);
+    case "byModule":
+      return reportByModule(p);
+    case "coverage":
+      return reportCoverage(p);
+    default:
+      return `<div class="text-muted">Select a report.</div>`;
   }
 }
 

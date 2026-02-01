@@ -5,7 +5,7 @@
  * @module components/nav
  */
 
-import { state, activeSteps } from '../state/store.js';
+import { activeSteps, state } from "../state/store.js";
 
 /**
  * Initializes event handlers for navigation buttons (back/next).
@@ -19,7 +19,9 @@ export function initNavButtons(onRender) {
     backBtn.onclick = () => {
       if (state.stepIndex > 0) {
         state.stepIndex--;
-        if (onRender) onRender();
+        if (onRender) {
+          onRender();
+        }
       }
     };
   }
@@ -28,17 +30,19 @@ export function initNavButtons(onRender) {
   if (nextBtn) {
     nextBtn.onclick = () => {
       const aSteps = activeSteps();
-      
+
       // Navigation gate: require at least one award standard before leaving identity step
       const currentStep = aSteps[state.stepIndex];
-      if (currentStep?.key === 'identity' && !(state.programme.awardStandardIds?.length)) {
-        alert('Select at least one QQI award standard before proceeding.');
+      if (currentStep?.key === "identity" && !state.programme.awardStandardIds?.length) {
+        alert("Select at least one QQI award standard before proceeding.");
         return;
       }
-      
+
       if (state.stepIndex < aSteps.length - 1) {
         state.stepIndex++;
-        if (onRender) onRender();
+        if (onRender) {
+          onRender();
+        }
       }
     };
   }

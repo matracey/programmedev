@@ -258,7 +258,7 @@ See section 2 above for complete list.
 ### Colors
 
 - **Header sections**: Light blue background (#d9e1f2)
-- **Form labels**: Light gray background (#e7e6e6)  
+- **Form labels**: Light gray background (#e7e6e6)
 - **Checkbox rows**: Very light gray background (#f2f2f2)
 - **Data cells**: White background
 - **Borders**: 1px solid black on all cells
@@ -291,7 +291,7 @@ See section 2 above for complete list.
 ### Row 13 Column Sequence (for reference when adding rows)
 
 ```text
-Module Title | Semester | Mandatory/Elective | Credits | Total Hrs | 
+Module Title | Semester | Mandatory/Elective | Credits | Total Hrs |
 Effort Hours (5 types) | Assessment Marks (6 types)
 ```
 

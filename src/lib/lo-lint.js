@@ -13,11 +13,7 @@
  * @private
  */
 function normalise(text) {
-  return (text ?? "")
-    .toString()
-    .normalize("NFKC")
-    .replace(/\s+/g, " ")
-    .trim();
+  return (text ?? "").toString().normalize("NFKC").replace(/\s+/g, " ").trim();
 }
 
 /**
@@ -46,7 +42,9 @@ function tokenize(text) {
 function countMatches(tokens, stopwordsSet) {
   let score = 0;
   for (const t of tokens) {
-    if (stopwordsSet.has(t)) score++;
+    if (stopwordsSet.has(t)) {
+      score++;
+    }
   }
   return score;
 }
@@ -55,21 +53,107 @@ function countMatches(tokens, stopwordsSet) {
 /** Stopwords by language for heuristic language detection */
 export const LANGUAGE_STOPWORDS = {
   en: new Set([
-    "the", "and", "to", "of", "in", "for", "with", "on", "by", "as", "from", "that", "this", "these", "those",
-    "will", "can", "be", "is", "are", "an", "a", "at", "or", "into", "using"
+    "the",
+    "and",
+    "to",
+    "of",
+    "in",
+    "for",
+    "with",
+    "on",
+    "by",
+    "as",
+    "from",
+    "that",
+    "this",
+    "these",
+    "those",
+    "will",
+    "can",
+    "be",
+    "is",
+    "are",
+    "an",
+    "a",
+    "at",
+    "or",
+    "into",
+    "using",
   ]),
   ga: new Set([
-    "agus", "an", "na", "ar", "le", "go", "i", "is", "ní", "mar", "don", "do", "seo", "sin", "atá", "bhfuil"
+    "agus",
+    "an",
+    "na",
+    "ar",
+    "le",
+    "go",
+    "i",
+    "is",
+    "ní",
+    "mar",
+    "don",
+    "do",
+    "seo",
+    "sin",
+    "atá",
+    "bhfuil",
   ]),
   fr: new Set([
-    "le", "la", "les", "et", "de", "des", "du", "un", "une", "dans", "pour", "avec", "sur", "par", "est", "être", "au"
+    "le",
+    "la",
+    "les",
+    "et",
+    "de",
+    "des",
+    "du",
+    "un",
+    "une",
+    "dans",
+    "pour",
+    "avec",
+    "sur",
+    "par",
+    "est",
+    "être",
+    "au",
   ]),
   es: new Set([
-    "el", "la", "los", "las", "y", "de", "del", "un", "una", "en", "para", "con", "por", "es", "ser", "al", "que"
+    "el",
+    "la",
+    "los",
+    "las",
+    "y",
+    "de",
+    "del",
+    "un",
+    "una",
+    "en",
+    "para",
+    "con",
+    "por",
+    "es",
+    "ser",
+    "al",
+    "que",
   ]),
   de: new Set([
-    "der", "die", "das", "und", "zu", "von", "mit", "für", "im", "auf", "ist", "sein", "eine", "ein", "den", "dem"
-  ])
+    "der",
+    "die",
+    "das",
+    "und",
+    "zu",
+    "von",
+    "mit",
+    "für",
+    "im",
+    "auf",
+    "ist",
+    "sein",
+    "eine",
+    "ein",
+    "den",
+    "dem",
+  ]),
 };
 
 /**
@@ -113,29 +197,29 @@ export const LO_LINT_RULES = [
     severity: "warn",
     pattern: /\b(understand|understands|understanding)\b/gi,
     message: "'Understand' is hard to assess directly. Use an observable verb instead.",
-    suggestions: ["describe", "explain", "apply", "analyse", "evaluate"]
+    suggestions: ["describe", "explain", "apply", "analyse", "evaluate"],
   },
   {
     id: "vague_knowledge",
     severity: "warn",
     pattern: /\b(have knowledge of|has knowledge of|knowledge of|be knowledgeable about)\b/gi,
     message: "Vague knowledge phrasing. Prefer a demonstrable action.",
-    suggestions: ["identify", "summarise", "compare", "apply", "justify"]
+    suggestions: ["identify", "summarise", "compare", "apply", "justify"],
   },
   {
     id: "vague_familiar",
     severity: "warn",
     pattern: /\b(be familiar with|become familiar with|familiar with)\b/gi,
     message: "'Familiar with' is usually not measurable. State what learners will *do*.",
-    suggestions: ["use", "select", "demonstrate", "interpret"]
+    suggestions: ["use", "select", "demonstrate", "interpret"],
   },
   {
     id: "vague_aware",
     severity: "warn",
     pattern: /\b(aware of|awareness of)\b/gi,
     message: "'Aware of' is often too soft. Specify the behaviour or output.",
-    suggestions: ["recognise", "identify", "explain", "evaluate"]
-  }
+    suggestions: ["recognise", "identify", "explain", "evaluate"],
+  },
 ];
 
 /**
@@ -172,7 +256,7 @@ export function lintLearningOutcome(text, opts = {}) {
         end: 0,
         match: "",
         message: `Detected language looks like "${language.lang}" (expected "${expected}").`,
-        suggestions: []
+        suggestions: [],
       });
     }
   } else if (!allowUnknown) {
@@ -183,7 +267,7 @@ export function lintLearningOutcome(text, opts = {}) {
       end: 0,
       match: "",
       message: "Could not detect language reliably (short text).",
-      suggestions: []
+      suggestions: [],
     });
   }
 
@@ -198,9 +282,11 @@ export function lintLearningOutcome(text, opts = {}) {
         end: m.index + m[0].length,
         match: m[0],
         message: rule.message,
-        suggestions: rule.suggestions ?? []
+        suggestions: rule.suggestions ?? [],
       });
-      if (m.index === rule.pattern.lastIndex) rule.pattern.lastIndex++;
+      if (m.index === rule.pattern.lastIndex) {
+        rule.pattern.lastIndex++;
+      }
     }
   }
 
@@ -218,6 +304,6 @@ export function lintLearningOutcomes(outcomes, opts = {}) {
   return (outcomes ?? []).map((loText, idx) => ({
     index: idx,
     text: loText,
-    ...lintLearningOutcome(loText, opts)
+    ...lintLearningOutcome(loText, opts),
   }));
 }

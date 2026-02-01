@@ -563,12 +563,7 @@
             "aiDeclaration": true,
             "viva": true
           },
-          "mimloIds": [
-            "mimlo_agile_1",
-            "mimlo_agile_2",
-            "mimlo_agile_3",
-            "mimlo_agile_4"
-          ],
+          "mimloIds": ["mimlo_agile_1", "mimlo_agile_2", "mimlo_agile_3", "mimlo_agile_4"],
           "notes": "Group project with sprint deliverables"
         },
         {
@@ -664,12 +659,7 @@
             "aiDeclaration": true,
             "viva": true
           },
-          "mimloIds": [
-            "mimlo_cap_1",
-            "mimlo_cap_2",
-            "mimlo_cap_3",
-            "mimlo_cap_4"
-          ],
+          "mimloIds": ["mimlo_cap_1", "mimlo_cap_2", "mimlo_cap_3", "mimlo_cap_4"],
           "notes": "Final project with demonstration and viva"
         },
         {

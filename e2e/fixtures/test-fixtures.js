@@ -1,7 +1,7 @@
 // @ts-nocheck
-import { test as base, expect as pwExpect } from '@playwright/test';
+import { expect as pwExpect, test as base } from "@playwright/test";
 
-const STORAGE_KEY = 'nci_pds_mvp_programme_v1';
+const STORAGE_KEY = "nci_pds_mvp_programme_v1";
 
 /**
  * Custom test fixtures for the Programme Design Studio
@@ -12,17 +12,17 @@ export const test = base.extend({
    */
   page: async ({ page }, use) => {
     // Navigate to the page first
-    await page.goto('/');
-    
+    await page.goto("/");
+
     // Clear localStorage
     await page.evaluate((key) => {
       localStorage.removeItem(key);
     }, STORAGE_KEY);
-    
+
     // Reload to apply clean state
     await page.reload();
-    await page.waitForLoadState('networkidle');
-    
+    await page.waitForLoadState("networkidle");
+
     await use(page);
   },
 });
@@ -31,12 +31,15 @@ export const test = base.extend({
  * Helper to load programme data into localStorage
  */
 export const loadProgrammeData = async (page, data) => {
-  await page.evaluate(({ key, value }) => {
-    localStorage.setItem(key, JSON.stringify(value));
-  }, { key: STORAGE_KEY, value: data });
-  
+  await page.evaluate(
+    ({ key, value }) => {
+      localStorage.setItem(key, JSON.stringify(value));
+    },
+    { key: STORAGE_KEY, value: data },
+  );
+
   await page.reload();
-  await page.waitForLoadState('networkidle');
+  await page.waitForLoadState("networkidle");
 };
 
 /**
@@ -84,7 +87,7 @@ export const navigateToStepByNumber = async (page, stepNumber) => {
  * Helper to click the Next button
  */
 export const clickNext = async (page) => {
-  await page.getByTestId('next-btn').click();
+  await page.getByTestId("next-btn").click();
   await page.waitForTimeout(300);
 };
 
@@ -92,7 +95,7 @@ export const clickNext = async (page) => {
  * Helper to click the Back button
  */
 export const clickBack = async (page) => {
-  await page.getByTestId('back-btn').click();
+  await page.getByTestId("back-btn").click();
   await page.waitForTimeout(300);
 };
 
