@@ -44,8 +44,17 @@ function copyToClipboard(container, button, statusEl) {
  * @param {HTMLElement} statusEl - Status element
  * @param {HTMLElement} schedulesContainer - Container for schedule tables
  * @param {HTMLElement} moduleDescriptorsContainer - Container for module descriptors
+ * @param {HTMLElement} schedulesHeader - Header for schedules section
+ * @param {HTMLElement} moduleDescriptorsHeader - Header for module descriptors section
  */
-async function handleFileUpload(file, statusEl, schedulesContainer, moduleDescriptorsContainer) {
+async function handleFileUpload(
+  file,
+  statusEl,
+  schedulesContainer,
+  moduleDescriptorsContainer,
+  schedulesHeader,
+  moduleDescriptorsHeader,
+) {
   statusEl.textContent = "Loading...";
   statusEl.className = "";
 
@@ -64,6 +73,10 @@ async function handleFileUpload(file, statusEl, schedulesContainer, moduleDescri
     currentProgrammeData = data;
     schedulesContainer.innerHTML = renderAllSchedules(data);
     moduleDescriptorsContainer.innerHTML = renderAllModuleDescriptors(data);
+
+    // Show section headers
+    schedulesHeader.style.display = "flex";
+    moduleDescriptorsHeader.style.display = "flex";
   } catch (error) {
     const err = /** @type {Error} */ (error);
     statusEl.textContent = `✗ Error: ${err.message}`;
@@ -108,14 +121,27 @@ function init() {
   const moduleDescriptorsContainer = /** @type {HTMLElement} */ (
     document.getElementById("module-descriptors-container")
   );
-  const copyBtn = /** @type {HTMLButtonElement} */ (document.getElementById("copy-btn"));
+  const schedulesHeader = /** @type {HTMLElement} */ (document.getElementById("schedules-header"));
+  const moduleDescriptorsHeader = /** @type {HTMLElement} */ (
+    document.getElementById("module-descriptors-header")
+  );
+  const copySchedulesBtn = /** @type {HTMLButtonElement} */ (
+    document.getElementById("copy-schedules-btn")
+  );
+  const copyModuleDescriptorsBtn = /** @type {HTMLButtonElement} */ (
+    document.getElementById("copy-module-descriptors-btn")
+  );
   const downloadDocxBtn = /** @type {HTMLButtonElement} */ (
     document.getElementById("download-docx-btn")
   );
 
   // Wire up event handlers
-  copyBtn?.addEventListener("click", () => {
-    copyToClipboard(schedulesContainer, copyBtn, uploadStatus);
+  copySchedulesBtn?.addEventListener("click", () => {
+    copyToClipboard(schedulesContainer, copySchedulesBtn, uploadStatus);
+  });
+
+  copyModuleDescriptorsBtn?.addEventListener("click", () => {
+    copyToClipboard(moduleDescriptorsContainer, copyModuleDescriptorsBtn, uploadStatus);
   });
 
   downloadDocxBtn?.addEventListener("click", () => {
@@ -126,7 +152,14 @@ function init() {
     const target = /** @type {HTMLInputElement} */ (e.target);
     const file = target.files?.[0];
     if (file) {
-      handleFileUpload(file, uploadStatus, schedulesContainer, moduleDescriptorsContainer);
+      handleFileUpload(
+        file,
+        uploadStatus,
+        schedulesContainer,
+        moduleDescriptorsContainer,
+        schedulesHeader,
+        moduleDescriptorsHeader,
+      );
     }
   });
 
@@ -152,7 +185,14 @@ function init() {
     if (files && files.length > 0) {
       const file = files[0];
       if (file.name.endsWith(".json")) {
-        handleFileUpload(file, uploadStatus, schedulesContainer, moduleDescriptorsContainer);
+        handleFileUpload(
+          file,
+          uploadStatus,
+          schedulesContainer,
+          moduleDescriptorsContainer,
+          schedulesHeader,
+          moduleDescriptorsHeader,
+        );
       } else {
         uploadStatus.textContent = "✗ Please drop a JSON file";
         uploadStatus.className = "error";
