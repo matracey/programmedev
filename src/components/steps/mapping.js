@@ -1,13 +1,13 @@
 // @ts-check
 /**
- * PLO to Module Mapping step component (QQI-critical).
- * Maps Programme Learning Outcomes to modules using ploToModules structure.
+ * PLO to MIMLO Mapping step component (QQI-critical).
+ * Maps Programme Learning Outcomes to MIMLOs using ploToMimlos structure.
+ * Shows hierarchical checkboxes: Module → MIMLOs.
  * @module components/steps/mapping
  */
 
 import { saveDebounced, state } from "../../state/store.js";
 import { escapeHtml } from "../../utils/dom.js";
-import { ploText } from "../../utils/helpers.js";
 import { getDevModeToggleHtml, wireDevModeToggle } from "../dev-mode.js";
 import { accordionControlsHtml, captureOpenCollapseIds, wireAccordionControls } from "./shared.js";
 
@@ -28,8 +28,38 @@ function editableModuleIds() {
 }
 
 /**
- * Renders the PLO-Module Mapping step UI.
- * Displays a matrix for mapping PLOs to modules with checkboxes.
+ * Gets all MIMLO IDs for a module.
+ * @param {Module} mod - Module
+ * @returns {string[]} Array of MIMLO IDs
+ */
+function getModuleMimloIds(mod) {
+  return (mod.mimlos ?? []).map((m) => m.id);
+}
+
+/**
+ * Checks if all MIMLOs of a module are mapped to a PLO.
+ * @param {string[]} mappedMimloIds - Currently mapped MIMLO IDs for a PLO
+ * @param {Module} mod - Module to check
+ * @returns {"all" | "some" | "none"} Mapping state
+ */
+function getModuleMappingState(mappedMimloIds, mod) {
+  const moduleMimloIds = getModuleMimloIds(mod);
+  if (moduleMimloIds.length === 0) {
+    return "none";
+  }
+  const mappedCount = moduleMimloIds.filter((id) => mappedMimloIds.includes(id)).length;
+  if (mappedCount === 0) {
+    return "none";
+  }
+  if (mappedCount === moduleMimloIds.length) {
+    return "all";
+  }
+  return "some";
+}
+
+/**
+ * Renders the PLO-MIMLO Mapping step UI.
+ * Displays hierarchical checkboxes for mapping PLOs to MIMLOs via modules.
  */
 export function renderMappingStep() {
   const p = state.programme;
@@ -43,11 +73,11 @@ export function renderMappingStep() {
   const modules = p.modules ?? [];
   const openCollapseIds = captureOpenCollapseIds("mappingAccordion");
 
-  // Ensure ploToModules exists
-  if (!p.ploToModules) {
-    p.ploToModules = {};
+  // Ensure ploToMimlos exists
+  if (!p.ploToMimlos) {
+    p.ploToMimlos = {};
   }
-  const ploToModules = p.ploToModules;
+  const ploToMimlos = p.ploToMimlos;
 
   if (!plos.length || !modules.length) {
     content.innerHTML =
@@ -67,19 +97,20 @@ export function renderMappingStep() {
   const editableIds = editableModuleIds();
   const isModuleEditor = p.mode === "MODULE_EDITOR";
 
-  // Build PLO blocks with module checkboxes
+  // Build PLO blocks with hierarchical module/MIMLO checkboxes
   const blocks = plos
     .map((o, idx) => {
-      const selected = ploToModules[o.id] ?? [];
+      const mappedMimloIds = ploToMimlos[o.id] ?? [];
 
-      // Build checkbox list for each module
-      const checks = modules
+      // Build hierarchical checkbox list for each module and its MIMLOs
+      const moduleBlocks = modules
         .map((m) => {
           const isEditable = editableIds.includes(m.id);
-          const isChecked = selected.includes(m.id);
+          const moduleMimlos = m.mimlos ?? [];
+          const mappingState = getModuleMappingState(mappedMimloIds, m);
 
-          // In module editor mode, hide modules they can't edit (unless already mapped)
-          if (isModuleEditor && !isEditable && !isChecked) {
+          // In module editor mode, hide modules they can't edit (unless already has mapped MIMLOs)
+          if (isModuleEditor && !isEditable && mappingState === "none") {
             return "";
           }
 
@@ -90,12 +121,71 @@ export function renderMappingStep() {
             ? ' <span class="text-secondary fst-italic">(read-only)</span>'
             : "";
 
+          // Module-level checkbox state
+          const moduleChecked = mappingState === "all" ? "checked" : "";
+          const moduleIndeterminate = mappingState === "some" ? "data-indeterminate" : "";
+
+          // Build MIMLO checkboxes
+          const mimloChecks = moduleMimlos
+            .map((mimlo, mimloIdx) => {
+              const isMimloChecked = mappedMimloIds.includes(mimlo.id);
+              const mimloText = mimlo.text || `MIMLO ${mimloIdx + 1}`;
+              const shortText = mimloText.length > 80 ? `${mimloText.slice(0, 80)}…` : mimloText;
+              return `
+              <label class="list-group-item d-flex gap-2 align-items-start ps-4 ${disabledClass}">
+                <input class="form-check-input m-0 mt-1" type="checkbox" 
+                  data-map-plo="${o.id}" 
+                  data-map-mimlo="${mimlo.id}" 
+                  data-map-module="${m.id}"
+                  ${isMimloChecked ? "checked" : ""} 
+                  ${disabledAttr} 
+                  aria-label="Map PLO ${idx + 1} to MIMLO: ${escapeHtml(shortText)}"
+                  data-testid="mapping-checkbox-${o.id}-${mimlo.id}">
+                <span class="small">${mimloIdx + 1}. ${escapeHtml(shortText)}</span>
+              </label>
+            `;
+            })
+            .join("");
+
+          const moduleCollapseId = `map_${o.id}_${m.id}_mimlos`;
+          const hasMimlos = moduleMimlos.length > 0;
+
           return `
-        <label class="list-group-item d-flex gap-2 align-items-center ${disabledClass}">
-          <input class="form-check-input m-0" type="checkbox" data-map-plo="${o.id}" data-map-module="${m.id}" ${isChecked ? "checked" : ""} ${disabledAttr} aria-label="Map PLO ${idx + 1} to ${escapeHtml(m.title)}" data-testid="mapping-checkbox-${o.id}-${m.id}">
-          <span class="small">${escapeHtml((m.code ? m.code + " — " : "") + m.title)} <span class="text-secondary">(${Number(m.credits ?? 0)} cr)</span>${disabledNote}</span>
-        </label>
-      `;
+          <div class="module-mapping-group border-start border-2 ${mappingState !== "none" ? "border-primary" : "border-light"} mb-2">
+            <div class="d-flex align-items-center gap-2 py-2 px-2 bg-light rounded-end ${disabledClass}">
+              <input class="form-check-input m-0" type="checkbox" 
+                data-map-plo="${o.id}" 
+                data-map-module-all="${m.id}"
+                ${moduleChecked}
+                ${moduleIndeterminate}
+                ${disabledAttr} 
+                aria-label="Map PLO ${idx + 1} to all MIMLOs of ${escapeHtml(m.title)}"
+                data-testid="mapping-module-checkbox-${o.id}-${m.id}">
+              <span class="small fw-semibold flex-grow-1">${escapeHtml((m.code ? m.code + " — " : "") + m.title)} <span class="text-secondary fw-normal">(${Number(m.credits ?? 0)} cr)</span>${disabledNote}</span>
+              ${
+                hasMimlos
+                  ? `
+                <button class="btn btn-sm btn-link p-0 text-decoration-none" type="button" 
+                  data-bs-toggle="collapse" data-bs-target="#${moduleCollapseId}" 
+                  aria-expanded="false" aria-controls="${moduleCollapseId}">
+                  <i class="ph ph-caret-down" aria-hidden="true"></i>
+                  <span class="small">${moduleMimlos.length} MIMLOs</span>
+                </button>
+              `
+                  : `<span class="small text-secondary fst-italic">No MIMLOs</span>`
+              }
+            </div>
+            ${
+              hasMimlos
+                ? `
+              <div class="collapse" id="${moduleCollapseId}">
+                <div class="list-group list-group-flush">${mimloChecks}</div>
+              </div>
+            `
+                : ""
+            }
+          </div>
+        `;
         })
         .filter(Boolean)
         .join("");
@@ -107,19 +197,25 @@ export function renderMappingStep() {
         : openCollapseIds.size === 0 && idx === 0;
       const preview = (o.text || "").trim();
       const previewShort = preview.length > 120 ? `${preview.slice(0, 120)}…` : preview || "—";
+      const mappedCount = mappedMimloIds.length;
+      const badgeClass = mappedCount > 0 ? "text-bg-primary" : "text-bg-secondary";
+
       return `
       <div class="accordion-item bg-body">
         <h2 class="accordion-header" id="${headingId}">
           <button class="accordion-button ${isActive ? "" : "collapsed"}" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="${isActive}" aria-controls="${collapseId}">
-            <div>
-              <div class="fw-semibold">PLO ${idx + 1}</div>
-              <div class="small text-secondary">${escapeHtml(previewShort)}</div>
+            <div class="d-flex w-100 align-items-center gap-2">
+              <div class="flex-grow-1">
+                <div class="fw-semibold">PLO ${idx + 1}</div>
+                <div class="small text-secondary">${escapeHtml(previewShort)}</div>
+              </div>
+              <span class="badge ${badgeClass} me-2">${mappedCount} MIMLOs</span>
             </div>
           </button>
         </h2>
         <div id="${collapseId}" class="accordion-collapse collapse ${isActive ? "show" : ""}" aria-labelledby="${headingId}">
           <div class="accordion-body">
-            <div class="list-group">${checks || '<div class="small text-secondary">No modules available to map.</div>'}</div>
+            ${moduleBlocks || '<div class="small text-secondary">No modules available to map.</div>'}
           </div>
         </div>
       </div>
@@ -129,15 +225,23 @@ export function renderMappingStep() {
 
   // Module editor mode note
   const modeNote = isModuleEditor
-    ? `<div class="alert alert-info mb-3"><strong>Module Editor Mode:</strong> You can only map PLOs to your assigned modules. Other mappings are shown as read-only.</div>`
+    ? `<div class="alert alert-info mb-3"><strong>Module Editor Mode:</strong> You can only map PLOs to MIMLOs in your assigned modules. Other mappings are shown as read-only.</div>`
     : "";
 
-  // Summary stats
-  const unmappedPlos = plos.filter((plo) => !(ploToModules[plo.id] ?? []).length).length;
+  // Summary stats - now based on MIMLOs
+  const unmappedPlos = plos.filter((plo) => !(ploToMimlos[plo.id] ?? []).length).length;
 
-  const modulesWithNoMapping = modules.filter(
-    (m) => !plos.some((plo) => (ploToModules[plo.id] ?? []).includes(m.id)),
-  ).length;
+  // Count modules with at least one MIMLO mapped to any PLO
+  const modulesWithMapping = new Set();
+  Object.values(ploToMimlos).forEach((mimloIds) => {
+    (mimloIds ?? []).forEach((mimloId) => {
+      const mod = modules.find((m) => (m.mimlos ?? []).some((mi) => mi.id === mimloId));
+      if (mod) {
+        modulesWithMapping.add(mod.id);
+      }
+    });
+  });
+  const modulesWithNoMapping = modules.filter((m) => !modulesWithMapping.has(m.id)).length;
 
   const summaryHtml =
     unmappedPlos || modulesWithNoMapping
@@ -145,21 +249,21 @@ export function renderMappingStep() {
     <div class="card bg-light mb-3">
       <div class="card-body py-2">
         <div class="small">
-          ${unmappedPlos ? `<div class="text-danger">⚠️ ${unmappedPlos} PLO(s) not mapped to any module</div>` : '<div class="text-success">✓ All PLOs mapped to at least one module</div>'}
-          ${modulesWithNoMapping ? `<div class="text-warning">⚠️ ${modulesWithNoMapping} module(s) not linked to any PLO</div>` : ""}
+          ${unmappedPlos ? `<div class="text-danger">⚠️ ${unmappedPlos} PLO(s) not mapped to any MIMLO</div>` : '<div class="text-success">✓ All PLOs mapped to at least one MIMLO</div>'}
+          ${modulesWithNoMapping ? `<div class="text-warning">⚠️ ${modulesWithNoMapping} module(s) have no MIMLOs linked to any PLO</div>` : ""}
         </div>
       </div>
     </div>
   `
-      : '<div class="alert alert-success mb-3">✓ All PLOs mapped to modules</div>';
+      : '<div class="alert alert-success mb-3">✓ All PLOs mapped to MIMLOs</div>';
 
   content.innerHTML =
     devModeToggleHtml +
     `
     <div class="card shadow-sm">
       <div class="card-body">
-        <h5 class="card-title mb-3"><i class="ph ph-graph me-2" aria-hidden="true"></i>Map PLOs to modules (QQI-critical)</h5>
-        <p class="text-muted small mb-3"><i class="ph ph-lightbulb me-1" aria-hidden="true"></i>For each PLO, select the modules where this outcome is addressed. This mapping is required for QQI validation and the traceability matrix.</p>
+        <h5 class="card-title mb-3"><i class="ph ph-graph me-2" aria-hidden="true"></i>Map PLOs to MIMLOs (QQI-critical)</h5>
+        <p class="text-muted small mb-3"><i class="ph ph-lightbulb me-1" aria-hidden="true"></i>For each PLO, select the module MIMLOs that address this outcome. Check a module to select all its MIMLOs, or expand to select individual MIMLOs.</p>
         ${modeNote}
         ${summaryHtml}
         ${accordionControlsHtml("mappingAccordion")}
@@ -176,39 +280,131 @@ export function renderMappingStep() {
 }
 
 /**
- * Wire Mapping step event handlers
+ * Wire Mapping step event handlers for hierarchical MIMLO checkboxes.
  */
 function wireMappingStep() {
   const p = state.programme;
 
-  // Ensure ploToModules exists
-  if (!p.ploToModules) {
-    p.ploToModules = {};
+  // Ensure ploToMimlos exists
+  if (!p.ploToMimlos) {
+    p.ploToMimlos = {};
   }
 
-  document.querySelectorAll("[data-map-plo]").forEach((chk) => {
+  // Set indeterminate state for module checkboxes marked with data-indeterminate
+  document.querySelectorAll("[data-indeterminate]").forEach((chk) => {
+    /** @type {HTMLInputElement} */ (chk).indeterminate = true;
+  });
+
+  // Handle individual MIMLO checkbox changes
+  document.querySelectorAll("[data-map-mimlo]").forEach((chk) => {
     /** @type {HTMLInputElement} */ (chk).onchange = () => {
       const ploId = chk.getAttribute("data-map-plo");
+      const mimloId = chk.getAttribute("data-map-mimlo");
       const moduleId = chk.getAttribute("data-map-module");
-      if (!ploId || !moduleId || !p.ploToModules) {
+      if (!ploId || !mimloId || !p.ploToMimlos) {
         return;
       }
 
-      if (!p.ploToModules[ploId]) {
-        p.ploToModules[ploId] = [];
+      if (!p.ploToMimlos[ploId]) {
+        p.ploToMimlos[ploId] = [];
       }
 
       if (/** @type {HTMLInputElement} */ (chk).checked) {
-        if (!p.ploToModules[ploId].includes(moduleId)) {
-          p.ploToModules[ploId].push(moduleId);
+        if (!p.ploToMimlos[ploId].includes(mimloId)) {
+          p.ploToMimlos[ploId].push(mimloId);
         }
       } else {
-        p.ploToModules[ploId] = p.ploToModules[ploId].filter(
-          (/** @type {string} */ id) => id !== moduleId,
+        p.ploToMimlos[ploId] = p.ploToMimlos[ploId].filter(
+          (/** @type {string} */ id) => id !== mimloId,
         );
       }
+
+      // Update module-level checkbox state
+      updateModuleCheckboxState(ploId, moduleId);
 
       saveDebounced();
     };
   });
+
+  // Handle module-level checkbox changes (check/uncheck all MIMLOs)
+  document.querySelectorAll("[data-map-module-all]").forEach((chk) => {
+    /** @type {HTMLInputElement} */ (chk).onchange = () => {
+      const ploId = chk.getAttribute("data-map-plo");
+      const moduleId = chk.getAttribute("data-map-module-all");
+      if (!ploId || !moduleId || !p.ploToMimlos) {
+        return;
+      }
+
+      const mod = (p.modules ?? []).find((m) => m.id === moduleId);
+      if (!mod) {
+        return;
+      }
+
+      const moduleMimloIds = getModuleMimloIds(mod);
+
+      if (!p.ploToMimlos[ploId]) {
+        p.ploToMimlos[ploId] = [];
+      }
+
+      if (/** @type {HTMLInputElement} */ (chk).checked) {
+        // Add all MIMLOs from this module
+        moduleMimloIds.forEach((mimloId) => {
+          if (!p.ploToMimlos?.[ploId]?.includes(mimloId)) {
+            p.ploToMimlos?.[ploId]?.push(mimloId);
+          }
+        });
+        // Check all MIMLO checkboxes in this module
+        document
+          .querySelectorAll(`[data-map-plo="${ploId}"][data-map-module="${moduleId}"]`)
+          .forEach((mimloChk) => {
+            /** @type {HTMLInputElement} */ (mimloChk).checked = true;
+          });
+      } else {
+        // Remove all MIMLOs from this module
+        p.ploToMimlos[ploId] = p.ploToMimlos[ploId].filter(
+          (/** @type {string} */ id) => !moduleMimloIds.includes(id),
+        );
+        // Uncheck all MIMLO checkboxes in this module
+        document
+          .querySelectorAll(`[data-map-plo="${ploId}"][data-map-module="${moduleId}"]`)
+          .forEach((mimloChk) => {
+            /** @type {HTMLInputElement} */ (mimloChk).checked = false;
+          });
+      }
+
+      // Clear indeterminate state
+      /** @type {HTMLInputElement} */ (chk).indeterminate = false;
+
+      saveDebounced();
+    };
+  });
+}
+
+/**
+ * Updates the module-level checkbox state based on individual MIMLO selections.
+ * @param {string | null} ploId - PLO ID
+ * @param {string | null} moduleId - Module ID
+ */
+function updateModuleCheckboxState(ploId, moduleId) {
+  if (!ploId || !moduleId) {
+    return;
+  }
+
+  const p = state.programme;
+  const mod = (p.modules ?? []).find((m) => m.id === moduleId);
+  if (!mod) {
+    return;
+  }
+
+  const mappedMimloIds = p.ploToMimlos?.[ploId] ?? [];
+  const mappingState = getModuleMappingState(mappedMimloIds, mod);
+
+  const moduleChk = /** @type {HTMLInputElement | null} */ (
+    document.querySelector(`[data-map-plo="${ploId}"][data-map-module-all="${moduleId}"]`)
+  );
+
+  if (moduleChk) {
+    moduleChk.checked = mappingState === "all";
+    moduleChk.indeterminate = mappingState === "some";
+  }
 }
