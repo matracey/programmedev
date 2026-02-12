@@ -83,19 +83,19 @@ function getAssessmentPercentages(mod) {
 }
 
 /**
- * Gets the PLO numbers that a module maps to.
+ * Gets the PLO numbers that a specific MIMLO is mapped to.
  * @param {Programme} programme - Programme data
- * @param {string} moduleId - Module ID
+ * @param {string} mimloId - MIMLO ID
  * @returns {string} Comma-separated PLO numbers
  */
-function getModuleRelatedPLOs(programme, moduleId) {
+function getMimloRelatedPLOs(programme, mimloId) {
   /** @type {string[]} */
   const ploIds = [];
-  const mapping = programme.ploToModules ?? {};
+  const mapping = programme.ploToMimlos ?? {};
   const plos = programme.plos ?? [];
 
-  Object.entries(mapping).forEach(([ploId, moduleIds]) => {
-    if ((moduleIds ?? []).includes(moduleId)) {
+  Object.entries(mapping).forEach(([ploId, mimloIds]) => {
+    if ((mimloIds ?? []).includes(mimloId)) {
       ploIds.push(ploId);
     }
   });
@@ -171,7 +171,7 @@ function renderModuleOverviewTable(mod, stage, stageModule, version, effort) {
   </tr>
   <tr>
     <th colspan="3" class="hdr tight">Teaching and Learning Modalities</th>
-    <th class="hdr tight">√ if relevant to this module</th>
+    <th class="hdr tight">ΓêÜ if relevant to this module</th>
     <th colspan="2" class="hdr tight">Approx. proportion of total (hours)</th>
   </tr>
   <tr>
@@ -181,17 +181,17 @@ function renderModuleOverviewTable(mod, stage, stageModule, version, effort) {
   </tr>
   <tr>
     <td colspan="3" class="tight">On-site face-to-face</td>
-    <td class="tight">${effort.classroomHours > 0 ? "✔" : ""}</td>
+    <td class="tight">${effort.classroomHours > 0 ? "Γ£ö" : ""}</td>
     <td colspan="2" class="tight">${effort.classroomHours || ""}</td>
   </tr>
   <tr>
     <td colspan="3" class="tight">Synchronous online</td>
-    <td class="tight">${effort.syncOnlineHours > 0 ? "✔" : ""}</td>
+    <td class="tight">${effort.syncOnlineHours > 0 ? "Γ£ö" : ""}</td>
     <td colspan="2" class="tight">${effort.syncOnlineHours || ""}</td>
   </tr>
   <tr>
     <td colspan="3" class="tight">Synchronous Hybrid</td>
-    <td class="tight">${effort.syncHybridHours > 0 ? "✔" : ""}</td>
+    <td class="tight">${effort.syncHybridHours > 0 ? "Γ£ö" : ""}</td>
     <td colspan="2" class="tight">${effort.syncHybridHours || ""}</td>
   </tr>
   <tr>
@@ -201,22 +201,22 @@ function renderModuleOverviewTable(mod, stage, stageModule, version, effort) {
   </tr>
   <tr>
     <td colspan="3" class="tight">Asynchronous</td>
-    <td class="tight">${effort.asyncHours > 0 ? "✔" : ""}</td>
+    <td class="tight">${effort.asyncHours > 0 ? "Γ£ö" : ""}</td>
     <td colspan="2" class="tight">${effort.asyncHours || ""}</td>
   </tr>
   <tr>
     <td colspan="3" class="tight">Independent Learning</td>
-    <td class="tight">${effort.independentHours > 0 ? "✔" : ""}</td>
+    <td class="tight">${effort.independentHours > 0 ? "Γ£ö" : ""}</td>
     <td colspan="2" class="tight">${effort.independentHours || ""}</td>
   </tr>
   <tr>
     <td colspan="3" class="tight">Work Based</td>
-    <td class="tight">${effort.workBasedHours > 0 ? "✔" : ""}</td>
+    <td class="tight">${effort.workBasedHours > 0 ? "Γ£ö" : ""}</td>
     <td colspan="2" class="tight">${effort.workBasedHours || ""}</td>
   </tr>
   <tr>
     <td colspan="3" class="tight">Other (Identify)</td>
-    <td class="tight">${effort.otherHours > 0 ? "✔" : ""}</td>
+    <td class="tight">${effort.otherHours > 0 ? "Γ£ö" : ""}</td>
     <td colspan="2" class="tight">${effort.otherHours || ""}</td>
   </tr>
   <tr>
@@ -281,12 +281,12 @@ function renderAssessmentTable(asmPcts) {
     <col style="width: 12%">
   </colgroup>
   <tr>
-    <th colspan="6" class="grey center">Assessment Techniques – percentage contribution</th>
+    <th colspan="6" class="grey center">Assessment Techniques ΓÇô percentage contribution</th>
   </tr>
   <tr>
     <td class="blue">Continuous Assessment</td>
     <td>${asmPcts.continuous || ""}</td>
-    <td class="blue">Proctored Exam – in person</td>
+    <td class="blue">Proctored Exam ΓÇô in person</td>
     <td>${asmPcts.invigilated || ""}</td>
     <td class="blue">Practical Skills Based</td>
     <td>${asmPcts.practical || ""}</td>
@@ -316,14 +316,14 @@ function renderAssessmentTable(asmPcts) {
  */
 function renderMimloTable(programme, mod) {
   const mimlos = mod.mimlos ?? [];
-  const relatedPLOs = getModuleRelatedPLOs(programme, mod.id);
 
   let rows = "";
   for (let i = 0; i < mimlos.length; i++) {
     const mimlo = mimlos[i];
+    const relatedPLOs = mimlo ? getMimloRelatedPLOs(programme, mimlo.id) : "";
     rows += `<tr>
       <td>${i + 1}. ${mimlo ? escapeHtml(mimlo.text) : ""}</td>
-      <td>${mimlo ? relatedPLOs : ""}</td>
+      <td>${relatedPLOs}</td>
     </tr>`;
   }
 
