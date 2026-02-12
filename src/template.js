@@ -6,6 +6,7 @@
  */
 
 import { downloadScheduleDocx } from "./export/schedule-docx.js";
+import { renderAllModuleDescriptors } from "./template/module-descriptors-html.js";
 import { renderAllSchedules } from "./template/schedule-html.js";
 
 /** @type {Programme | null} */
@@ -41,9 +42,10 @@ function copyToClipboard(container, button, statusEl) {
  * Handles file upload and parsing.
  * @param {File} file - Uploaded file
  * @param {HTMLElement} statusEl - Status element
- * @param {HTMLElement} container - Container for rendered content
+ * @param {HTMLElement} schedulesContainer - Container for schedule tables
+ * @param {HTMLElement} moduleDescriptorsContainer - Container for module descriptors
  */
-async function handleFileUpload(file, statusEl, container) {
+async function handleFileUpload(file, statusEl, schedulesContainer, moduleDescriptorsContainer) {
   statusEl.textContent = "Loading...";
   statusEl.className = "";
 
@@ -60,7 +62,8 @@ async function handleFileUpload(file, statusEl, container) {
     statusEl.textContent = `✓ Loaded: ${data.title || file.name}`;
     statusEl.className = "success";
     currentProgrammeData = data;
-    container.innerHTML = renderAllSchedules(data);
+    schedulesContainer.innerHTML = renderAllSchedules(data);
+    moduleDescriptorsContainer.innerHTML = renderAllModuleDescriptors(data);
   } catch (error) {
     const err = /** @type {Error} */ (error);
     statusEl.textContent = `✗ Error: ${err.message}`;
@@ -101,6 +104,9 @@ function init() {
   const schedulesContainer = /** @type {HTMLElement} */ (
     document.getElementById("schedules-container")
   );
+  const moduleDescriptorsContainer = /** @type {HTMLElement} */ (
+    document.getElementById("module-descriptors-container")
+  );
   const copyBtn = /** @type {HTMLButtonElement} */ (document.getElementById("copy-btn"));
   const downloadDocxBtn = /** @type {HTMLButtonElement} */ (
     document.getElementById("download-docx-btn")
@@ -119,7 +125,7 @@ function init() {
     const target = /** @type {HTMLInputElement} */ (e.target);
     const file = target.files?.[0];
     if (file) {
-      handleFileUpload(file, uploadStatus, schedulesContainer);
+      handleFileUpload(file, uploadStatus, schedulesContainer, moduleDescriptorsContainer);
     }
   });
 }
