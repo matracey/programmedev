@@ -112,7 +112,7 @@ test.describe("Module Editor Mode", () => {
       await mappingBtn.click();
       await page.waitForTimeout(300);
 
-      await expect(page.locator('h5:has-text("Map PLOs to modules")')).toBeVisible();
+      await expect(page.locator('h5:has-text("Map PLOs to MIMLOs")')).toBeVisible();
     }
   });
 });
