@@ -390,12 +390,6 @@ function renderSummativeTable(mod) {
     </tr>`;
   });
 
-  // Add empty rows if few assessments
-  const emptyRows = Math.max(0, 3 - assessments.length);
-  for (let i = 0; i < emptyRows; i++) {
-    rows += `<tr><td></td><td></td><td></td></tr>`;
-  }
-
   return `
 <table class="summative-table" aria-label="Summative Assessment Strategy">
   <colgroup>
