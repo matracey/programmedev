@@ -150,6 +150,21 @@ export function renderMappingStep() {
           const moduleCollapseId = `map_${o.id}_${m.id}_mimlos`;
           const hasMimlos = moduleMimlos.length > 0;
 
+          // Count selected MIMLOs for this module
+          const selectedCount = moduleMimlos.filter((mimlo) => mappedMimloIds.includes(mimlo.id)).length;
+          const totalCount = moduleMimlos.length;
+
+          // Make the module name clickable to expand/collapse if it has MIMLOs
+          const moduleNameAttrs = hasMimlos
+            ? `role="button" tabindex="0" data-bs-toggle="collapse" data-bs-target="#${moduleCollapseId}" aria-expanded="false" aria-controls="${moduleCollapseId}" style="cursor: pointer;"`
+            : "";
+
+          // Badge styling: gray for none, primary for any selection
+          const badgeClass =
+            selectedCount === 0
+              ? "bg-secondary-subtle text-secondary-emphasis"
+              : "bg-primary-subtle text-primary-emphasis";
+
           return `
           <div class="module-mapping-group border-start border-2 ${mappingState !== "none" ? "border-primary" : "border-light"} mb-2">
             <div class="d-flex align-items-center gap-2 py-2 px-2 bg-light rounded-end ${disabledClass}">
@@ -161,17 +176,12 @@ export function renderMappingStep() {
                 ${disabledAttr} 
                 aria-label="Map PLO ${idx + 1} to all MIMLOs of ${escapeHtml(m.title)}"
                 data-testid="mapping-module-checkbox-${o.id}-${m.id}">
-              <span class="small fw-semibold flex-grow-1">${escapeHtml((m.code ? m.code + " — " : "") + m.title)} <span class="text-secondary fw-normal">(${Number(m.credits ?? 0)} cr)</span>${disabledNote}</span>
+              <span class="small fw-semibold flex-grow-1 ${hasMimlos ? "text-primary-emphasis" : ""}" ${moduleNameAttrs}>
+                ${hasMimlos ? '<i class="ph ph-caret-right me-1 collapse-icon" aria-hidden="true"></i>' : ""}${escapeHtml((m.code ? m.code + " — " : "") + m.title)} <span class="text-secondary fw-normal">(${Number(m.credits ?? 0)} cr)</span>${disabledNote}
+              </span>
               ${
                 hasMimlos
-                  ? `
-                <button class="btn btn-sm btn-link p-0 text-decoration-none" type="button" 
-                  data-bs-toggle="collapse" data-bs-target="#${moduleCollapseId}" 
-                  aria-expanded="false" aria-controls="${moduleCollapseId}">
-                  <i class="ph ph-caret-down" aria-hidden="true"></i>
-                  <span class="small">${moduleMimlos.length} MIMLOs</span>
-                </button>
-              `
+                  ? `<span class="badge ${badgeClass}">${selectedCount} / ${totalCount} selected</span>`
                   : `<span class="small text-secondary fst-italic">No MIMLOs</span>`
               }
             </div>
@@ -375,13 +385,16 @@ function wireMappingStep() {
       // Clear indeterminate state
       /** @type {HTMLInputElement} */ (chk).indeterminate = false;
 
+      // Update badge and border
+      updateModuleCheckboxState(ploId, moduleId);
+
       saveDebounced();
     };
   });
 }
 
 /**
- * Updates the module-level checkbox state based on individual MIMLO selections.
+ * Updates the module-level checkbox state and badge based on individual MIMLO selections.
  * @param {string | null} ploId - PLO ID
  * @param {string | null} moduleId - Module ID
  */
@@ -406,5 +419,32 @@ function updateModuleCheckboxState(ploId, moduleId) {
   if (moduleChk) {
     moduleChk.checked = mappingState === "all";
     moduleChk.indeterminate = mappingState === "some";
+
+    // Update the badge in the same row
+    const row = moduleChk.closest(".module-mapping-group");
+    const badge = row?.querySelector(".badge");
+    if (badge) {
+      const moduleMimlos = mod.mimlos ?? [];
+      const totalCount = moduleMimlos.length;
+      const selectedCount = moduleMimlos.filter((mimlo) =>
+        mappedMimloIds.includes(mimlo.id),
+      ).length;
+
+      badge.textContent = `${selectedCount} / ${totalCount} selected`;
+
+      // Update badge color: gray for none, primary for any selection
+      badge.className = "badge";
+      if (selectedCount === 0) {
+        badge.classList.add("bg-secondary-subtle", "text-secondary-emphasis");
+      } else {
+        badge.classList.add("bg-primary-subtle", "text-primary-emphasis");
+      }
+    }
+
+    // Update border color on the module group
+    if (row) {
+      row.classList.remove("border-primary", "border-light");
+      row.classList.add(mappingState !== "none" ? "border-primary" : "border-light");
+    }
   }
 }
