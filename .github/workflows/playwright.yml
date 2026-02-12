@@ -41,7 +41,7 @@ jobs:
         run: npx wait-on http://localhost:${{ env.VITE_PORT }} --timeout 30000
 
       - name: Run Playwright tests
-        run: npx playwright test
+        run: npx playwright test --workers=4
         env:
           CI: true
 
