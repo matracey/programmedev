@@ -89,6 +89,7 @@ function getAssessmentPercentages(mod) {
  * @returns {string} Comma-separated PLO numbers
  */
 function getModuleRelatedPLOs(programme, moduleId) {
+  /** @type {string[]} */
   const ploIds = [];
   const mapping = programme.ploToModules ?? {};
   const plos = programme.plos ?? [];
@@ -520,7 +521,7 @@ export function renderAllModuleDescriptors(data) {
     return "<p>No programme versions available.</p>";
   }
 
-  let html = '<h2 class="section-title">Section 7: Module Descriptors</h2>';
+  let html = "";
 
   // Use the first version as default context
   const defaultVersion = data.versions[0];
