@@ -147,3 +147,27 @@ pre.jsonbox {
   padding-bottom: 0.5rem;
   border-bottom: 1px solid var(--bs-border-color);
 }
+
+/* Mapping step collapse icon rotation */
+.collapse-icon {
+  transition: transform 0.2s ease-in-out;
+}
+
+[aria-expanded="true"] .collapse-icon {
+  transform: rotate(90deg);
+}
+
+/* Hover effect for clickable module names */
+.module-mapping-group span[role="button"] {
+  transition: opacity 0.15s ease-in-out;
+}
+
+.module-mapping-group span[role="button"]:hover {
+  opacity: 0.7;
+}
+
+.module-mapping-group span[role="button"]:focus-visible {
+  outline: 2px solid var(--bs-primary);
+  outline-offset: 2px;
+  border-radius: 0.25rem;
+}
