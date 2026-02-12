@@ -91,6 +91,7 @@ function getAssessmentPercentages(mod) {
 function getModuleRelatedPLOs(programme, moduleId) {
   const ploIds = [];
   const mapping = programme.ploToModules ?? {};
+  const plos = programme.plos ?? [];
 
   Object.entries(mapping).forEach(([ploId, moduleIds]) => {
     if ((moduleIds ?? []).includes(moduleId)) {
@@ -98,19 +99,14 @@ function getModuleRelatedPLOs(programme, moduleId) {
     }
   });
 
+  // Convert PLO IDs to their sequential position (1-based index in plos array)
   return ploIds
     .map((id) => {
-      const plo = (programme.plos ?? []).find((p) => p.id === id);
-      return plo?.code ?? id.replace("plo_", "");
+      const index = plos.findIndex((p) => p.id === id);
+      return index >= 0 ? index + 1 : null;
     })
-    .sort((a, b) => {
-      const numA = parseInt(a, 10);
-      const numB = parseInt(b, 10);
-      if (!isNaN(numA) && !isNaN(numB)) {
-        return numA - numB;
-      }
-      return a.localeCompare(b);
-    })
+    .filter((n) => n !== null)
+    .sort((a, b) => /** @type {number} */ (a) - /** @type {number} */ (b))
     .join(", ");
 }
 
