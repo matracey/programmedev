@@ -11,14 +11,14 @@ import { escapeHtml } from "../utils/dom.js";
  * Formats effort hours for the teaching modalities table.
  * @param {Module} mod - Module data
  * @param {string} versionKey - Version/delivery key to look up effort hours
- * @returns {{ classroomHours: number, mentoringHours: number, syncHybridHours: number, asyncHours: number, independentHours: number, workBasedHours: number, otherHours: number, total: number, classroomRatio: string, mentoringRatio: string }}
+ * @returns {{ classroomHours: number, syncOnlineHours: number, syncHybridHours: number, asyncHours: number, independentHours: number, workBasedHours: number, otherHours: number, total: number }}
  */
 function getEffortHours(mod, versionKey) {
   const effort =
     mod.effortHours?.[versionKey] ?? mod.effortHours?.[Object.keys(mod.effortHours ?? {})[0]] ?? {};
 
   const classroomHours = effort.classroomHours ?? 0;
-  const mentoringHours = effort.mentoringHours ?? 0;
+  const syncOnlineHours = effort.mentoringHours ?? 0;
   const syncHybridHours = effort.otherContactHours ?? 0;
   const asyncHours = effort.directedElearningHours ?? 0;
   const independentHours = effort.independentLearningHours ?? 0;
@@ -27,7 +27,7 @@ function getEffortHours(mod, versionKey) {
 
   const total =
     classroomHours +
-    mentoringHours +
+    syncOnlineHours +
     syncHybridHours +
     asyncHours +
     independentHours +
@@ -36,15 +36,13 @@ function getEffortHours(mod, versionKey) {
 
   return {
     classroomHours,
-    mentoringHours,
+    syncOnlineHours,
     syncHybridHours,
     asyncHours,
     independentHours,
     workBasedHours,
     otherHours,
     total,
-    classroomRatio: effort.classroomRatio ?? "",
-    mentoringRatio: effort.mentoringRatio ?? "",
   };
 }
 
@@ -85,12 +83,12 @@ function getAssessmentPercentages(mod) {
 }
 
 /**
- * Gets the PLO numbers that a module contributes to.
+ * Gets the PLO numbers that a module maps to.
  * @param {Programme} programme - Programme data
  * @param {string} moduleId - Module ID
- * @returns {string[]} Array of PLO codes/numbers
+ * @returns {string} Comma-separated PLO numbers
  */
-function getRelatedPLOs(programme, moduleId) {
+function getModuleRelatedPLOs(programme, moduleId) {
   const ploIds = [];
   const mapping = programme.ploToModules ?? {};
 
@@ -100,7 +98,6 @@ function getRelatedPLOs(programme, moduleId) {
     }
   });
 
-  // Return PLO numbers (extract from plo_1 -> 1)
   return ploIds
     .map((id) => {
       const plo = (programme.plos ?? []).find((p) => p.id === id);
@@ -113,7 +110,8 @@ function getRelatedPLOs(programme, moduleId) {
         return numA - numB;
       }
       return a.localeCompare(b);
-    });
+    })
+    .join(", ");
 }
 
 /**
@@ -130,271 +128,287 @@ export function renderModuleDescriptor(programme, mod, version, stage, stageModu
   const versionKey = `${version.id}_${version.deliveryModality}`;
   const effort = getEffortHours(mod, versionKey);
   const asmPcts = getAssessmentPercentages(mod);
-  const relatedPLOs = getRelatedPLOs(programme, mod.id);
   const mimlos = mod.mimlos ?? [];
   const assessments = mod.assessments ?? [];
   const readingList = mod.readingList ?? [];
+  const hoursPerWeek =
+    effort.total > 0 && version.durationWeeks
+      ? Math.round(effort.total / version.durationWeeks)
+      : "";
+  const relatedPLOs = getModuleRelatedPLOs(programme, mod.id);
 
   let html = '<table class="module-descriptor">';
 
-  // 7.1 Module Overview
+  // 7.1 Module Overview header
   html += `<tr>
-    <td colspan="6" class="form-section-title">
-      <strong>7.1&nbsp;&nbsp;&nbsp;Module Overview</strong>
+    <td colspan="11" class="section-header">
+      <strong>7.1</strong>&nbsp;&nbsp;&nbsp;<strong>Module Overview</strong>
       <span class="instruction-text"> (copy and paste for other modules)</span>
     </td>
   </tr>`;
 
-  // Module Number / Module Title
+  // Row: Module Number | [value] | Module Title | [value]
   html += `<tr>
-    <td class="label-cell">Module Number</td>
-    <td class="empty-data">${escapeHtml(mod.code ?? "")}</td>
-    <td colspan="4" class="label-cell">Module Title</td>
-  </tr>`;
-  html += `<tr>
-    <td colspan="6" class="empty-data">${escapeHtml(mod.title ?? "")}</td>
+    <td class="label-cell">Module<br>Number</td>
+    <td class="data-cell">${escapeHtml(mod.code ?? "")}</td>
+    <td colspan="2" class="label-cell">Module Title</td>
+    <td colspan="7" class="data-cell">${escapeHtml(mod.title ?? "")}</td>
   </tr>`;
 
-  // Stage / Semester / Duration / ECTS
+  // Row: Stage | [value] | Semester | [value] | Duration | [value] | ECTS | [value]
   html += `<tr>
     <td colspan="2" class="label-cell">Stage of Principal Programme</td>
+    <td class="data-cell">${escapeHtml(stage.name ?? "")}</td>
     <td class="label-cell">Semester<br><span class="instruction-text">(if applicable)</span></td>
-    <td class="label-cell">Duration.<br><span class="instruction-text">(Weeks F/T)</span></td>
+    <td class="data-cell">${escapeHtml(stageModule.semester ?? "")}</td>
+    <td colspan="2" class="label-cell">Duration.<br><span class="instruction-text">(Weeks F/T)</span></td>
+    <td class="data-cell">${version.durationWeeks ?? ""}</td>
     <td class="label-cell">ECTS</td>
-    <td class="empty-data"></td>
-  </tr>`;
-  html += `<tr>
-    <td colspan="2" class="empty-data">${escapeHtml(stage.name ?? "")}</td>
-    <td class="empty-data">${escapeHtml(stageModule.semester ?? "")}</td>
-    <td class="empty-data">${version.durationWeeks ?? ""}</td>
-    <td class="empty-data">${mod.credits ?? ""}</td>
-    <td class="empty-data"></td>
+    <td colspan="2" class="data-cell">${mod.credits ?? ""}</td>
   </tr>`;
 
-  // Mandatory/Elective and Hours of Learner Effort
+  // Row: Mandatory/Elective | Hours | Analysis header
   html += `<tr>
-    <td class="label-cell">Mandatory / Elective<br>(M/E)</td>
+    <td class="label-cell">Mandatory<br>/ Elective<br>(M/E)</td>
     <td class="label-cell">Hours of Learner<br>Effort / Week<sup>2</sup></td>
-    <td colspan="4" class="form-section-title">Analysis of required hours of learning effort</td>
+    <td colspan="9" class="section-subheader" style="text-align: center;">Analysis of required hours of learning effort</td>
   </tr>`;
 
-  // Teaching and Learning Modalities table
+  // Teaching and Learning Modalities header row
   html += `<tr>
-    <td rowspan="12" class="empty-data" style="vertical-align: top;">${mod.isElective ? "E" : "M"}</td>
-    <td rowspan="12" class="empty-data" style="vertical-align: top;">${effort.total > 0 ? Math.round(effort.total / 15) : ""}</td>
-    <td colspan="2" class="label-cell">Teaching and Learning Modalities</td>
-    <td class="label-cell">✓ if relevant to this module</td>
-    <td class="label-cell">Approx. proportion of total (hours)</td>
+    <td rowspan="11" class="data-cell" style="vertical-align: top; text-align: center;">${mod.isElective ? "E" : "M"}</td>
+    <td rowspan="11" class="data-cell" style="vertical-align: top; text-align: center;">${hoursPerWeek}</td>
+    <td colspan="5" class="label-cell">Teaching and Learning Modalities</td>
+    <td colspan="2" class="label-cell">✓if relevant to this<br>module</td>
+    <td colspan="2" class="label-cell">Approx. proportion<br>of total (hours)</td>
   </tr>`;
 
-  // Direct Contact Hours header
+  // Direct Contact Hours subheader
   html += `<tr>
-    <td colspan="2" class="label-cell">Direct Contact Hours</td>
-    <td class="empty-data"></td>
-    <td class="empty-data"></td>
+    <td colspan="9" class="subsection-header">Direct Contact Hours</td>
   </tr>`;
 
   // On-site face-to-face
   html += `<tr>
-    <td colspan="2" class="checkbox-label">On-site face-to-face</td>
-    <td class="empty-data">${effort.classroomHours > 0 ? "✔" : ""}</td>
-    <td class="empty-data">${effort.classroomHours || ""}</td>
+    <td colspan="5" class="modality-label">On-site face-to-face</td>
+    <td colspan="2" class="data-cell">${effort.classroomHours > 0 ? "✔" : ""}</td>
+    <td colspan="2" class="data-cell">${effort.classroomHours || ""}</td>
   </tr>`;
 
   // Synchronous online
   html += `<tr>
-    <td colspan="2" class="checkbox-label">Synchronous online</td>
-    <td class="empty-data">${effort.mentoringHours > 0 ? "✔" : ""}</td>
-    <td class="empty-data">${effort.mentoringHours || ""}</td>
+    <td colspan="5" class="modality-label">Synchronous online</td>
+    <td colspan="2" class="data-cell">${effort.syncOnlineHours > 0 ? "✔" : ""}</td>
+    <td colspan="2" class="data-cell">${effort.syncOnlineHours || ""}</td>
   </tr>`;
 
   // Synchronous Hybrid
   html += `<tr>
-    <td colspan="2" class="checkbox-label">Synchronous Hybrid</td>
-    <td class="empty-data">${effort.syncHybridHours > 0 ? "✔" : ""}</td>
-    <td class="empty-data">${effort.syncHybridHours || ""}</td>
+    <td colspan="5" class="modality-label">Synchronous Hybrid</td>
+    <td colspan="2" class="data-cell">${effort.syncHybridHours > 0 ? "✔" : ""}</td>
+    <td colspan="2" class="data-cell">${effort.syncHybridHours || ""}</td>
   </tr>`;
 
-  // Indirect/Non-contact Hours header
+  // Indirect/Non-contact Hours subheader
   html += `<tr>
-    <td colspan="2" class="label-cell">Indirect/Non-contact Hours</td>
-    <td class="empty-data"></td>
-    <td class="empty-data"></td>
+    <td colspan="9" class="subsection-header">Indirect/Non-contact Hours</td>
   </tr>`;
 
   // Asynchronous
   html += `<tr>
-    <td colspan="2" class="checkbox-label">Asynchronous</td>
-    <td class="empty-data">${effort.asyncHours > 0 ? "✔" : ""}</td>
-    <td class="empty-data">${effort.asyncHours || ""}</td>
+    <td colspan="5" class="modality-label">Asynchronous</td>
+    <td colspan="2" class="data-cell">${effort.asyncHours > 0 ? "✔" : ""}</td>
+    <td colspan="2" class="data-cell">${effort.asyncHours || ""}</td>
   </tr>`;
 
   // Independent Learning
   html += `<tr>
-    <td colspan="2" class="checkbox-label">Independent Learning</td>
-    <td class="empty-data">${effort.independentHours > 0 ? "✔" : ""}</td>
-    <td class="empty-data">${effort.independentHours || ""}</td>
+    <td colspan="5" class="modality-label">Independent Learning</td>
+    <td colspan="2" class="data-cell">${effort.independentHours > 0 ? "✔" : ""}</td>
+    <td colspan="2" class="data-cell">${effort.independentHours || ""}</td>
   </tr>`;
 
   // Work Based
   html += `<tr>
-    <td colspan="2" class="checkbox-label">Work Based</td>
-    <td class="empty-data">${effort.workBasedHours > 0 ? "✔" : ""}</td>
-    <td class="empty-data">${effort.workBasedHours || ""}</td>
+    <td colspan="5" class="modality-label">Work Based</td>
+    <td colspan="2" class="data-cell">${effort.workBasedHours > 0 ? "✔" : ""}</td>
+    <td colspan="2" class="data-cell">${effort.workBasedHours || ""}</td>
   </tr>`;
 
   // Other (identify)
   html += `<tr>
-    <td colspan="2" class="checkbox-label">Other (identify)</td>
-    <td class="empty-data">${effort.otherHours > 0 ? "✔" : ""}</td>
-    <td class="empty-data">${effort.otherHours || ""}</td>
+    <td colspan="5" class="modality-label">Other (identify)</td>
+    <td colspan="2" class="data-cell">${effort.otherHours > 0 ? "✔" : ""}</td>
+    <td colspan="2" class="data-cell">${effort.otherHours || ""}</td>
   </tr>`;
 
   // Total row
   html += `<tr>
-    <td colspan="2" class="label-cell">Total</td>
-    <td class="empty-data"></td>
-    <td class="empty-data">${effort.total || ""}</td>
+    <td colspan="5" class="label-cell">Total</td>
+    <td colspan="2" class="data-cell"></td>
+    <td colspan="2" class="data-cell">${effort.total || ""}</td>
   </tr>`;
 
-  // Pre/Co-requisites and Max learners
+  // Pre-Requisite row
   html += `<tr>
-    <td colspan="4" class="label-cell">Pre-Requisite Module, if any. Module Number and Title</td>
-    <td colspan="2" class="empty-data"></td>
-  </tr>`;
-  html += `<tr>
-    <td colspan="4" class="label-cell">Co-Requisite Module, if any. Module Number and Title</td>
-    <td colspan="2" class="empty-data"></td>
-  </tr>`;
-  html += `<tr>
-    <td colspan="4" class="label-cell">Maximum number of learners per instance of the module</td>
-    <td colspan="2" class="empty-data"></td>
+    <td colspan="8" class="label-cell">Pre-Requisite Module, if any. Module Number and Title</td>
+    <td colspan="3" class="data-cell"></td>
   </tr>`;
 
-  // Staff qualifications table
+  // Co-Requisite row
   html += `<tr>
-    <td colspan="6" class="form-section-title">
+    <td colspan="8" class="label-cell">Co-Requisite Module, if any. Module Number and Title</td>
+    <td colspan="3" class="data-cell"></td>
+  </tr>`;
+
+  // Max learners row
+  html += `<tr>
+    <td colspan="8" class="label-cell">Maximum number of learners per instance of the module</td>
+    <td colspan="3" class="data-cell"></td>
+  </tr>`;
+
+  // Staff qualifications header
+  html += `<tr>
+    <td colspan="11" class="section-subheader">
       Specification of the qualifications (academic, pedagogical and professional/occupational) and experience required of staff working in this module.
     </td>
   </tr>`;
+
+  // Staff table header
   html += `<tr>
-    <td colspan="2" class="label-cell">Role e.g.,<br>Tutor, Mentor,<br>Lecturer, Research<br>Supervisor, etc.</td>
-    <td colspan="2" class="label-cell">Qualifications & experience required</td>
-    <td colspan="2" class="label-cell">Staff (X) : Learner (Y)<br>Ratio<br>Express as X:Y</td>
-  </tr>`;
-  // Empty staff row
-  html += `<tr>
-    <td colspan="2" class="empty-data" style="min-height: 30pt;">&nbsp;</td>
-    <td colspan="2" class="empty-data">&nbsp;</td>
-    <td colspan="2" class="empty-data">&nbsp;</td>
+    <td colspan="4" class="label-cell">Role e.g.,<br>Tutor, Mentor,<br>Lecturer, Research<br>Supervisor, etc.</td>
+    <td colspan="4" class="label-cell">Qualifications &amp; experience required</td>
+    <td colspan="3" class="label-cell">Staff (X) : Learner (Y)<br>Ratio<br>Express as X:Y</td>
   </tr>`;
 
-  // Assessment Techniques table
+  // Empty staff row
   html += `<tr>
-    <td colspan="6" class="form-section-title">Assessment Techniques – percentage contribution</td>
+    <td colspan="4" class="data-cell" style="min-height: 30pt;">&nbsp;</td>
+    <td colspan="4" class="data-cell">&nbsp;</td>
+    <td colspan="3" class="data-cell">&nbsp;</td>
   </tr>`;
+
+  // Assessment Techniques header
   html += `<tr>
-    <td class="label-cell">Continuous<br>Assessment</td>
-    <td class="label-cell">Proctored Exam – in<br>person</td>
-    <td class="label-cell">Practical Skills<br>Based</td>
-    <td class="label-cell">Project</td>
-    <td class="label-cell">Proctored Exam –<br>online</td>
-    <td class="label-cell">Work Based</td>
+    <td colspan="11" class="section-subheader">Assessment Techniques – percentage contribution</td>
   </tr>`;
+
+  // Assessment Techniques labels row 1 (3 columns)
   html += `<tr>
-    <td class="empty-data">${asmPcts.continuous || ""}</td>
-    <td class="empty-data">${asmPcts.invigilated || ""}</td>
-    <td class="empty-data">${asmPcts.practical || ""}</td>
-    <td class="empty-data">${asmPcts.project || ""}</td>
-    <td class="empty-data">${asmPcts.proctored || ""}</td>
-    <td class="empty-data">${asmPcts.workBased || ""}</td>
+    <td colspan="4" class="label-cell">Continuous<br>Assessment</td>
+    <td colspan="4" class="label-cell">Proctored Exam – in<br>person</td>
+    <td colspan="3" class="label-cell">Practical Skills<br>Based</td>
+  </tr>`;
+
+  // Assessment Techniques values row 1
+  html += `<tr>
+    <td colspan="4" class="data-cell">${asmPcts.continuous || ""}</td>
+    <td colspan="4" class="data-cell">${asmPcts.invigilated || ""}</td>
+    <td colspan="3" class="data-cell">${asmPcts.practical || ""}</td>
+  </tr>`;
+
+  // Assessment Techniques labels row 2 (3 columns)
+  html += `<tr>
+    <td colspan="4" class="label-cell">Project</td>
+    <td colspan="4" class="label-cell">Proctored Exam –<br>online</td>
+    <td colspan="3" class="label-cell">Work Based</td>
+  </tr>`;
+
+  // Assessment Techniques values row 2
+  html += `<tr>
+    <td colspan="4" class="data-cell">${asmPcts.project || ""}</td>
+    <td colspan="4" class="data-cell">${asmPcts.proctored || ""}</td>
+    <td colspan="3" class="data-cell">${asmPcts.workBased || ""}</td>
   </tr>`;
 
   // Capstone modules row
   html += `<tr>
-    <td colspan="2" class="label-cell">Capstone modules<br>(Yes/No)?</td>
-    <td colspan="4" class="label-cell">If Yes, provide details</td>
+    <td colspan="4" class="label-cell">Capstone modules<br>(Yes/No)?</td>
+    <td colspan="7" class="label-cell">If Yes, provide details</td>
   </tr>`;
   html += `<tr>
-    <td colspan="2" class="empty-data">&nbsp;</td>
-    <td colspan="4" class="empty-data">&nbsp;</td>
+    <td colspan="4" class="data-cell">&nbsp;</td>
+    <td colspan="7" class="data-cell">&nbsp;</td>
   </tr>`;
 
-  // 7.2 MIMLOs
+  // 7.2 MIMLOs header
   html += `<tr>
-    <td colspan="6" class="form-section-title">
-      <strong>7.2&nbsp;&nbsp;&nbsp;Minimum Intended Module Learning Outcomes (MIMLOs)</strong>
+    <td colspan="11" class="section-header">
+      <strong>7.2</strong>&nbsp;&nbsp;&nbsp;<strong>Minimum Intended Module Learning Outcomes (MIMLOs)</strong>
     </td>
   </tr>`;
+
+  // MIMLO table header
   html += `<tr>
-    <td colspan="5" class="label-cell">MIMLO<br>On successful completion of this module a learner will be able to:</td>
-    <td class="label-cell">Related MIPLO<br>#</td>
+    <td colspan="9" class="label-cell">MIMLO<br>On successful completion of this module a learner will be able to:</td>
+    <td colspan="2" class="label-cell" style="text-align: right;">Related MIPLO<br>#</td>
   </tr>`;
 
-  // MIMLO rows (show up to 5, or all if more)
+  // MIMLO rows (show at least 5)
   const mimloCount = Math.max(5, mimlos.length);
   for (let i = 0; i < mimloCount; i++) {
     const mimlo = mimlos[i];
-    const ploNums = mimlo ? relatedPLOs.join(", ") : "";
     html += `<tr>
-      <td class="empty-data" style="width: 20px;">${i + 1}.</td>
-      <td colspan="4" class="empty-data">${mimlo ? escapeHtml(mimlo.text) : ""}</td>
-      <td class="empty-data">${ploNums}</td>
+      <td class="data-cell" style="width: 30px;">${i + 1}.</td>
+      <td colspan="8" class="data-cell">${mimlo ? escapeHtml(mimlo.text) : ""}</td>
+      <td colspan="2" class="data-cell" style="text-align: right;">${mimlo ? relatedPLOs : ""}</td>
     </tr>`;
   }
 
   // 7.3 Indicative Module Content
   html += `<tr>
-    <td colspan="6" class="form-section-title">
-      <strong>7.3&nbsp;&nbsp;&nbsp;Indicative Module Content, Organisation and Structure</strong>
+    <td colspan="11" class="section-header">
+      <strong>7.3</strong>&nbsp;&nbsp;&nbsp;<strong>Indicative Module Content, Organisation and Structure</strong>
     </td>
   </tr>`;
   html += `<tr>
-    <td colspan="6" class="empty-data" style="min-height: 60pt;">&nbsp;</td>
+    <td colspan="11" class="data-cell content-area">&nbsp;</td>
   </tr>`;
 
   // 7.4 Work based learning
   html += `<tr>
-    <td colspan="6" class="form-section-title">
-      <strong>7.4&nbsp;&nbsp;&nbsp;Work based learning and practice-placement</strong>
+    <td colspan="11" class="section-header">
+      <strong>7.4</strong>&nbsp;&nbsp;&nbsp;<strong>Work based learning and practice-placement</strong>
       <span class="instruction-text"> (if applicable)</span>
     </td>
   </tr>`;
   html += `<tr>
-    <td colspan="6" class="empty-data" style="min-height: 40pt;">&nbsp;</td>
+    <td colspan="11" class="data-cell content-area">&nbsp;</td>
   </tr>`;
 
   // 7.5 Specific module resources
   html += `<tr>
-    <td colspan="6" class="form-section-title">
-      <strong>7.5&nbsp;&nbsp;&nbsp;Specific module resources required</strong>
+    <td colspan="11" class="section-header">
+      <strong>7.5</strong>&nbsp;&nbsp;&nbsp;<strong>Specific module resources required</strong>
       <span class="instruction-text"> (if applicable)</span>
     </td>
   </tr>`;
   html += `<tr>
-    <td colspan="6" class="empty-data" style="min-height: 40pt;">&nbsp;</td>
+    <td colspan="11" class="data-cell content-area">&nbsp;</td>
   </tr>`;
 
   // 7.6 Application of programme teaching
   html += `<tr>
-    <td colspan="6" class="form-section-title">
-      <strong>7.6&nbsp;&nbsp;&nbsp;Application of programme teaching, learning and assessment strategies to this module</strong>
+    <td colspan="11" class="section-header">
+      <strong>7.6</strong>&nbsp;&nbsp;&nbsp;<strong>Application of programme teaching, learning and assessment strategies to this module</strong>
     </td>
   </tr>`;
   html += `<tr>
-    <td colspan="6" class="empty-data" style="min-height: 60pt;">&nbsp;</td>
+    <td colspan="11" class="data-cell content-area">&nbsp;</td>
   </tr>`;
 
   // 7.7 Summative Assessment Strategy
   html += `<tr>
-    <td colspan="6" class="form-section-title">
-      <strong>7.7&nbsp;&nbsp;&nbsp;Summative Assessment Strategy for this module</strong>
+    <td colspan="11" class="section-header">
+      <strong>7.7</strong>&nbsp;&nbsp;&nbsp;<strong>Summative Assessment Strategy for this module</strong>
     </td>
   </tr>`;
+
+  // Assessment strategy table header
   html += `<tr>
-    <td colspan="2" class="label-cell">MIMLOs</td>
-    <td colspan="2" class="label-cell">Technique(s)</td>
-    <td colspan="2" class="label-cell">Weighting</td>
+    <td colspan="4" class="label-cell">MIMLOs</td>
+    <td colspan="4" class="label-cell"><em>Technique(s)</em></td>
+    <td colspan="3" class="label-cell"><em>Weighting</em></td>
   </tr>`;
 
   // Assessment rows
@@ -408,39 +422,38 @@ export function renderModuleDescriptor(programme, mod, version, stage, stageModu
       .join(", ");
 
     html += `<tr>
-      <td colspan="2" class="empty-data">${mimloNums}</td>
-      <td colspan="2" class="empty-data">${escapeHtml(a.title ?? a.type ?? "")}</td>
-      <td colspan="2" class="empty-data">${a.weighting ?? ""}%</td>
+      <td colspan="4" class="data-cell">${mimloNums}</td>
+      <td colspan="4" class="data-cell">${escapeHtml(a.title ?? a.type ?? "")}</td>
+      <td colspan="3" class="data-cell">${a.weighting ?? ""}%</td>
     </tr>`;
   });
 
-  // Add empty rows if no assessments
-  if (assessments.length === 0) {
-    for (let i = 0; i < 2; i++) {
-      html += `<tr>
-        <td colspan="2" class="empty-data">&nbsp;</td>
-        <td colspan="2" class="empty-data">&nbsp;</td>
-        <td colspan="2" class="empty-data">&nbsp;</td>
-      </tr>`;
-    }
+  // Add empty rows if few assessments
+  const emptyAssessmentRows = Math.max(0, 3 - assessments.length);
+  for (let i = 0; i < emptyAssessmentRows; i++) {
+    html += `<tr>
+      <td colspan="4" class="data-cell">&nbsp;</td>
+      <td colspan="4" class="data-cell">&nbsp;</td>
+      <td colspan="3" class="data-cell">&nbsp;</td>
+    </tr>`;
   }
 
   // 7.8 Sample Assessment Materials
   html += `<tr>
-    <td colspan="6" class="form-section-title">
-      <strong>7.8&nbsp;&nbsp;&nbsp;Sample Assessment Materials</strong>
+    <td colspan="11" class="section-header">
+      <strong>7.8</strong>&nbsp;&nbsp;&nbsp;<strong>Sample Assessment Materials</strong>
     </td>
   </tr>`;
   html += `<tr>
-    <td colspan="6" class="instruction-text" style="padding: 4pt;">
+    <td colspan="11" class="instruction-text" style="padding: 4pt; font-style: italic;">
       List sample assessment materials as supporting documentation and supply in separate document.
     </td>
   </tr>`;
 
   // 7.9 Indicative reading lists
   html += `<tr>
-    <td colspan="6" class="form-section-title">
-      <strong>7.9&nbsp;&nbsp;&nbsp;Indicative reading lists and other information resources</strong>
+    <td colspan="11" class="section-header">
+      <strong>7.9</strong>&nbsp;&nbsp;&nbsp;<strong>Indicative reading lists and other information resources</strong>
     </td>
   </tr>`;
 
@@ -451,12 +464,12 @@ export function renderModuleDescriptor(programme, mod, version, stage, stageModu
         item.citation ??
         `${item.author ?? ""} (${item.year ?? ""}). ${item.title ?? ""}. ${item.publisher ?? ""}.`;
       html += `<tr>
-        <td colspan="6" class="empty-data">${escapeHtml(citation)}</td>
+        <td colspan="11" class="data-cell">${escapeHtml(citation)}</td>
       </tr>`;
     });
   } else {
     html += `<tr>
-      <td colspan="6" class="empty-data" style="min-height: 60pt;">&nbsp;</td>
+      <td colspan="11" class="data-cell content-area">&nbsp;</td>
     </tr>`;
   }
 
@@ -481,7 +494,7 @@ export function renderAllModuleDescriptors(data) {
 
   let html = '<h2 class="section-title">Section 7: Module Descriptors</h2>';
 
-  // Use the first version as default context for effort hours
+  // Use the first version as default context
   const defaultVersion = data.versions[0];
 
   // Build a map of moduleId -> stage/stageModule for lookup
