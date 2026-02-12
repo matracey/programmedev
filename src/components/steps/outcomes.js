@@ -328,7 +328,7 @@ function wireOutcomesStep() {
   const p = state.programme;
   p.mode ??= "PROGRAMME_OWNER";
   p.plos ??= [];
-  p.ploToModules ??= {};
+  p.ploToMimlos ??= {};
 
   // Ensure each PLO has a mapping array
   p.plos = (p.plos ?? []).map((o) => ({
@@ -354,7 +354,7 @@ function wireOutcomesStep() {
         return;
       }
       p.plos = p.plos.filter((o) => o.id !== id);
-      delete (/** @type {Record<string, string[]>} */ (p.ploToModules)[id]);
+      delete (/** @type {Record<string, string[]>} */ (p.ploToMimlos)[id]);
       delete ploSelectedStandards[id];
       saveDebounced();
       window.render?.();

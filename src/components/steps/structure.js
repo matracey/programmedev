@@ -180,9 +180,9 @@ function wireStructureStep() {
   const p = state.programme;
   p.mode ??= "PROGRAMME_OWNER";
   p.modules ??= [];
-  p.ploToModules ??= {};
+  p.ploToMimlos ??= {};
   const modules = p.modules;
-  const ploToModules = p.ploToModules;
+  const ploToMimlos = p.ploToMimlos;
 
   const addBtn = document.getElementById("addModuleBtn");
   if (addBtn) {
@@ -204,10 +204,16 @@ function wireStructureStep() {
   document.querySelectorAll("[data-remove-module]").forEach((btn) => {
     /** @type {HTMLElement} */ (btn).onclick = () => {
       const id = btn.getAttribute("data-remove-module");
+      const moduleToRemove = modules.find((m) => m.id === id);
+      // Get all MIMLO IDs from the module being removed
+      const mimloIdsToRemove = (moduleToRemove?.mimlos ?? []).map((m) => m.id);
+
       p.modules = modules.filter((m) => m.id !== id);
-      // remove from mappings too
-      for (const ploId of Object.keys(ploToModules)) {
-        ploToModules[ploId] = (ploToModules[ploId] ?? []).filter((mid) => mid !== id);
+      // remove MIMLOs from mappings
+      for (const ploId of Object.keys(ploToMimlos)) {
+        ploToMimlos[ploId] = (ploToMimlos[ploId] ?? []).filter(
+          (mimloId) => !mimloIdsToRemove.includes(mimloId),
+        );
       }
       // remove from elective groups (nested in definitions)
       (p.electiveDefinitions ?? []).forEach((def) => {

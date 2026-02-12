@@ -355,12 +355,12 @@ export function validateProgramme(p) {
 
   const unmappedPLOs = (p.plos ?? []).filter(
     (/** @type {PLO} */ o) =>
-      !(p.ploToModules ?? {})[o.id] || ((p.ploToModules ?? {})[o.id] ?? []).length === 0,
+      !(p.ploToMimlos ?? {})[o.id] || ((p.ploToMimlos ?? {})[o.id] ?? []).length === 0,
   );
   if (unmappedPLOs.length > 0) {
     flags.push({
       type: "error",
-      msg: `Some PLOs are not mapped to any module (${unmappedPLOs.length}).`,
+      msg: `Some PLOs are not mapped to any MIMLO (${unmappedPLOs.length}).`,
       step: "mapping",
     });
   }
@@ -413,7 +413,7 @@ export function completionPercent(p) {
     done++;
   }
   total++;
-  if (Object.keys(p.ploToModules ?? {}).length > 0) {
+  if (Object.keys(p.ploToMimlos ?? {}).length > 0) {
     done++;
   }
 

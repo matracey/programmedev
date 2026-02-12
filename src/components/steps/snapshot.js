@@ -67,18 +67,30 @@ export function renderSnapshotStep() {
     return { id: m.id, label, full, credits: Number(m.credits ?? 0) };
   });
 
-  // PLO ↔ Module Matrix
+  // PLO ↔ Module Matrix (shows ✓ if any MIMLO of the module is mapped to the PLO)
   const matrixHeader = moduleLabels
     .map((m) => `<th class="text-center" title="${escapeHtml(m.full)}">${escapeHtml(m.label)}</th>`)
     .join("");
 
+  // Build a map of module ID to its MIMLO IDs for quick lookup
+  /** @type {Map<string, string[]>} */
+  const moduleToMimloIds = new Map();
+  (p.modules ?? []).forEach((/** @type {Module} */ m) => {
+    moduleToMimloIds.set(
+      m.id,
+      (m.mimlos ?? []).map((mi) => mi.id),
+    );
+  });
+
   const matrixRows = (p.plos ?? [])
     .map((o, i) => {
-      const selected = p.ploToModules?.[o.id] ?? [];
+      const mappedMimloIds = p.ploToMimlos?.[o.id] ?? [];
       const cells = moduleLabels
         .map((m) => {
-          const on = selected.includes(m.id);
-          return `<td class="text-center">${on ? "✓" : ""}</td>`;
+          // Check if any MIMLO of this module is mapped to this PLO
+          const moduleMimloIds = moduleToMimloIds.get(m.id) ?? [];
+          const hasMapping = moduleMimloIds.some((mimloId) => mappedMimloIds.includes(mimloId));
+          return `<td class="text-center">${hasMapping ? "✓" : ""}</td>`;
         })
         .join("");
       return `<tr><th class="small" style="min-width:260px" title="${escapeHtml(o.text || "")}">PLO ${i + 1}</th>${cells}</tr>`;

@@ -72,7 +72,7 @@ export const defaultProgramme = () =>
     /** @type {PLO[]} */
     plos: [],
     /** @type {Record<string, string[]>} */
-    ploToModules: {},
+    ploToMimlos: {},
 
     // Elective definitions - each definition has a credit value and contains 1-N groups
     // Students complete every definition, choosing one group from each

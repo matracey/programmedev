@@ -253,7 +253,16 @@ function buildTraceRows(p, standardsDataArray) {
 
   (p.plos ?? []).forEach((/** @type {PLO} */ plo, /** @type {number} */ ploIdx) => {
     const standardMappings = plo.standardMappings ?? [];
-    const mappedModuleIds = p.ploToModules?.[plo.id] ?? [];
+    const mappedMimloIds = p.ploToMimlos?.[plo.id] ?? [];
+
+    // Build a map of MIMLO ID to module for quick lookup
+    /** @type {Map<string, {mod: Module, mimlo: MIMLO, mimloIdx: number}>} */
+    const mimloToModuleMap = new Map();
+    (p.modules ?? []).forEach((/** @type {Module} */ mod) => {
+      (mod.mimlos ?? []).forEach((/** @type {MIMLO} */ mimlo, /** @type {number} */ idx) => {
+        mimloToModuleMap.set(mimlo.id, { mod, mimlo, mimloIdx: idx });
+      });
+    });
 
     // If no standard mappings, still show the PLO
     const standards =
@@ -270,15 +279,15 @@ function buildTraceRows(p, standardsDataArray) {
         coveredStandardsByAward.get(awardStandardId).add(std.thread);
       }
 
-      if (mappedModuleIds.length === 0) {
-        // PLO not mapped to any module
+      if (mappedMimloIds.length === 0) {
+        // PLO not mapped to any MIMLO
         traceRows.push({
           awardStandardId,
           standard: standardLabel,
           ploNum: ploIdx + 1,
           ploText: plo.text || "",
           moduleCode: "—",
-          moduleTitle: "(Not mapped to module)",
+          moduleTitle: "(Not mapped to MIMLO)",
           mimloNum: "—",
           mimloText: "",
           assessmentTitle: "",
@@ -288,17 +297,22 @@ function buildTraceRows(p, standardsDataArray) {
           statusLabel: "PLO Gap",
         });
       } else {
-        mappedModuleIds.forEach((/** @type {string} */ modId) => {
-          const mod = moduleMap.get(modId);
-          if (!mod) {
+        mappedMimloIds.forEach((/** @type {string} */ mimloId) => {
+          const mimloInfo = mimloToModuleMap.get(mimloId);
+          if (!mimloInfo) {
             return;
           }
 
-          const mimlos = mod.mimlos ?? [];
+          const { mod, mimlo, mimloIdx } = mimloInfo;
           const assessments = mod.assessments ?? [];
 
-          if (mimlos.length === 0) {
-            // Module has no MIMLOs
+          // Find assessments that cover this MIMLO
+          const coveringAssessments = assessments.filter((/** @type {any} */ a) =>
+            (a.mimloIds ?? a.mappedMimlos ?? []).includes(mimloId),
+          );
+
+          if (coveringAssessments.length === 0) {
+            // MIMLO not assessed
             traceRows.push({
               awardStandardId,
               standard: standardLabel,
@@ -306,58 +320,31 @@ function buildTraceRows(p, standardsDataArray) {
               ploText: plo.text || "",
               moduleCode: mod.code || "",
               moduleTitle: mod.title || "",
-              mimloNum: "—",
-              mimloText: "(No MIMLOs defined)",
-              assessmentTitle: "",
-              assessmentType: "",
+              mimloNum: mimloIdx + 1,
+              mimloText: mimlo.text || "",
+              assessmentTitle: "—",
+              assessmentType: "(Not assessed)",
               assessmentWeight: "",
-              status: "gap",
-              statusLabel: "MIMLO Gap",
+              status: "warning",
+              statusLabel: "Assessment Gap",
             });
           } else {
-            mimlos.forEach((/** @type {MIMLO} */ mimlo, /** @type {number} */ mimloIdx) => {
-              const mimloId = mimlo.id || `mimlo_${mimloIdx}`;
-              // Find assessments that cover this MIMLO
-              const coveringAssessments = assessments.filter((/** @type {any} */ a) =>
-                (a.mimloIds ?? a.mappedMimlos ?? []).includes(mimloId),
-              );
-
-              if (coveringAssessments.length === 0) {
-                // MIMLO not assessed
-                traceRows.push({
-                  awardStandardId,
-                  standard: standardLabel,
-                  ploNum: ploIdx + 1,
-                  ploText: plo.text || "",
-                  moduleCode: mod.code || "",
-                  moduleTitle: mod.title || "",
-                  mimloNum: mimloIdx + 1,
-                  mimloText: mimlo.text || "",
-                  assessmentTitle: "—",
-                  assessmentType: "(Not assessed)",
-                  assessmentWeight: "",
-                  status: "warning",
-                  statusLabel: "Assessment Gap",
-                });
-              } else {
-                coveringAssessments.forEach((/** @type {any} */ asm) => {
-                  traceRows.push({
-                    awardStandardId,
-                    standard: standardLabel,
-                    ploNum: ploIdx + 1,
-                    ploText: plo.text || "",
-                    moduleCode: mod.code || "",
-                    moduleTitle: mod.title || "",
-                    mimloNum: mimloIdx + 1,
-                    mimloText: mimlo.text || "",
-                    assessmentTitle: asm.title || "",
-                    assessmentType: asm.type || "",
-                    assessmentWeight: asm.weighting ? `${asm.weighting}%` : "",
-                    status: "ok",
-                    statusLabel: "Covered",
-                  });
-                });
-              }
+            coveringAssessments.forEach((/** @type {any} */ asm) => {
+              traceRows.push({
+                awardStandardId,
+                standard: standardLabel,
+                ploNum: ploIdx + 1,
+                ploText: plo.text || "",
+                moduleCode: mod.code || "",
+                moduleTitle: mod.title || "",
+                mimloNum: mimloIdx + 1,
+                mimloText: mimlo.text || "",
+                assessmentTitle: asm.title || "",
+                assessmentType: asm.type || "",
+                assessmentWeight: asm.weighting ? `${asm.weighting}%` : "",
+                status: "ok",
+                statusLabel: "Covered",
+              });
             });
           }
         });
