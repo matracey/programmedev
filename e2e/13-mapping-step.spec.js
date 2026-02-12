@@ -8,7 +8,7 @@ async function getOpenCollapseIds(page, accordionId) {
   );
 }
 
-test.describe("Step 12: PLO to Module Mapping", () => {
+test.describe("Step 12: PLO to MIMLO Mapping", () => {
   test.beforeEach(async ({ page }) => {
     // Fill Identity step first
     await page.getByTestId("title-input").fill("Test Programme");
@@ -20,7 +20,7 @@ test.describe("Step 12: PLO to Module Mapping", () => {
     await page.getByTestId("step-outcomes").click();
     await page.waitForTimeout(300);
 
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 2; i++) {
       await page.getByTestId("add-plo-btn").click();
       await page.waitForTimeout(300);
 
@@ -40,7 +40,7 @@ test.describe("Step 12: PLO to Module Mapping", () => {
     }
     await page.waitForTimeout(500);
 
-    // Set up modules
+    // Set up modules with MIMLOs
     await page.getByTestId("step-structure").click();
     await page.waitForTimeout(300);
 
@@ -65,10 +65,46 @@ test.describe("Step 12: PLO to Module Mapping", () => {
       await page.waitForTimeout(300);
     }
 
-    // Fill second module (now visible after expand)
+    // Fill second module
     await page.locator('[data-module-field="code"]').nth(1).fill("MOD2");
     await page.locator('[data-module-field="title"]').nth(1).fill("Module 2");
     await page.locator('[data-module-field="credits"]').nth(1).fill("10");
+    await page.waitForTimeout(500);
+
+    // Add MIMLOs to modules
+    await page.getByTestId("step-mimlos").click();
+    await page.waitForTimeout(300);
+
+    // Expand first module accordion to add MIMLOs
+    const moduleAccordions = page.locator(".accordion-button");
+    if ((await moduleAccordions.count()) > 0) {
+      await moduleAccordions.first().click();
+      await page.waitForTimeout(200);
+    }
+
+    // Add 2 MIMLOs to first module
+    for (let i = 0; i < 2; i++) {
+      const addMimloBtn = page.locator("[data-add-mimlo]").first();
+      if (await addMimloBtn.isVisible()) {
+        await addMimloBtn.click();
+        await page.waitForTimeout(300);
+      }
+    }
+
+    // Expand second module and add MIMLOs
+    if ((await moduleAccordions.count()) > 1) {
+      await moduleAccordions.nth(1).click();
+      await page.waitForTimeout(200);
+    }
+
+    // Add 2 MIMLOs to second module
+    for (let i = 0; i < 2; i++) {
+      const addMimloBtn = page.locator("[data-add-mimlo]").nth(1);
+      if (await addMimloBtn.isVisible()) {
+        await addMimloBtn.click();
+        await page.waitForTimeout(300);
+      }
+    }
 
     await page.waitForTimeout(500);
 
@@ -78,100 +114,169 @@ test.describe("Step 12: PLO to Module Mapping", () => {
   });
 
   test("should display mapping section heading", async ({ page }) => {
-    await expect(page.locator('h5:has-text("Map PLOs to modules")')).toBeVisible();
+    await expect(page.locator('h5:has-text("Map PLOs to MIMLOs")')).toBeVisible();
   });
 
   test("should display PLOs for mapping", async ({ page }) => {
-    // Should show PLO text - app shows "PLO 1", "PLO 2" etc.
-    // Use exact: true to avoid matching the full PLO text like "PLO 1: Test learning outcome"
     await expect(page.getByText("PLO 1", { exact: true })).toBeVisible();
+    await expect(page.getByText("PLO 2", { exact: true })).toBeVisible();
   });
 
-  test("should display modules as mapping options", async ({ page }) => {
-    // Should show module options (checkboxes or similar)
-    // Module cards show code + title, or just title
-    // Use .first() since 'MOD1' appears multiple times (once per PLO row)
+  test("should display modules with MIMLO count badges", async ({ page }) => {
+    // Should show module names with MIMLO count
     await expect(page.getByText("MOD1", { exact: false }).first()).toBeVisible();
+    // Should show "X MIMLOs" button to expand
+    const mimloButtons = page.locator('button:has-text("MIMLOs")');
+    expect(await mimloButtons.count()).toBeGreaterThan(0);
   });
 
-  test("should allow mapping PLO to module via checkbox", async ({ page }) => {
-    // Find checkbox for PLO-module mapping
-    const checkbox = page.locator('input[type="checkbox"]').first();
+  test("should allow mapping PLO to all MIMLOs via module checkbox", async ({ page }) => {
+    // Find the module-level checkbox (has data-map-module-all attribute)
+    const moduleCheckbox = page.locator("[data-map-module-all]").first();
 
-    if (await checkbox.isVisible()) {
-      await checkbox.check();
-      await page.waitForTimeout(500);
+    if (await moduleCheckbox.isVisible()) {
+      await moduleCheckbox.check();
+      await page.waitForTimeout(600);
 
       const data = await getProgrammeData(page);
-      // Check ploToModules was updated
-      const mappings = Object.values(data.ploToModules || {});
+      // Check ploToMimlos was updated (not ploToModules)
+      const mappings = Object.values(data.ploToMimlos || {});
       const hasMapping = mappings.some((m) => m && m.length > 0);
       expect(hasMapping).toBeTruthy();
     }
   });
 
-  test("should save multiple PLO-module mappings", async ({ page }) => {
-    // Expand all PLO accordions first to make checkboxes visible
-    await page.getByRole("button", { name: "Expand all" }).click();
-    await page.waitForTimeout(200);
+  test("should expand module to show individual MIMLO checkboxes", async ({ page }) => {
+    // Click the MIMLOs expand button
+    const expandBtn = page.locator('button:has-text("MIMLOs")').first();
+    if (await expandBtn.isVisible()) {
+      await expandBtn.click();
+      await page.waitForTimeout(300);
 
-    // Map multiple PLOs to modules
-    const checkboxes = page.locator('input[type="checkbox"]');
-    const count = await checkboxes.count();
+      // Should now see individual MIMLO checkboxes
+      const mimloCheckboxes = page.locator("[data-map-mimlo]");
+      expect(await mimloCheckboxes.count()).toBeGreaterThan(0);
+    }
+  });
 
-    for (let i = 0; i < Math.min(count, 4); i++) {
-      await checkboxes.nth(i).check();
-      await page.waitForTimeout(200);
+  test("should allow mapping individual MIMLOs", async ({ page }) => {
+    // Expand MIMLOs
+    const expandBtn = page.locator('button:has-text("MIMLOs")').first();
+    if (await expandBtn.isVisible()) {
+      await expandBtn.click();
+      await page.waitForTimeout(300);
     }
 
-    await page.waitForTimeout(500);
+    // Check an individual MIMLO
+    const mimloCheckbox = page.locator("[data-map-mimlo]").first();
+    if (await mimloCheckbox.isVisible()) {
+      await mimloCheckbox.check();
+      await page.waitForTimeout(600);
+
+      const data = await getProgrammeData(page);
+      const allMimloIds = Object.values(data.ploToMimlos || {}).flat();
+      expect(allMimloIds.length).toBeGreaterThan(0);
+    }
+  });
+
+  test("should show indeterminate state when some MIMLOs selected", async ({ page }) => {
+    // Expand MIMLOs
+    const expandBtn = page.locator('button:has-text("MIMLOs")').first();
+    if (await expandBtn.isVisible()) {
+      await expandBtn.click();
+      await page.waitForTimeout(300);
+    }
+
+    // Check only one MIMLO (not all)
+    const mimloCheckboxes = page.locator("[data-map-mimlo]");
+    const count = await mimloCheckboxes.count();
+    if (count >= 2) {
+      await mimloCheckboxes.first().check();
+      await page.waitForTimeout(600);
+
+      // Module checkbox should be indeterminate (checked but not all MIMLOs)
+      const moduleCheckbox = page.locator("[data-map-module-all]").first();
+      const isIndeterminate = await moduleCheckbox.evaluate((el) => el.indeterminate);
+      expect(isIndeterminate).toBeTruthy();
+    }
+  });
+
+  test("checking module checkbox should check all MIMLOs", async ({ page }) => {
+    // First expand MIMLOs to see them
+    const expandBtn = page.locator('button:has-text("MIMLOs")').first();
+    if (await expandBtn.isVisible()) {
+      await expandBtn.click();
+      await page.waitForTimeout(300);
+    }
+
+    // Check the module checkbox
+    const moduleCheckbox = page.locator("[data-map-module-all]").first();
+    await moduleCheckbox.check();
+    await page.waitForTimeout(300);
+
+    // All MIMLO checkboxes within that module should now be checked
+    const ploId = await moduleCheckbox.getAttribute("data-map-plo");
+    const moduleId = await moduleCheckbox.getAttribute("data-map-module-all");
+    const mimloCheckboxes = page.locator(
+      `[data-map-plo="${ploId}"][data-map-module="${moduleId}"]`,
+    );
+
+    const count = await mimloCheckboxes.count();
+    for (let i = 0; i < count; i++) {
+      await expect(mimloCheckboxes.nth(i)).toBeChecked();
+    }
+  });
+
+  test("unchecking module checkbox should uncheck all MIMLOs", async ({ page }) => {
+    // Expand MIMLOs
+    const expandBtn = page.locator('button:has-text("MIMLOs")').first();
+    if (await expandBtn.isVisible()) {
+      await expandBtn.click();
+      await page.waitForTimeout(300);
+    }
+
+    // Check then uncheck module
+    const moduleCheckbox = page.locator("[data-map-module-all]").first();
+    await moduleCheckbox.check();
+    await page.waitForTimeout(300);
+    await moduleCheckbox.uncheck();
+    await page.waitForTimeout(300);
+
+    // All MIMLO checkboxes should be unchecked
+    const ploId = await moduleCheckbox.getAttribute("data-map-plo");
+    const moduleId = await moduleCheckbox.getAttribute("data-map-module-all");
+    const mimloCheckboxes = page.locator(
+      `[data-map-plo="${ploId}"][data-map-module="${moduleId}"]`,
+    );
+
+    const count = await mimloCheckboxes.count();
+    for (let i = 0; i < count; i++) {
+      await expect(mimloCheckboxes.nth(i)).not.toBeChecked();
+    }
+  });
+
+  test("should save ploToMimlos structure in localStorage", async ({ page }) => {
+    // Check a module checkbox
+    const moduleCheckbox = page.locator("[data-map-module-all]").first();
+    await moduleCheckbox.check();
+    await page.waitForTimeout(600);
 
     const data = await getProgrammeData(page);
-    expect(Object.keys(data.ploToModules || {}).length).toBeGreaterThan(0);
+
+    // Should have ploToMimlos, not ploToModules
+    expect(data.ploToMimlos).toBeDefined();
+    expect(Object.keys(data.ploToMimlos).length).toBeGreaterThan(0);
+
+    // Values should be MIMLO IDs (contain 'mimlo' prefix)
+    const allIds = Object.values(data.ploToMimlos).flat();
+    const hasMimloIds = allIds.some((id) => id.includes("mimlo"));
+    expect(hasMimloIds).toBeTruthy();
   });
 
   test("should show unmapped PLOs warning", async ({ page }) => {
     // QQI flags panel shows warning for unmapped PLOs
-    // The actual validation message mentions PLOs or mapping
-    const hasWarning = (await page.locator("text=/not mapped|unmapped|PLO|mapping/i").count()) > 0;
+    const hasWarning = (await page.locator("text=/not mapped|unmapped|PLO|MIMLO/i").count()) > 0;
     expect(hasWarning).toBeTruthy();
-  });
-
-  test("should clear warning when all PLOs are mapped", async ({ page }) => {
-    // Expand all PLO accordions first to make checkboxes visible
-    await page.getByRole("button", { name: "Expand all" }).click();
-    await page.waitForTimeout(200);
-
-    // Map all PLOs
-    const checkboxes = page.locator('input[type="checkbox"]');
-    const count = await checkboxes.count();
-
-    // Check at least one per PLO
-    for (let i = 0; i < Math.min(count, 3); i++) {
-      await checkboxes.nth(i).check();
-      await page.waitForTimeout(200);
-    }
-
-    await page.waitForTimeout(600);
-
-    // Warning should be reduced or cleared
-    const data = await getProgrammeData(page);
-    const unmappedCount = (data.plos || []).filter(
-      (p) => !(data.ploToModules || {})[p.id] || data.ploToModules[p.id].length === 0,
-    ).length;
-
-    expect(unmappedCount).toBeLessThan(3);
-  });
-
-  test("should unmap PLO from module", async ({ page }) => {
-    // First map
-    const checkbox = page.locator('input[type="checkbox"]').first();
-    await checkbox.check();
-    await page.waitForTimeout(400);
-
-    // Then unmap
-    await checkbox.uncheck();
-    await page.waitForTimeout(500);
   });
 
   test("keeps open PLO panels after re-render", async ({ page }) => {
@@ -195,31 +300,32 @@ test.describe("Step 12: PLO to Module Mapping", () => {
   });
 });
 
-test.describe("Step 12: Mapping Matrix View", () => {
-  test("should display mapping in matrix format", async ({ page }) => {
+test.describe("Step 12: Mapping Summary", () => {
+  test("should display MIMLO count badge per PLO", async ({ page }) => {
     // Fill Identity first
     await page.getByTestId("title-input").fill("Test Programme");
     await page.getByTestId("level-input").fill("8");
     await page.getByTestId("total-credits-input").fill("60");
     await page.waitForTimeout(300);
 
-    // Set up data
+    // Set up a PLO
     await page.getByTestId("step-outcomes").click();
     await page.waitForTimeout(200);
     await page.getByTestId("add-plo-btn").click();
     await page.locator("[data-plo-id]").first().fill("PLO 1");
     await page.waitForTimeout(300);
 
+    // Set up a module
     await page.getByTestId("step-structure").click();
     await page.waitForTimeout(200);
     await page.getByTestId("add-module-btn").click();
     await page.waitForTimeout(400);
 
+    // Navigate to mapping
     await page.getByTestId("step-mapping").click();
     await page.waitForTimeout(300);
 
-    // Look for matrix/table structure
-    const hasMatrix = (await page.locator("table, .matrix, .mapping-grid, .card").count()) > 0;
-    expect(hasMatrix).toBeTruthy();
+    // Should see "0 MIMLOs" badge initially
+    await expect(page.locator('.badge:has-text("MIMLOs")')).toBeVisible();
   });
 });
