@@ -316,10 +316,9 @@ function renderAssessmentTable(asmPcts) {
 function renderMimloTable(programme, mod) {
   const mimlos = mod.mimlos ?? [];
   const relatedPLOs = getModuleRelatedPLOs(programme, mod.id);
-  const mimloCount = Math.max(6, mimlos.length);
 
   let rows = "";
-  for (let i = 0; i < mimloCount; i++) {
+  for (let i = 0; i < mimlos.length; i++) {
     const mimlo = mimlos[i];
     rows += `<tr>
       <td>${i + 1}. ${mimlo ? escapeHtml(mimlo.text) : ""}</td>
