@@ -99,6 +99,7 @@ async function handleDownloadDocx(button, statusEl) {
  * Initializes the template page.
  */
 function init() {
+  const uploadSection = /** @type {HTMLElement} */ (document.getElementById("upload-section"));
   const fileUpload = /** @type {HTMLInputElement} */ (document.getElementById("file-upload"));
   const uploadStatus = /** @type {HTMLElement} */ (document.getElementById("upload-status"));
   const schedulesContainer = /** @type {HTMLElement} */ (
@@ -126,6 +127,36 @@ function init() {
     const file = target.files?.[0];
     if (file) {
       handleFileUpload(file, uploadStatus, schedulesContainer, moduleDescriptorsContainer);
+    }
+  });
+
+  // Drag and drop handlers
+  uploadSection?.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    uploadSection.classList.add("drag-over");
+  });
+
+  uploadSection?.addEventListener("dragleave", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    uploadSection.classList.remove("drag-over");
+  });
+
+  uploadSection?.addEventListener("drop", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    uploadSection.classList.remove("drag-over");
+
+    const files = e.dataTransfer?.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      if (file.name.endsWith(".json")) {
+        handleFileUpload(file, uploadStatus, schedulesContainer, moduleDescriptorsContainer);
+      } else {
+        uploadStatus.textContent = "✗ Please drop a JSON file";
+        uploadStatus.className = "error";
+      }
     }
   });
 }
