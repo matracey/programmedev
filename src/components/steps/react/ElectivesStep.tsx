@@ -9,9 +9,6 @@ import { Badge, Button, Card, Col, Form, ListGroup, Row } from "react-bootstrap"
 import { Accordion, AccordionControls, AccordionItem, Alert, Icon, SectionCard } from "../../ui";
 import { useProgramme, useSaveDebounced, useUpdateProgramme } from "../../../hooks/useStore";
 import { state, steps } from "../../../state/store.js";
-import { validateProgramme } from "../../../utils/validation.js";
-import { renderFlags } from "../../flags.js";
-import { renderHeader } from "../../header.js";
 
 // ============================================================================
 // Types (using global types from types.d.ts where available)
@@ -330,12 +327,7 @@ export const ElectivesStep: React.FC = () => {
 
   // Helper to update flags and header
   const updateFlagsAndHeader = useCallback(() => {
-    const flags = validateProgramme(state.programme);
-    renderFlags(flags, () => {
-      const win = window as Window & { render?: () => void | Promise<void> };
-      win.render?.();
-    });
-    renderHeader();
+    // No-op: React components auto-update via useSyncExternalStore
   }, []);
 
   // Computed values

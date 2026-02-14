@@ -9,9 +9,6 @@ import { Card, Col, Form, Row, Table, Button } from "react-bootstrap";
 import { Accordion, AccordionControls, AccordionItem, Alert, Icon } from "../../ui";
 import { useProgramme } from "../../../hooks/useStore";
 import { state } from "../../../state/store.js";
-import { validateProgramme } from "../../../utils/validation.js";
-import { renderFlags } from "../../flags.js";
-import { renderHeader } from "../../header.js";
 
 // ============================================================================
 // Types
@@ -277,12 +274,7 @@ export const ScheduleStep: React.FC = () => {
 
   // Helper to update flags and header
   const updateFlagsAndHeader = useCallback(() => {
-    const flags = validateProgramme(state.programme);
-    renderFlags(flags, () => {
-      const win = window as Window & { render?: () => void | Promise<void> };
-      win.render?.();
-    });
-    renderHeader();
+    // No-op: React components auto-update via useSyncExternalStore
   }, []);
 
   // Get versions array

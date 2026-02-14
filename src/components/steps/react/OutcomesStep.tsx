@@ -25,9 +25,6 @@ import {
 } from "../../../state/store.js";
 import { lintLearningOutcome } from "../../../lib/lo-lint.js";
 import { uid } from "../../../utils/uid.js";
-import { validateProgramme } from "../../../utils/validation.js";
-import { renderFlags } from "../../flags.js";
-import { renderHeader } from "../../header.js";
 
 // ============================================================================
 // Types
@@ -625,12 +622,7 @@ export const OutcomesStep: React.FC = () => {
 
   // Helper to update flags and header
   const updateFlagsAndHeader = useCallback(() => {
-    const flags = validateProgramme(state.programme);
-    renderFlags(flags, () => {
-      const win = window as Window & { render?: () => void | Promise<void> };
-      win.render?.();
-    });
-    renderHeader();
+    // No-op: React components auto-update via useSyncExternalStore
   }, []);
 
   const handleAddPLO = useCallback(() => {

@@ -20,9 +20,6 @@ import { editableModuleIds, getSelectedModuleId, state } from "../../../state/st
 import { lintLearningOutcome } from "../../../lib/lo-lint.js";
 import { uid } from "../../../utils/uid.js";
 import { ensureMimloObjects, mimloText } from "../../../utils/helpers.js";
-import { validateProgramme } from "../../../utils/validation.js";
-import { renderFlags } from "../../flags.js";
-import { renderHeader } from "../../header.js";
 
 // ============================================================================
 // Types
@@ -321,12 +318,7 @@ export const MimlosStep: React.FC = () => {
 
   // Helper to update flags and header
   const updateFlagsAndHeader = useCallback(() => {
-    const flags = validateProgramme(state.programme);
-    renderFlags(flags, () => {
-      const win = window as Window & { render?: () => void | Promise<void> };
-      win.render?.();
-    });
-    renderHeader();
+    // No-op: React components auto-update via useSyncExternalStore
   }, []);
 
   // Get editable modules

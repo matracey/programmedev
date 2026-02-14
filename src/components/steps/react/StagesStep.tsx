@@ -10,9 +10,6 @@ import { Accordion, AccordionControls, AccordionItem, Alert, HeaderAction, Icon 
 import { notifyStateChange, useProgramme, useSaveDebounced } from "../../../hooks/useStore";
 import { defaultStage, state } from "../../../state/store.js";
 import { sumStageCredits } from "../../../utils/helpers.js";
-import { validateProgramme } from "../../../utils/validation.js";
-import { renderFlags } from "../../flags.js";
-import { renderHeader } from "../../header.js";
 
 // ============================================================================
 // Types (local aliases to avoid conflicts with global types)
@@ -310,12 +307,7 @@ export const StagesStep: React.FC = () => {
 
   // Helper to update flags and header
   const updateFlagsAndHeader = useCallback(() => {
-    const flags = validateProgramme(state.programme);
-    renderFlags(flags, () => {
-      const win = window as Window & { render?: () => void | Promise<void> };
-      win.render?.();
-    });
-    renderHeader();
+    // No-op: React components auto-update via useSyncExternalStore
   }, []);
 
   // ============================================================================
