@@ -1,6 +1,14 @@
+import react from "@vitejs/plugin-react";
 import { resolve } from "path";
+import { defineConfig } from "vite";
 
-export default {
+export default defineConfig({
+  plugins: [
+    react({
+      // Use automatic JSX runtime for React 17+
+      jsxRuntime: "automatic",
+    }),
+  ],
   css: {
     preprocessorOptions: {
       scss: {
@@ -11,6 +19,11 @@ export default {
   server: {
     allowedHosts: ["gaming.emu-ordinal.ts.net"],
   },
+  resolve: {
+    alias: {
+      "@": resolve(__dirname, "src"),
+    },
+  },
   build: {
     rollupOptions: {
       input: {
@@ -19,4 +32,4 @@ export default {
       },
     },
   },
-};
+});
