@@ -2,6 +2,24 @@
  * Global type declarations for the Programme Design Studio
  */
 
+// Module declaration for plotly.js-dist-min (no @types available)
+declare module "plotly.js-dist-min" {
+  export function newPlot(
+    root: string | HTMLElement,
+    data: object[],
+    layout?: object,
+    config?: object,
+  ): Promise<void>;
+  export function react(
+    root: string | HTMLElement,
+    data: object[],
+    layout?: object,
+    config?: object,
+  ): Promise<void>;
+  export function relayout(root: string | HTMLElement, layout: object): Promise<void>;
+  export function purge(root: string | HTMLElement): void;
+}
+
 interface Window {
   /** Global render function for re-rendering the UI */
   render?: () => void | Promise<void>;
