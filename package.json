@@ -24,11 +24,16 @@
   },
   "dependencies": {
     "@phosphor-icons/web": "^2.1.2",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
     "bootstrap": "^5.3.8",
     "docx": "^9.5.1",
     "docxtemplater": "^3.67.6",
     "file-saver": "^2.0.5",
     "pizzip": "^3.2.0",
-    "plotly.js-dist-min": "^3.3.1"
+    "plotly.js-dist-min": "^3.3.1",
+    "react": "^19.2.4",
+    "react-bootstrap": "^2.10.10",
+    "react-dom": "^19.2.4"
   }
 }
