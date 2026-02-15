@@ -34,25 +34,18 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
-      - name: Start application
-        run: npm run build && npm run preview -- --port ${{ env.VITE_PORT }} &
-
-      - name: Wait for application to be ready
-        run: npx wait-on http://localhost:${{ env.VITE_PORT }} --timeout 30000
-
       - name: Run Playwright tests
         run: npx playwright test --workers=4
         env:
           CI: true
 
-      - name: Publish test results
-        uses: EnricoMi/publish-unit-test-result-action@v2
+      - name: Publish Playwright test results
+        uses: dorny/test-reporter@v2
         if: always()
         with:
-          files: |
-            test-results/junit.xml
-          check_name: "Playwright Test Results"
-          comment_mode: off
+          name: Playwright Test Results
+          path: test-results/junit.xml
+          reporter: java-junit
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@v6
