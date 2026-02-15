@@ -9,7 +9,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { Sidebar, SidebarProps } from "./Sidebar";
 
 // Mock the store module
-vi.mock("../../state/store.js", () => ({
+vi.mock("../../state/store", () => ({
   state: {
     programme: {
       mode: "PROGRAMME_OWNER",

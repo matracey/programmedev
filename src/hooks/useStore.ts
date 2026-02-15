@@ -6,7 +6,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { saveNow, state } from "../state/store.js";
+import { saveNow, state } from "../state/store";
 
 // Simple subscription system for state changes
 type Listener = () => void;

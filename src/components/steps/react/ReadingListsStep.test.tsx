@@ -5,7 +5,7 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { state } from "../../../state/store.js";
+import { state } from "../../../state/store";
 import { ReadingListsStep } from "./ReadingListsStep";
 
 // Store module mock functions
@@ -13,8 +13,8 @@ const mockEditableModuleIds = vi.fn(() => ["mod_1", "mod_2"]);
 const mockGetSelectedModuleId = vi.fn(() => "mod_1");
 
 // Mock the store module
-vi.mock("../../../state/store.js", async () => {
-  const actual = await vi.importActual("../../../state/store.js");
+vi.mock("../../../state/store", async () => {
+  const actual = await vi.importActual("../../../state/store");
   return {
     ...actual,
     saveNow: vi.fn(),

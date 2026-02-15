@@ -7,7 +7,7 @@
 import { useMemo } from "react";
 
 import { useProgramme } from "../../hooks/useStore";
-import { activeSteps } from "../../state/store.js";
+import { activeSteps } from "../../state/store";
 import { validateProgramme } from "../../utils/validation";
 import { Icon } from "../ui/Icon";
 

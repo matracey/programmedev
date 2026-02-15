@@ -8,7 +8,7 @@ import React from "react";
 import { ListGroup } from "react-bootstrap";
 
 import { useProgramme } from "../../hooks/useStore";
-import { activeSteps, state } from "../../state/store.js";
+import { activeSteps, state } from "../../state/store";
 import { Icon } from "../ui";
 import { NavButtons } from "./NavButtons";
 

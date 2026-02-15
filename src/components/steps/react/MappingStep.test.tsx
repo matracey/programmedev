@@ -56,7 +56,7 @@ let mockState: { programme: typeof mockProgramme } = {
   programme: JSON.parse(JSON.stringify(mockProgramme)),
 };
 
-vi.mock("../../../state/store.js", () => ({
+vi.mock("../../../state/store", () => ({
   state: {
     get programme() {
       return mockState.programme;

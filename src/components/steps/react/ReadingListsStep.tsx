@@ -16,7 +16,7 @@ import {
   SectionCard,
 } from "../../ui";
 import { useProgramme, useSaveDebounced, useUpdateProgramme } from "../../../hooks/useStore";
-import { editableModuleIds, getSelectedModuleId, state } from "../../../state/store.js";
+import { editableModuleIds, getSelectedModuleId, state } from "../../../state/store";
 import { uid } from "../../../utils/uid";
 
 // ============================================================================

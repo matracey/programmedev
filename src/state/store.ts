@@ -1,4 +1,3 @@
-// @ts-check
 /**
  * Application state management.
  * Handles global state, localStorage persistence, and data factory functions.
@@ -13,7 +12,7 @@ import { uid } from "../utils/uid";
 const STORAGE_KEY = "nci_pds_mvp_programme_v1";
 
 // Workflow steps definition
-export const steps = [
+export const steps: readonly { key: string; title: string }[] = [
   { key: "identity", title: "Identity" },
   { key: "outcomes", title: "PLOs" },
   { key: "versions", title: "Programme Versions" },
@@ -31,9 +30,14 @@ export const steps = [
 ];
 
 // Options
-export const SCHOOL_OPTIONS = ["Computing", "Business", "Psychology", "Education"];
+export const SCHOOL_OPTIONS: readonly string[] = [
+  "Computing",
+  "Business",
+  "Psychology",
+  "Education",
+];
 
-export const AWARD_TYPE_OPTIONS = [
+export const AWARD_TYPE_OPTIONS: readonly string[] = [
   "Higher Certificate",
   "Ordinary Bachelor Degree",
   "Honours Bachelor Degree",
@@ -46,52 +50,39 @@ export const AWARD_TYPE_OPTIONS = [
 
 /**
  * Creates an empty programme object with default values.
- *
- * @returns {Programme} A new programme object initialized with default values
  */
-export const defaultProgramme = () =>
-  /** @type {Programme} */ ({
-    schemaVersion: 3,
-    id: "current",
+export const defaultProgramme = (): Programme => ({
+  schemaVersion: 3,
+  id: "current",
 
-    // Identity
-    title: "",
-    awardType: "",
-    awardTypeIsOther: false,
-    nfqLevel: null,
-    school: "",
-    /** @type {string[]} */
-    awardStandardIds: [],
-    /** @type {string[]} */
-    awardStandardNames: [],
+  // Identity
+  title: "",
+  awardType: "",
+  awardTypeIsOther: false,
+  nfqLevel: null,
+  school: "",
+  awardStandardIds: [],
+  awardStandardNames: [],
 
-    // Programme-level structure
-    totalCredits: 0,
-    /** @type {Module[]} */
-    modules: [],
-    /** @type {PLO[]} */
-    plos: [],
-    /** @type {Record<string, string[]>} */
-    ploToMimlos: {},
+  // Programme-level structure
+  totalCredits: 0,
+  modules: [],
+  plos: [],
+  ploToMimlos: {},
 
-    // Elective definitions - each definition has a credit value and contains 1-N groups
-    // Students complete every definition, choosing one group from each
-    /** @type {ElectiveDefinition[]} */
-    electiveDefinitions: [], // [{ id, name, code, credits, groups: [{ id, name, code, moduleIds: [] }] }]
+  // Elective definitions
+  electiveDefinitions: [],
 
-    // Versions
-    /** @type {ProgrammeVersion[]} */
-    versions: [],
+  // Versions
+  versions: [],
 
-    updatedAt: null,
-  });
+  updatedAt: null,
+});
 
 /**
  * Creates a new programme version with default values.
- *
- * @returns {any} A new programme version object (FT/PT/Online variant)
  */
-export const defaultVersion = () => ({
+export const defaultVersion = (): any => ({
   id: uid("ver"),
   label: "Full-time",
   code: "FT",
@@ -101,7 +92,7 @@ export const defaultVersion = () => ({
   numberOfGroups: 0,
 
   deliveryModality: "F2F",
-  deliveryPatterns: {},
+  deliveryPatterns: {} as Record<string, any>,
   deliveryNotes: "",
 
   onlineProctoredExams: "TBC",
@@ -112,11 +103,8 @@ export const defaultVersion = () => ({
 
 /**
  * Creates a new stage object with default values.
- *
- * @param {number} [sequence=1] - The stage sequence number (1-based)
- * @returns {any} A new stage object with default exit award settings
  */
-export const defaultStage = (sequence = 1) => ({
+export const defaultStage = (sequence: number = 1): any => ({
   id: uid("stage"),
   name: `Stage ${sequence}`,
   sequence,
@@ -128,10 +116,18 @@ export const defaultStage = (sequence = 1) => ({
 /**
  * Global application state object.
  * Contains the current programme, navigation state, and UI state.
- *
- * @type {{ programme: Programme, stepIndex: number, saving: boolean, lastSaved: string | null, selectedVersionId: string | null, selectedModuleId: string | null, reportTypeId?: string, reportVersionId?: string, [key: string]: any }}
  */
-export const state = {
+export const state: {
+  programme: Programme;
+  stepIndex: number;
+  saving: boolean;
+  lastSaved: string | null;
+  selectedVersionId: string | null;
+  selectedModuleId: string | null;
+  reportTypeId?: string;
+  reportVersionId?: string;
+  [key: string]: any;
+} = {
   programme: defaultProgramme(),
   stepIndex: 0,
   saving: false,
@@ -143,10 +139,8 @@ export const state = {
 /**
  * Returns the active workflow steps based on the current programme mode.
  * In MODULE_EDITOR mode, only module-related steps are shown.
- *
- * @returns {Array<{key: string, title: string}>} Array of active step definitions
  */
-export function activeSteps() {
+export function activeSteps(): Array<{ key: string; title: string }> {
   const p = state.programme;
   if (p.mode === "MODULE_EDITOR") {
     const allowed = new Set([
@@ -161,16 +155,14 @@ export function activeSteps() {
     ]);
     return steps.filter((s) => allowed.has(s.key));
   }
-  return steps;
+  return [...steps];
 }
 
 /**
  * Returns the IDs of modules that can be edited in the current mode.
  * In MODULE_EDITOR mode, returns only assigned modules.
- *
- * @returns {string[]} Array of editable module IDs
  */
-export function editableModuleIds() {
+export function editableModuleIds(): string[] {
   const p = state.programme;
   if (!p) {
     return [];
@@ -185,10 +177,8 @@ export function editableModuleIds() {
 /**
  * Returns the currently selected module ID for the module picker.
  * Auto-selects the first editable module if none selected or selection is invalid.
- *
- * @returns {string} The selected module ID, or empty string if no modules available
  */
-export function getSelectedModuleId() {
+export function getSelectedModuleId(): string {
   const ids = editableModuleIds();
   if (!ids.length) {
     return "";
@@ -201,11 +191,8 @@ export function getSelectedModuleId() {
 
 /**
  * Finds a programme version by its ID.
- *
- * @param {string} id - The version ID to find
- * @returns {ProgrammeVersion|undefined} The matching version, or undefined if not found
  */
-export function getVersionById(id) {
+export function getVersionById(id: string): ProgrammeVersion | undefined {
   return (state.programme.versions ?? []).find((v) => v.id === id);
 }
 
@@ -213,7 +200,7 @@ export function getVersionById(id) {
  * Loads programme state from localStorage.
  * Applies any necessary migrations and creates a default version if needed.
  */
-export function load() {
+export function load(): void {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) {
@@ -254,7 +241,7 @@ export function load() {
  * Saves the current programme state to localStorage immediately.
  * Updates the programme's updatedAt timestamp.
  */
-export function saveNow() {
+export function saveNow(): void {
   try {
     state.saving = true;
     const now = new Date().toISOString();
@@ -266,16 +253,13 @@ export function saveNow() {
   }
 }
 
-/** @type {ReturnType<typeof setTimeout> | null} */
-let saveTimer = null;
+let saveTimer: ReturnType<typeof setTimeout> | null = null;
 
 /**
  * Saves programme state after a 400ms debounce delay.
  * Useful for input fields to avoid excessive saves during typing.
- *
- * @param {Function} [onSaved] - Optional callback invoked after save completes
  */
-export function saveDebounced(onSaved) {
+export function saveDebounced(onSaved?: () => void): void {
   if (saveTimer) {
     clearTimeout(saveTimer);
   }
@@ -291,7 +275,7 @@ export function saveDebounced(onSaved) {
  * Resets the application to an empty programme state.
  * Clears localStorage and resets navigation to step 0.
  */
-export function resetProgramme() {
+export function resetProgramme(): void {
   state.programme = defaultProgramme();
   state.stepIndex = 0;
   state.selectedVersionId = null;
@@ -302,11 +286,8 @@ export function resetProgramme() {
 /**
  * Sets the application mode (PROGRAMME_OWNER or MODULE_EDITOR).
  * MODULE_EDITOR mode restricts editing to assigned modules and specific steps.
- *
- * @param {string} mode - Either "PROGRAMME_OWNER" or "MODULE_EDITOR"
- * @param {string[]} [assignedModuleIds=[]] - Module IDs editable in MODULE_EDITOR mode
  */
-export function setMode(mode, assignedModuleIds = []) {
+export function setMode(mode: string, assignedModuleIds: string[] = []): void {
   const p = state.programme;
   if (!p) {
     console.error("Programme not loaded yet.");
@@ -322,8 +303,7 @@ export function setMode(mode, assignedModuleIds = []) {
 
   if (mode === "MODULE_EDITOR") {
     const defaultAssigned = (p.modules ?? []).map((m) => m.id);
-    /** @type {any} */
-    const editor = p.moduleEditor ?? {
+    const editor: any = p.moduleEditor ?? {
       assignedModuleIds: [],
       locks: undefined,
     };
@@ -351,16 +331,12 @@ export function setMode(mode, assignedModuleIds = []) {
 }
 
 // Cache for award standards
-/** @type {Promise<any[]> | null} */
-let _standardsPromise = null;
+let _standardsPromise: Promise<any[]> | null = null;
 
 /**
  * Loads and caches the standards.json file.
- *
- * @returns {Promise<any[]>} Promise resolving to array of award standard objects
- * @private
  */
-async function loadStandardsFile() {
+async function loadStandardsFile(): Promise<any[]> {
   if (_standardsPromise) {
     return _standardsPromise;
   }
@@ -382,25 +358,20 @@ async function loadStandardsFile() {
 
 /**
  * Returns all available award standards.
- *
- * @returns {Promise<any[]>} Promise resolving to array of award standard objects
  */
-export async function getAwardStandards() {
+export async function getAwardStandards(): Promise<any[]> {
   return await loadStandardsFile();
 }
 
 /**
  * Returns a single award standard by ID.
- *
- * @param {string} [standardId] - The standard ID to find (defaults to first standard)
- * @returns {Promise<any>} Promise resolving to the standard object, or null if not found
  */
-export async function getAwardStandard(standardId) {
+export async function getAwardStandard(standardId?: string): Promise<any> {
   const list = await loadStandardsFile();
   if (!standardId) {
     return list[0] || null;
   }
-  return list.find((s) => s && s.id === standardId) || list[0] || null;
+  return list.find((s: any) => s && s.id === standardId) || list[0] || null;
 }
 
 // Export helper functions from migrate-programme for convenience

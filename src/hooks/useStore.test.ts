@@ -1,7 +1,7 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { state } from "../state/store.js";
+import { state } from "../state/store";
 import {
   notifyStateChange,
   useProgramme,
@@ -11,8 +11,8 @@ import {
 } from "./useStore";
 
 // Mock the store module
-vi.mock("../state/store.js", async () => {
-  const actual = await vi.importActual("../state/store.js");
+vi.mock("../state/store", async () => {
+  const actual = await vi.importActual("../state/store");
   return {
     ...actual,
     saveNow: vi.fn(),
@@ -92,7 +92,7 @@ describe("useStore hooks", () => {
     });
 
     it("saveDebounced delays the save by the specified time", async () => {
-      const { saveNow } = await import("../state/store.js");
+      const { saveNow } = await import("../state/store");
       const { result } = renderHook(() => useSaveDebounced(400));
       const onSaved = vi.fn();
 
@@ -114,7 +114,7 @@ describe("useStore hooks", () => {
     });
 
     it("saveDebounced resets the timer on subsequent calls", async () => {
-      const { saveNow } = await import("../state/store.js");
+      const { saveNow } = await import("../state/store");
       const { result } = renderHook(() => useSaveDebounced(400));
 
       act(() => {

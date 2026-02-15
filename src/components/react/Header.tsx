@@ -10,7 +10,7 @@ import { Badge, Button, ButtonGroup, Nav, Navbar, OverlayTrigger, Popover } from
 
 import { notifyStateChange, useProgramme } from "../../hooks/useStore";
 import { exportProgrammeToJson, importProgrammeFromJson } from "../../export/json";
-import { activeSteps, resetProgramme, saveNow, state } from "../../state/store.js";
+import { activeSteps, resetProgramme, saveNow, state } from "../../state/store";
 import { completionPercent, validateProgramme } from "../../utils/validation";
 import { Icon } from "../ui";
 

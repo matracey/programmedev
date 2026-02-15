@@ -25,7 +25,7 @@ const mockProgramme = {
 
 let mockState = { programme: { ...mockProgramme } };
 
-vi.mock("../../../state/store.js", () => ({
+vi.mock("../../../state/store", () => ({
   state: {
     get programme() {
       return mockState.programme;

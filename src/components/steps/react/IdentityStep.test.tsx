@@ -6,12 +6,12 @@ import { act, fireEvent, render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { state } from "../../../state/store.js";
+import { state } from "../../../state/store";
 import { IdentityStep } from "./IdentityStep";
 
 // Mock the store module
-vi.mock("../../../state/store.js", async () => {
-  const actual = await vi.importActual("../../../state/store.js");
+vi.mock("../../../state/store", async () => {
+  const actual = await vi.importActual("../../../state/store");
   return {
     ...actual,
     saveNow: vi.fn(),

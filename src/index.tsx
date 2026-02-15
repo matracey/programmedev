@@ -14,7 +14,7 @@ import "@phosphor-icons/web/bold";
 import "./style.css";
 
 // Import state management
-import { load } from "./state/store.js";
+import { load } from "./state/store";
 
 // Import App component
 import { App } from "./App";

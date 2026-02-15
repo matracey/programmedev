@@ -8,7 +8,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import { Badge, Col, Form, Row, Table } from "react-bootstrap";
 import { Accordion, AccordionControls, AccordionItem, Alert, Icon, SectionCard } from "../../ui";
 import { useProgramme, useSaveDebounced, useUpdateProgramme } from "../../../hooks/useStore";
-import { editableModuleIds, getSelectedModuleId, state } from "../../../state/store.js";
+import { editableModuleIds, getSelectedModuleId, state } from "../../../state/store";
 
 // ============================================================================
 // Types

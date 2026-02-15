@@ -5,13 +5,13 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { state } from "../../../state/store.js";
+import { state } from "../../../state/store";
 import { TraceabilityStep, buildSankeyData } from "./TraceabilityStep";
 import type { TraceRow } from "./TraceabilityStep";
 
 // Mock the store module
-vi.mock("../../../state/store.js", async () => {
-  const actual = await vi.importActual("../../../state/store.js");
+vi.mock("../../../state/store", async () => {
+  const actual = await vi.importActual("../../../state/store");
   return {
     ...actual,
     saveNow: vi.fn(),

@@ -16,7 +16,7 @@ import {
   SectionCard,
 } from "../../ui";
 import { useProgramme, useSaveDebounced, useUpdateProgramme } from "../../../hooks/useStore";
-import { state } from "../../../state/store.js";
+import { state } from "../../../state/store";
 import { uid } from "../../../utils/uid";
 
 // ============================================================================

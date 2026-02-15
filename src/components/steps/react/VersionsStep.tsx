@@ -9,7 +9,7 @@ import React, { useCallback } from "react";
 import { Badge, Button, Card, Col, Form, Row } from "react-bootstrap";
 import { Accordion, AccordionControls, AccordionItem, Alert, HeaderAction, Icon } from "../../ui";
 import { useProgramme, useSaveDebounced, useUpdateProgramme } from "../../../hooks/useStore";
-import { defaultVersion, state } from "../../../state/store.js";
+import { defaultVersion, state } from "../../../state/store";
 import { defaultPatternFor, sumPattern } from "../../../utils/helpers";
 
 // ============================================================================

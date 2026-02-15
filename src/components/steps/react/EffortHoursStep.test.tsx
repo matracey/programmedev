@@ -65,7 +65,7 @@ let mockState = {
 };
 
 // Mock the store module
-vi.mock("../../../state/store.js", () => ({
+vi.mock("../../../state/store", () => ({
   state: {
     get programme() {
       return mockState.programme;

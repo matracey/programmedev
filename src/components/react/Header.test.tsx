@@ -6,12 +6,12 @@ import { act, fireEvent, render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { state } from "../../state/store.js";
+import { state } from "../../state/store";
 import { Header } from "./Header";
 
 // Mock the store module
-vi.mock("../../state/store.js", async () => {
-  const actual = await vi.importActual("../../state/store.js");
+vi.mock("../../state/store", async () => {
+  const actual = await vi.importActual("../../state/store");
   return {
     ...actual,
     saveNow: vi.fn(),
@@ -220,7 +220,7 @@ describe("Header", () => {
 
     it("calls importProgrammeFromJson when file is selected", async () => {
       const { importProgrammeFromJson } = await import("../../export/json.js");
-      const { saveNow } = await import("../../state/store.js");
+      const { saveNow } = await import("../../state/store");
 
       render(<Header />);
 
@@ -263,7 +263,7 @@ describe("Header", () => {
     });
 
     it("calls resetProgramme when reset button is clicked and confirmed", async () => {
-      const { resetProgramme } = await import("../../state/store.js");
+      const { resetProgramme } = await import("../../state/store");
       const confirmSpy = vi.spyOn(window, "confirm").mockReturnValue(true);
 
       render(<Header />);
@@ -282,7 +282,7 @@ describe("Header", () => {
     });
 
     it("does not call resetProgramme when reset is cancelled", async () => {
-      const { resetProgramme } = await import("../../state/store.js");
+      const { resetProgramme } = await import("../../state/store");
       vi.mocked(resetProgramme).mockClear();
       const confirmSpy = vi.spyOn(window, "confirm").mockReturnValue(false);
 

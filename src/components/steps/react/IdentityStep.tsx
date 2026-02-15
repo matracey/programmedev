@@ -26,7 +26,7 @@ import {
   getAwardStandard,
   getAwardStandards,
   state,
-} from "../../../state/store.js";
+} from "../../../state/store";
 import { uid } from "../../../utils/uid";
 
 // ============================================================================

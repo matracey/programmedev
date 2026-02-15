@@ -39,7 +39,7 @@ let mockState: { programme: typeof mockProgramme; selectedModuleId: string | nul
   selectedModuleId: null,
 };
 
-vi.mock("../../../state/store.js", () => ({
+vi.mock("../../../state/store", () => ({
   state: {
     get programme() {
       return mockState.programme;

@@ -8,7 +8,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import { Card, Col, Form, Row, Table, Button } from "react-bootstrap";
 import { Accordion, AccordionControls, AccordionItem, Alert, Icon } from "../../ui";
 import { useProgramme } from "../../../hooks/useStore";
-import { state } from "../../../state/store.js";
+import { state } from "../../../state/store";
 
 // ============================================================================
 // Types
