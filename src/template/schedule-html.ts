@@ -1,4 +1,3 @@
-// @ts-check
 /**
  * Programme Schedule HTML table rendering.
  * Generates HTML tables for the schedule template page.
@@ -9,11 +8,18 @@ import { escapeHtml } from "../utils/dom";
 
 /**
  * Determines assessment types used in a stage.
- * @param {Programme} programme - Programme data
- * @param {Stage["modules"]} stageModules - Modules in the stage
- * @returns {{continuous: boolean, invigilated: boolean, proctored: boolean, project: boolean, practical: boolean, workBased: boolean}}
  */
-function getAssessmentTypes(programme, stageModules) {
+function getAssessmentTypes(
+  programme: Programme,
+  stageModules: Stage["modules"],
+): {
+  continuous: boolean;
+  invigilated: boolean;
+  proctored: boolean;
+  project: boolean;
+  practical: boolean;
+  workBased: boolean;
+} {
   const types = {
     continuous: false,
     invigilated: false,
@@ -26,7 +32,7 @@ function getAssessmentTypes(programme, stageModules) {
   (stageModules ?? []).forEach((sm) => {
     const mod = (programme.modules ?? []).find((m) => m.id === sm.moduleId);
     if (mod?.assessments) {
-      mod.assessments.forEach((a) => {
+      mod.assessments.forEach((a: ModuleAssessment) => {
         const t = (a.type ?? "").toLowerCase();
         if (t.includes("exam") && t.includes("campus")) {
           types.invigilated = true;
@@ -50,13 +56,12 @@ function getAssessmentTypes(programme, stageModules) {
 
 /**
  * Renders a single schedule table for a version/stage combination.
- *
- * @param {Programme} programme - Programme data
- * @param {ProgrammeVersion} version - Programme version
- * @param {Stage} stage - Stage data
- * @returns {string} HTML table markup
  */
-export function renderScheduleTable(programme, version, stage) {
+export function renderScheduleTable(
+  programme: Programme,
+  version: ProgrammeVersion,
+  stage: Stage,
+): string {
   const stageModules = stage.modules ?? [];
   const deliveryKey = `${version.id}_${version.deliveryModality}`;
 
@@ -192,7 +197,7 @@ export function renderScheduleTable(programme, version, stage) {
       return;
     }
 
-    const effort =
+    const effort: any =
       mod.effortHours?.[deliveryKey] ??
       mod.effortHours?.[Object.keys(mod.effortHours ?? {})[0]] ??
       {};
@@ -206,7 +211,7 @@ export function renderScheduleTable(programme, version, stage) {
       practical: 0,
       workBased: 0,
     };
-    (mod.assessments ?? []).forEach((a) => {
+    (mod.assessments ?? []).forEach((a: ModuleAssessment) => {
       const t = (a.type ?? "").toLowerCase();
       const w = a.weighting ?? 0;
       if (t.includes("exam") && t.includes("campus")) {
@@ -274,11 +279,8 @@ export function renderScheduleTable(programme, version, stage) {
 
 /**
  * Renders all schedule tables for a programme.
- *
- * @param {Programme} data - Programme data
- * @returns {string} HTML markup for all schedules
  */
-export function renderAllSchedules(data) {
+export function renderAllSchedules(data: Programme): string {
   if (!data.versions || data.versions.length === 0) {
     return "<p>No programme versions available.</p>";
   }
