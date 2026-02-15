@@ -5,7 +5,7 @@
  * @module state/store
  */
 
-import { defaultPatternFor } from "../utils/helpers.js";
+import { defaultPatternFor } from "../utils/helpers";
 import { migrateProgramme } from "../utils/migrate-programme";
 import { uid } from "../utils/uid";
 

@@ -19,7 +19,7 @@ import { useProgramme, useSaveDebounced, useUpdateProgramme } from "../../../hoo
 import { editableModuleIds, getSelectedModuleId, state } from "../../../state/store.js";
 import { lintLearningOutcome } from "../../../lib/lo-lint";
 import { uid } from "../../../utils/uid";
-import { ensureMimloObjects, mimloText } from "../../../utils/helpers.js";
+import { ensureMimloObjects, mimloText } from "../../../utils/helpers";
 
 // ============================================================================
 // Types

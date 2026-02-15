@@ -9,7 +9,7 @@ import { Button, Card, Form, Row, Col } from "react-bootstrap";
 import { Accordion, AccordionControls, AccordionItem, Alert, HeaderAction, Icon } from "../../ui";
 import { notifyStateChange, useProgramme, useSaveDebounced } from "../../../hooks/useStore";
 import { defaultStage, state } from "../../../state/store.js";
-import { sumStageCredits } from "../../../utils/helpers.js";
+import { sumStageCredits } from "../../../utils/helpers";
 
 // ============================================================================
 // Types (local aliases to avoid conflicts with global types)

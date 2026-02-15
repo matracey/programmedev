@@ -10,7 +10,7 @@ import { Accordion, AccordionControls, AccordionItem, Alert, HeaderAction, Icon 
 import { useProgramme, useSaveDebounced, useUpdateProgramme } from "../../../hooks/useStore";
 import { editableModuleIds, getSelectedModuleId, state } from "../../../state/store.js";
 import { uid } from "../../../utils/uid";
-import { ensureMimloObjects, formatPct, mimloText } from "../../../utils/helpers.js";
+import { ensureMimloObjects, formatPct, mimloText } from "../../../utils/helpers";
 import { escapeHtml } from "../../../utils/dom";
 
 // ============================================================================

@@ -6,8 +6,8 @@
  */
 
 import { escapeHtml } from "../utils/dom";
-import { formatPct } from "../utils/helpers.js";
-import { ensureMimloObjects } from "../utils/helpers.js";
+import { formatPct } from "../utils/helpers";
+import { ensureMimloObjects } from "../utils/helpers";
 
 /** Available assessment report types */
 export const ASSESSMENT_REPORT_TYPES = [
