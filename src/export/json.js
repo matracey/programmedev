@@ -5,7 +5,7 @@
  * @module export/json
  */
 
-import { migrateProgramme } from "../utils/migrate-programme.js";
+import { migrateProgramme } from "../utils/migrate-programme";
 
 /**
  * Downloads a programme as a JSON file.

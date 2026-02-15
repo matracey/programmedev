@@ -6,7 +6,7 @@
  */
 
 import { defaultPatternFor } from "../utils/helpers.js";
-import { migrateProgramme } from "../utils/migrate-programme.js";
+import { migrateProgramme } from "../utils/migrate-programme";
 import { uid } from "../utils/uid";
 
 // Storage key for localStorage
@@ -411,4 +411,4 @@ export {
   getThreadList,
   migrateProgramme,
   validateStandardMappings,
-} from "../utils/migrate-programme.js";
+} from "../utils/migrate-programme";
