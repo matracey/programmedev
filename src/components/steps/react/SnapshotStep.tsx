@@ -11,7 +11,7 @@ import { Accordion, AccordionControls, AccordionItem, Alert, Icon, SectionCard }
 import { useProgramme } from "../../../hooks/useStore";
 import { state } from "../../../state/store.js";
 import { completionPercent } from "../../../utils/validation";
-import { exportProgrammeToWord } from "../../../export/word.js";
+import { exportProgrammeToWord } from "../../../export/word";
 
 // ============================================================================
 // Types
