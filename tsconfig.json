@@ -25,8 +25,8 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
 
-    "allowJs": true,
-    "checkJs": true,
+    "allowJs": false,
+    "checkJs": false,
     "skipLibCheck": true,
 
     "esModuleInterop": true,
@@ -38,6 +38,6 @@
       "@/*": ["src/*"]
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.js", "src/**/*.d.ts"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.d.ts"],
   "exclude": ["node_modules", "dist", "e2e"]
 }

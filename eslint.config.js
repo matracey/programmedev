@@ -2,7 +2,7 @@ import simpleImportSort from "eslint-plugin-simple-import-sort";
 
 export default [
   {
-    files: ["src/**/*.js", "e2e/**/*.js", "*.js"],
+    files: ["src/**/*.{ts,tsx}", "e2e/**/*.js", "*.js"],
     plugins: {
       "simple-import-sort": simpleImportSort,
     },
