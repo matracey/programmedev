@@ -86,19 +86,21 @@ test.describe("Step 4: Stage Structure", () => {
     await page.getByTestId("add-stage-btn").click();
     await page.waitForTimeout(300);
 
-    // Look for exit award checkbox or toggle
-    const exitAwardCheckbox = page.locator('input[type="checkbox"]').first();
+    // Use data-testid for exit award checkbox
+    const exitAwardCheckbox = page.getByTestId(/^stage-exit-/).first();
 
     if (await exitAwardCheckbox.isVisible()) {
-      await exitAwardCheckbox.check();
-      await page.waitForTimeout(300);
+      // Use click instead of check since the checkbox might already be checked
+      const isChecked = await exitAwardCheckbox.isChecked();
+      if (!isChecked) {
+        await exitAwardCheckbox.click();
+        await page.waitForTimeout(300);
+      }
 
       // Should show award title input
-      const awardTitleInput = page.locator(
-        '#content input[placeholder*="award"], input[placeholder*="title"]',
-      );
+      const awardTitleInput = page.getByTestId(/^stage-exit-title-/).first();
       if ((await awardTitleInput.count()) > 0) {
-        await awardTitleInput.first().fill("Certificate in Computing");
+        await awardTitleInput.fill("Certificate in Computing");
         await page.waitForTimeout(500);
       }
     }
@@ -193,15 +195,25 @@ test.describe("Step 4: Stage-Module Assignment", () => {
     await page.getByTestId("add-stage-btn").click();
     await page.waitForTimeout(300);
 
-    // Look for module checkboxes or dropdown
-    const moduleCheckbox = page.locator('input[type="checkbox"]').first();
+    // Get the module checkbox directly (data-testid is on the input element itself)
+    // This should find checkboxes for the modules added in beforeEach
+    const moduleCheckbox = page.getByTestId(/^stage-module-/).first();
+    await expect(moduleCheckbox).toBeVisible();
 
-    if (await moduleCheckbox.isVisible()) {
-      await moduleCheckbox.check();
-      await page.waitForTimeout(500);
+    // Toggle the checkbox
+    const wasChecked = await moduleCheckbox.isChecked();
+    await moduleCheckbox.click();
+    await page.waitForTimeout(500);
 
-      const data = await getProgrammeData(page);
-      expect(data.versions[0].stages[0].modules.length).toBeGreaterThanOrEqual(0);
+    // Verify the checkbox state changed
+    const nowChecked = await moduleCheckbox.isChecked();
+    expect(nowChecked).not.toBe(wasChecked);
+
+    // Verify data was saved
+    const data = await getProgrammeData(page);
+    const assignedModules = data.versions?.[0]?.stages?.[0]?.modules ?? [];
+    if (nowChecked) {
+      expect(assignedModules.length).toBeGreaterThan(0);
     }
   });
 

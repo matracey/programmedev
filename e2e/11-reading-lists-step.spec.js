@@ -22,14 +22,19 @@ test.describe("Step 10: Reading Lists", () => {
     await page.getByTestId("add-module-btn").click();
     await page.waitForTimeout(200);
 
-    // Fill module details using data attributes
-    const codeInput = page.locator('[data-module-field="code"]').first();
-    const titleInput = page.locator('[data-module-field="title"]').first();
-    const creditsInput = page.locator('[data-module-field="credits"]').first();
-
-    await codeInput.fill("CMP8001");
-    await titleInput.fill("Software Development");
-    await creditsInput.fill("10");
+    // Fill module details using data-testid patterns
+    await page
+      .getByTestId(/^module-code-/)
+      .first()
+      .fill("CMP8001");
+    await page
+      .getByTestId(/^module-title-/)
+      .first()
+      .fill("Software Development");
+    await page
+      .getByTestId(/^module-credits-/)
+      .first()
+      .fill("10");
     await page.waitForTimeout(400);
 
     // Navigate to Reading Lists
@@ -42,19 +47,17 @@ test.describe("Step 10: Reading Lists", () => {
   });
 
   test("should show module selector", async ({ page }) => {
-    // Module card should be visible
-    const moduleCard = page.locator(".card, [data-module-card]").first();
-    await expect(moduleCard).toBeVisible();
+    // Module panel should be visible
+    const modulePanel = page.getByTestId(/^reading-module-/);
+    await expect(modulePanel.first()).toBeVisible();
   });
 
   test("should show Add Reading button", async ({ page }) => {
-    await expect(
-      page.locator('button[data-add-reading], button:has-text("+ Add reading")'),
-    ).toBeVisible();
+    await expect(page.getByTestId(/^reading-add-/)).toBeVisible();
   });
 
   test("should add a reading list entry", async ({ page }) => {
-    const addBtn = page.locator("button[data-add-reading]").first();
+    const addBtn = page.getByTestId(/^reading-add-/).first();
     await addBtn.click();
     await page.waitForTimeout(600); // Wait for debounced save
 
@@ -63,12 +66,12 @@ test.describe("Step 10: Reading Lists", () => {
   });
 
   test("should select reading type (Core/Recommended)", async ({ page }) => {
-    const addBtn = page.locator("button[data-add-reading]").first();
+    const addBtn = page.getByTestId(/^reading-add-/).first();
     await addBtn.click();
     await page.waitForTimeout(300);
 
-    // Look for type selector using data attribute
-    const typeSelect = page.locator('[data-reading-field="type"]').first();
+    // Look for type selector using data-testid pattern
+    const typeSelect = page.getByTestId(/^reading-type-/).first();
     const options = await typeSelect.locator("option").allTextContents();
 
     const hasTypes = options.some(
@@ -79,11 +82,11 @@ test.describe("Step 10: Reading Lists", () => {
   });
 
   test("should enter book title", async ({ page }) => {
-    const addBtn = page.locator("button[data-add-reading]").first();
+    const addBtn = page.getByTestId(/^reading-add-/).first();
     await addBtn.click();
     await page.waitForTimeout(300);
 
-    const titleInput = page.locator('[data-reading-field="title"]').first();
+    const titleInput = page.getByTestId(/^reading-title-/).first();
     await titleInput.fill("Clean Code: A Handbook of Agile Software Craftsmanship");
     await page.waitForTimeout(600);
 
@@ -92,11 +95,11 @@ test.describe("Step 10: Reading Lists", () => {
   });
 
   test("should enter author", async ({ page }) => {
-    const addBtn = page.locator("button[data-add-reading]").first();
+    const addBtn = page.getByTestId(/^reading-add-/).first();
     await addBtn.click();
     await page.waitForTimeout(300);
 
-    const authorInput = page.locator('[data-reading-field="author"]').first();
+    const authorInput = page.getByTestId(/^reading-author-/).first();
     if (await authorInput.isVisible()) {
       await authorInput.fill("Robert C. Martin");
       await page.waitForTimeout(600);
@@ -104,11 +107,11 @@ test.describe("Step 10: Reading Lists", () => {
   });
 
   test("should enter publisher", async ({ page }) => {
-    const addBtn = page.locator("button[data-add-reading]").first();
+    const addBtn = page.getByTestId(/^reading-add-/).first();
     await addBtn.click();
     await page.waitForTimeout(300);
 
-    const publisherInput = page.locator('[data-reading-field="publisher"]').first();
+    const publisherInput = page.getByTestId(/^reading-publisher-/).first();
     if (await publisherInput.isVisible()) {
       await publisherInput.fill("Pearson");
       await page.waitForTimeout(600);
@@ -116,11 +119,11 @@ test.describe("Step 10: Reading Lists", () => {
   });
 
   test("should enter year", async ({ page }) => {
-    const addBtn = page.locator("button[data-add-reading]").first();
+    const addBtn = page.getByTestId(/^reading-add-/).first();
     await addBtn.click();
     await page.waitForTimeout(300);
 
-    const yearInput = page.locator('[data-reading-field="year"]').first();
+    const yearInput = page.getByTestId(/^reading-year-/).first();
     if (await yearInput.isVisible()) {
       await yearInput.fill("2023");
       await page.waitForTimeout(600);
@@ -128,11 +131,12 @@ test.describe("Step 10: Reading Lists", () => {
   });
 
   test("should enter ISBN", async ({ page }) => {
-    const addBtn = page.locator("button[data-add-reading]").first();
+    const addBtn = page.getByTestId(/^reading-add-/).first();
     await addBtn.click();
     await page.waitForTimeout(300);
 
-    const isbnInput = page.locator('[data-reading-field="isbn"]').first();
+    // Use more specific pattern to avoid matching the lookup button
+    const isbnInput = page.locator('input[data-testid^="reading-isbn-"]').first();
     if (await isbnInput.isVisible()) {
       await isbnInput.fill("978-0132350884");
       await page.waitForTimeout(600);
@@ -140,16 +144,29 @@ test.describe("Step 10: Reading Lists", () => {
   });
 
   test("should add complete reading list entry", async ({ page }) => {
-    const addBtn = page.locator("button[data-add-reading]").first();
+    const addBtn = page.getByTestId(/^reading-add-/).first();
     await addBtn.click();
     await page.waitForTimeout(300);
 
-    // Fill all fields using data attributes
-    await page.locator('[data-reading-field="title"]').first().fill("Clean Code");
-    await page.locator('[data-reading-field="author"]').first().fill("Robert C. Martin");
-    await page.locator('[data-reading-field="publisher"]').first().fill("Pearson");
-    await page.locator('[data-reading-field="year"]').first().fill("2023");
-    await page.locator('[data-reading-field="isbn"]').first().fill("978-0132350884");
+    // Fill all fields using data-testid patterns
+    await page
+      .getByTestId(/^reading-title-/)
+      .first()
+      .fill("Clean Code");
+    await page
+      .getByTestId(/^reading-author-/)
+      .first()
+      .fill("Robert C. Martin");
+    await page
+      .getByTestId(/^reading-publisher-/)
+      .first()
+      .fill("Pearson");
+    await page
+      .getByTestId(/^reading-year-/)
+      .first()
+      .fill("2023");
+    // Use more specific pattern for ISBN input
+    await page.locator('input[data-testid^="reading-isbn-"]').first().fill("978-0132350884");
     await page.waitForTimeout(600);
 
     const data = await getProgrammeData(page);
@@ -158,12 +175,15 @@ test.describe("Step 10: Reading Lists", () => {
   });
 
   test("should add multiple reading list entries", async ({ page }) => {
-    const addBtn = page.locator("button[data-add-reading]").first();
+    const addBtn = page.getByTestId(/^reading-add-/).first();
 
     // Add first entry
     await addBtn.click();
     await page.waitForTimeout(200);
-    await page.locator('[data-reading-field="title"]').first().fill("Book 1");
+    await page
+      .getByTestId(/^reading-title-/)
+      .first()
+      .fill("Book 1");
 
     // Add second entry
     await addBtn.click();
@@ -178,16 +198,17 @@ test.describe("Step 10: Reading Lists", () => {
   });
 
   test("should delete a reading list entry", async ({ page }) => {
-    const addBtn = page.locator("button[data-add-reading]").first();
+    const addBtn = page.getByTestId(/^reading-add-/).first();
     await addBtn.click();
     await page.waitForTimeout(300);
 
-    await page.locator('[data-reading-field="title"]').first().fill("Test Book");
+    await page
+      .getByTestId(/^reading-title-/)
+      .first()
+      .fill("Test Book");
     await page.waitForTimeout(400);
 
-    const deleteBtn = page
-      .locator('button[data-remove-reading], button:has-text("Remove")')
-      .first();
+    const deleteBtn = page.getByTestId(/^reading-remove-/).first();
     if (await deleteBtn.isVisible()) {
       await deleteBtn.click();
       await page.waitForTimeout(500);
@@ -208,7 +229,7 @@ test.describe("Step 10: Reading Lists", () => {
     const before = await getOpenCollapseIds(page, "readingAccordion");
 
     // Add a reading to trigger re-render
-    const addBtn = page.locator("button[data-add-reading]").first();
+    const addBtn = page.getByTestId(/^reading-add-/).first();
     if ((await addBtn.count()) > 0) {
       await addBtn.click();
       await page.waitForTimeout(600);

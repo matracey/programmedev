@@ -167,13 +167,16 @@ test.describe("Step 2: PLOs - Standard Mappings", () => {
     await page.getByTestId("add-plo-btn").click();
     await page.waitForTimeout(300);
 
-    await page.locator("textarea[data-plo-id]").first().fill("Test PLO");
+    await page
+      .getByTestId(/^plo-textarea-/)
+      .first()
+      .fill("Test PLO");
     await page.waitForTimeout(300);
 
     // Look for mapping UI (selects for criteria and threads)
     const hasMappingUI =
       (await page.getByText("Criteria").count()) > 0 ||
-      (await page.locator("select[data-plo-map-criteria]").count()) > 0;
+      (await page.getByTestId(/^plo-criteria-/).count()) > 0;
 
     // This will pass if mapping UI exists
     expect(hasMappingUI || true).toBeTruthy(); // Soft check - UI may vary
@@ -184,12 +187,15 @@ test.describe("Step 2: PLOs - Standard Mappings", () => {
     await page.getByTestId("add-plo-btn").click();
     await page.waitForTimeout(200);
     // Ensure panels are expanded before interacting
-    const expandAllBtn = page.locator('[data-accordion-expand-all="ploAccordion"]');
+    const expandAllBtn = page.getByTestId("accordion-expand-all");
     if ((await expandAllBtn.count()) > 0) {
       await expandAllBtn.click();
       await page.waitForTimeout(200);
     }
-    await page.locator("[data-plo-id]").last().fill("PLO 1 text");
+    await page
+      .getByTestId(/^plo-textarea-/)
+      .last()
+      .fill("PLO 1 text");
     await page.waitForTimeout(120);
 
     await page.getByTestId("add-plo-btn").click();
@@ -198,15 +204,18 @@ test.describe("Step 2: PLOs - Standard Mappings", () => {
       await expandAllBtn.click();
       await page.waitForTimeout(200);
     }
-    await page.locator("[data-plo-id]").last().fill("PLO 2 text");
+    await page
+      .getByTestId(/^plo-textarea-/)
+      .last()
+      .fill("PLO 2 text");
     await page.waitForTimeout(120);
 
     const beforeOpenIds = await getOpenCollapseIds(page, "ploAccordion");
     expect(beforeOpenIds.length).toBeGreaterThanOrEqual(2);
 
     // Add a mapping for the first PLO to trigger window.render()
-    const critSel = page.locator("select[data-plo-map-criteria]").first();
-    const threadSel = page.locator("select[data-plo-map-thread]").first();
+    const critSel = page.getByTestId(/^plo-criteria-/).first();
+    const threadSel = page.getByTestId(/^plo-thread-/).first();
     await expect(critSel).toBeVisible();
     await critSel.selectOption({ index: 1 });
     await page.waitForTimeout(100);
@@ -214,7 +223,10 @@ test.describe("Step 2: PLOs - Standard Mappings", () => {
     await threadSel.selectOption({ index: 1 });
     await page.waitForTimeout(100);
 
-    await page.locator("[data-add-plo-map]").first().click();
+    await page
+      .getByTestId(/^add-mapping-/)
+      .first()
+      .click();
     await page.waitForTimeout(400);
 
     const afterOpenIds = await getOpenCollapseIds(page, "ploAccordion");

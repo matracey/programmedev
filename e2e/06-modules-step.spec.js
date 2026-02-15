@@ -32,8 +32,8 @@ test.describe("Step 5: Credits & Modules", () => {
     await page.getByTestId("add-module-btn").click();
     await page.waitForTimeout(600); // Wait for debounced save (400ms) to complete
 
-    // Module form should appear - use specific data attribute selector
-    await expect(page.locator('[data-module-field="title"]').first()).toBeVisible();
+    // Module form should appear - use testid with regex pattern
+    await expect(page.getByTestId(/^module-title-/).first()).toBeVisible();
 
     const data = await getProgrammeData(page);
     expect(data.modules.length).toBeGreaterThan(0);
@@ -43,8 +43,8 @@ test.describe("Step 5: Credits & Modules", () => {
     await page.getByTestId("add-module-btn").click();
     await page.waitForTimeout(300);
 
-    // Find code input using data attribute
-    const codeInput = page.locator('[data-module-field="code"]').first();
+    // Find code input using testid regex
+    const codeInput = page.getByTestId(/^module-code-/).first();
     await codeInput.fill("CMP8001");
     await page.waitForTimeout(600);
 
@@ -56,8 +56,8 @@ test.describe("Step 5: Credits & Modules", () => {
     await page.getByTestId("add-module-btn").click();
     await page.waitForTimeout(300);
 
-    // Find title input using data attribute
-    const titleInput = page.locator('[data-module-field="title"]').first();
+    // Find title input using testid regex
+    const titleInput = page.getByTestId(/^module-title-/).first();
     await titleInput.fill("Software Development");
     await page.waitForTimeout(600);
 
@@ -69,8 +69,8 @@ test.describe("Step 5: Credits & Modules", () => {
     await page.getByTestId("add-module-btn").click();
     await page.waitForTimeout(300);
 
-    // Find credits input using data attribute
-    const creditsInput = page.locator('[data-module-field="credits"]').first();
+    // Find credits input using testid regex
+    const creditsInput = page.getByTestId(/^module-credits-/).first();
     await creditsInput.fill("10");
     await page.waitForTimeout(600);
 
@@ -106,8 +106,11 @@ test.describe("Step 5: Credits & Modules", () => {
     await page.getByTestId("add-module-btn").click();
     await page.waitForTimeout(500);
 
-    // Click Remove button (inside accordion header)
-    await page.locator("[data-remove-module]").first().click();
+    // Click Remove button using testid regex
+    await page
+      .getByTestId(/^remove-module-/)
+      .first()
+      .click();
     await page.waitForTimeout(500);
 
     const data = await getProgrammeData(page);
@@ -129,13 +132,13 @@ test.describe("Step 5: Credits & Modules", () => {
     await page.getByTestId("add-module-btn").click();
     await page.waitForTimeout(200);
 
-    // Use data attribute for credits input
-    const creditsInput = page.locator('[data-module-field="credits"]').first();
+    // Use testid regex for credits input
+    const creditsInput = page.getByTestId(/^module-credits-/).first();
     await creditsInput.fill("30");
     await page.waitForTimeout(600);
 
     // Verify the total programme credits field shows the value from Identity
-    await expect(page.locator("#totalCredits")).toHaveValue("60");
+    await expect(page.getByTestId("total-credits-display")).toHaveValue("60");
 
     // Verify module credits field has the value we entered
     await expect(creditsInput).toHaveValue("30");
@@ -154,8 +157,8 @@ test.describe("Step 5: Credits & Modules", () => {
     await page.getByTestId("add-module-btn").click();
     await page.waitForTimeout(200);
 
-    // Use data attribute for credits input
-    const creditsInput = page.locator('[data-module-field="credits"]').first();
+    // Use testid regex for credits input
+    const creditsInput = page.getByTestId(/^module-credits-/).first();
     await creditsInput.fill("30");
     await page.waitForTimeout(600);
 

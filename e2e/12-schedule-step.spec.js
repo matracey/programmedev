@@ -81,7 +81,7 @@ test.describe("Step 11: Programme Schedule", () => {
     // Add another version
     await page.getByTestId("step-versions").click();
     await page.waitForTimeout(200);
-    await expect(page.locator('h4:has-text("Programme Versions")')).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Programme Versions" })).toBeVisible();
     await page.getByTestId("add-version-btn").click();
     await page.waitForTimeout(400);
 

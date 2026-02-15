@@ -54,7 +54,10 @@ test.describe("QQI Validation Flags", () => {
     await page.waitForTimeout(200);
     await page.getByTestId("add-module-btn").click();
     await page.waitForTimeout(200);
-    await page.locator('[data-module-field="credits"]').first().fill("30");
+    await page
+      .getByTestId(/^module-credits-/)
+      .first()
+      .fill("30");
     await page.waitForTimeout(600);
 
     // Should show mismatch error - use more specific text
@@ -210,10 +213,11 @@ test.describe("QQI Validation - Stage Structure", () => {
     await page.getByTestId("add-stage-btn").click();
     await page.waitForTimeout(300);
 
-    // Enable exit award but leave title empty
-    const exitAwardCheckbox = page.locator('input[type="checkbox"]').first();
+    // Enable exit award but leave title empty using data-testid
+    const exitAwardCheckbox = page.getByTestId(/^stage-exit-/).first();
     if (await exitAwardCheckbox.isVisible()) {
-      await exitAwardCheckbox.check();
+      // Click the checkbox to enable exit award
+      await exitAwardCheckbox.click();
       await page.waitForTimeout(600);
 
       // Should show warning about missing award title

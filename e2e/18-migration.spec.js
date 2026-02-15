@@ -401,30 +401,28 @@ test.describe("Programme Migration - JSON Import Path", () => {
       ],
     };
 
-    // Find the file input for import
-    const fileInput = page.locator('input[type="file"]');
+    // Find the file input for import using data-testid
+    const fileInput = page.getByTestId("import-input");
 
-    if ((await fileInput.count()) > 0) {
-      await fileInput.setInputFiles({
-        name: "v1-import.json",
-        mimeType: "application/json",
-        buffer: Buffer.from(JSON.stringify(v1Programme)),
-      });
+    await fileInput.setInputFiles({
+      name: "v1-import.json",
+      mimeType: "application/json",
+      buffer: Buffer.from(JSON.stringify(v1Programme)),
+    });
 
-      await page.waitForTimeout(1000);
+    await page.waitForTimeout(1000);
 
-      const data = await getProgrammeData(page);
-      expect(data.schemaVersion).toBe(4);
-      expect(data.title).toBe("Imported V1 Programme");
-      // Should be migrated to arrays
-      expect(data.awardStandardIds).toEqual(["science"]);
-      expect(data.awardStandardNames).toEqual(["Science"]);
-      // Delivery modality should be converted
-      expect(data.versions[0].deliveryModality).toBe("Blended");
-      expect(data.versions[0].deliveryModalities).toBeUndefined();
-      // Should have ploToMimlos initialized
-      expect(data.ploToMimlos).toEqual({});
-    }
+    const data = await getProgrammeData(page);
+    expect(data.schemaVersion).toBe(4);
+    expect(data.title).toBe("Imported V1 Programme");
+    // Should be migrated to arrays
+    expect(data.awardStandardIds).toEqual(["science"]);
+    expect(data.awardStandardNames).toEqual(["Science"]);
+    // Delivery modality should be converted
+    expect(data.versions[0].deliveryModality).toBe("Blended");
+    expect(data.versions[0].deliveryModalities).toBeUndefined();
+    // Should have ploToMimlos initialized
+    expect(data.ploToMimlos).toEqual({});
   });
 
   test("should migrate imported v3 JSON to v4", async ({ page }) => {
@@ -456,26 +454,24 @@ test.describe("Programme Migration - JSON Import Path", () => {
       ],
     };
 
-    const fileInput = page.locator('input[type="file"]');
+    const fileInput = page.getByTestId("import-input");
 
-    if ((await fileInput.count()) > 0) {
-      await fileInput.setInputFiles({
-        name: "v3-import.json",
-        mimeType: "application/json",
-        buffer: Buffer.from(JSON.stringify(v3Programme)),
-      });
+    await fileInput.setInputFiles({
+      name: "v3-import.json",
+      mimeType: "application/json",
+      buffer: Buffer.from(JSON.stringify(v3Programme)),
+    });
 
-      await page.waitForTimeout(1000);
+    await page.waitForTimeout(1000);
 
-      const data = await getProgrammeData(page);
-      expect(data.schemaVersion).toBe(4);
-      expect(data.awardStandardIds).toEqual(["computing", "science"]);
-      expect(data.versions[0].deliveryModality).toBe("Online");
-      expect(data.modules.length).toBe(1);
-      // ploToModules should be converted to ploToMimlos
-      expect(data.ploToMimlos.p1).toEqual(["mim1"]);
-      expect(data.ploToModules).toBeUndefined();
-    }
+    const data = await getProgrammeData(page);
+    expect(data.schemaVersion).toBe(4);
+    expect(data.awardStandardIds).toEqual(["computing", "science"]);
+    expect(data.versions[0].deliveryModality).toBe("Online");
+    expect(data.modules.length).toBe(1);
+    // ploToModules should be converted to ploToMimlos
+    expect(data.ploToMimlos.p1).toEqual(["mim1"]);
+    expect(data.ploToModules).toBeUndefined();
   });
 
   test("should accept and preserve imported v4 JSON unchanged", async ({ page }) => {
@@ -507,24 +503,22 @@ test.describe("Programme Migration - JSON Import Path", () => {
       ],
     };
 
-    const fileInput = page.locator('input[type="file"]');
+    const fileInput = page.getByTestId("import-input");
 
-    if ((await fileInput.count()) > 0) {
-      await fileInput.setInputFiles({
-        name: "v4-import.json",
-        mimeType: "application/json",
-        buffer: Buffer.from(JSON.stringify(v4Programme)),
-      });
+    await fileInput.setInputFiles({
+      name: "v4-import.json",
+      mimeType: "application/json",
+      buffer: Buffer.from(JSON.stringify(v4Programme)),
+    });
 
-      await page.waitForTimeout(1000);
+    await page.waitForTimeout(1000);
 
-      const data = await getProgrammeData(page);
-      expect(data.schemaVersion).toBe(4);
-      expect(data.title).toBe("Imported V4 Programme");
-      expect(data.awardStandardIds).toEqual(["computing"]);
-      expect(data.ploToMimlos.p1).toEqual(["mim1"]);
-      expect(data.modules.length).toBe(1);
-    }
+    const data = await getProgrammeData(page);
+    expect(data.schemaVersion).toBe(4);
+    expect(data.title).toBe("Imported V4 Programme");
+    expect(data.awardStandardIds).toEqual(["computing"]);
+    expect(data.ploToMimlos.p1).toEqual(["mim1"]);
+    expect(data.modules.length).toBe(1);
   });
 });
 

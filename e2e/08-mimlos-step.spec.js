@@ -22,14 +22,19 @@ test.describe("Step 7: MIMLOs (Module Intended Learning Outcomes)", () => {
     await page.getByTestId("add-module-btn").click();
     await page.waitForTimeout(300);
 
-    // Fill module details using data attributes
-    const codeInput = page.locator('[data-module-field="code"]').first();
-    const titleInput = page.locator('[data-module-field="title"]').first();
-    const creditsInput = page.locator('[data-module-field="credits"]').first();
-
-    await codeInput.fill("CMP8001");
-    await titleInput.fill("Software Development");
-    await creditsInput.fill("10");
+    // Fill module details using data-testid patterns
+    await page
+      .getByTestId(/^module-code-/)
+      .first()
+      .fill("CMP8001");
+    await page
+      .getByTestId(/^module-title-/)
+      .first()
+      .fill("Software Development");
+    await page
+      .getByTestId(/^module-credits-/)
+      .first()
+      .fill("10");
     await page.waitForTimeout(500);
 
     // Navigate to MIMLOs step
@@ -52,19 +57,19 @@ test.describe("Step 7: MIMLOs (Module Intended Learning Outcomes)", () => {
     await page.waitForTimeout(300);
 
     // Module card with module name should be visible
-    await expect(page.locator("[data-module-card]").first()).toBeVisible();
+    await expect(page.getByTestId(/^mimlo-module-/).first()).toBeVisible();
   });
 
   test("should add a MIMLO to a module", async ({ page }) => {
     // Click Add MIMLO button
-    const addBtn = page.locator('button:has-text("+ Add MIMLO"), button[data-add-mimlo]');
+    const addBtn = page.getByTestId(/^add-mimlo-/);
 
     if (await addBtn.first().isVisible()) {
       await addBtn.first().click();
       await page.waitForTimeout(300);
 
-      // Find input and enter MIMLO text (app uses input, not textarea)
-      const mimloInput = page.locator("[data-mimlo-module]").first();
+      // Find input and enter MIMLO text
+      const mimloInput = page.getByTestId(/^mimlo-input-/).first();
       if (await mimloInput.isVisible()) {
         await mimloInput.fill("Design and implement object-oriented software solutions");
         await page.waitForTimeout(600);
@@ -90,12 +95,12 @@ test.describe("Step 7: MIMLOs (Module Intended Learning Outcomes)", () => {
     ];
 
     for (let i = 0; i < mimlos.length; i++) {
-      const addBtn = page.locator("button[data-add-mimlo]").first();
+      const addBtn = page.getByTestId(/^add-mimlo-/).first();
       if (await addBtn.isVisible()) {
         await addBtn.click();
         await page.waitForTimeout(300);
 
-        const mimloInputs = page.locator("[data-mimlo-module]");
+        const mimloInputs = page.getByTestId(/^mimlo-input-/);
         await mimloInputs.nth(i).fill(mimlos[i]);
         await page.waitForTimeout(500); // Wait for debounced save
       }
@@ -108,16 +113,19 @@ test.describe("Step 7: MIMLOs (Module Intended Learning Outcomes)", () => {
 
   test("should delete a MIMLO", async ({ page }) => {
     // Add a MIMLO first
-    const addBtn = page.locator("button[data-add-mimlo]").first();
+    const addBtn = page.getByTestId(/^add-mimlo-/).first();
     if (await addBtn.isVisible()) {
       await addBtn.click();
       await page.waitForTimeout(200);
-      await page.locator("[data-mimlo-module]").first().fill("Test MIMLO");
+      await page
+        .getByTestId(/^mimlo-input-/)
+        .first()
+        .fill("Test MIMLO");
       await page.waitForTimeout(500);
     }
 
     // Delete it
-    const deleteBtn = page.locator("button[data-remove-mimlo]").first();
+    const deleteBtn = page.getByTestId(/^remove-mimlo-/).first();
     if (await deleteBtn.isVisible()) {
       await deleteBtn.click();
       await page.waitForTimeout(500);
@@ -142,23 +150,29 @@ test.describe("Step 7: MIMLOs (Module Intended Learning Outcomes)", () => {
     }
 
     // Fill the second module's code and title (now visible after expand)
-    await page.locator('[data-module-field="code"]').nth(1).fill("CMP8002");
-    await page.locator('[data-module-field="title"]').nth(1).fill("Databases");
+    await page
+      .getByTestId(/^module-code-/)
+      .nth(1)
+      .fill("CMP8002");
+    await page
+      .getByTestId(/^module-title-/)
+      .nth(1)
+      .fill("Databases");
     await page.waitForTimeout(600);
 
     // Go back to MIMLOs
     await page.getByTestId("step-mimlos").click();
     await page.waitForTimeout(300);
 
-    // Both module cards should be visible in MIMLOs view (uses data-module-card)
-    const mimloCards = page.locator("[data-module-card]");
+    // Both module cards should be visible in MIMLOs view
+    const mimloCards = page.getByTestId(/^mimlo-module-/);
     expect(await mimloCards.count()).toBeGreaterThanOrEqual(2);
   });
 
   test("should show warning for modules without MIMLOs", async ({ page }) => {
     // Module was added without MIMLOs - check for empty state or add button
     const noMimlosText = page.locator("text=/no mimlo|add mimlo/i");
-    const addBtn = page.locator("button[data-add-mimlo]");
+    const addBtn = page.getByTestId(/^add-mimlo-/);
 
     // Either empty message or add button should be visible
     const hasEmptyState = (await noMimlosText.count()) > 0 || (await addBtn.count()) > 0;
@@ -180,7 +194,7 @@ test.describe("Step 7: MIMLOs (Module Intended Learning Outcomes)", () => {
     const before = await getOpenCollapseIds(page, "mimloAccordion");
 
     // Add a MIMLO to trigger re-render
-    const addBtn = page.locator("button[data-add-mimlo]").first();
+    const addBtn = page.getByTestId(/^add-mimlo-/).first();
     if (await addBtn.isVisible()) {
       await addBtn.click();
       await page.waitForTimeout(600);
@@ -213,14 +227,14 @@ test.describe("Step 7: MIMLO Learning Outcome Linting", () => {
   });
 
   test("should highlight weak verbs in MIMLO text", async ({ page }) => {
-    const addBtn = page.locator("button[data-add-mimlo]").first();
+    const addBtn = page.getByTestId(/^add-mimlo-/).first();
     if (await addBtn.isVisible()) {
       await addBtn.click();
       await page.waitForTimeout(200);
 
-      // Enter MIMLO with weak verb (uses input, not textarea)
+      // Enter MIMLO with weak verb
       await page
-        .locator("[data-mimlo-module]")
+        .getByTestId(/^mimlo-input-/)
         .first()
         .fill("Understand the basics of programming");
       await page.waitForTimeout(600);

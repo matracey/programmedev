@@ -18,15 +18,15 @@ test.describe("Step 13: Traceability (Sankey Diagram)", () => {
       await page.waitForTimeout(300);
 
       // Click "Expand all" to ensure all PLO accordions are visible
-      const expandAllBtn = page.getByRole("button", { name: "Expand all" });
+      const expandAllBtn = page.getByTestId("accordion-expand-all");
       if (await expandAllBtn.isVisible()) {
         await expandAllBtn.click();
         await page.waitForTimeout(200);
       }
 
-      // Fill the last (newly added) PLO
+      // Fill the last (newly added) PLO using data-testid
       await page
-        .locator("[data-plo-id]")
+        .getByTestId(/^plo-textarea-/)
         .last()
         .fill(`PLO ${i + 1}`);
       await page.waitForTimeout(200);
@@ -38,16 +38,19 @@ test.describe("Step 13: Traceability (Sankey Diagram)", () => {
     await page.waitForTimeout(300);
     await page.getByTestId("add-module-btn").click();
     await page.waitForTimeout(400);
-    await page.locator('[data-module-field="title"]').first().fill("Software Development");
+    await page
+      .getByTestId(/^module-title-/)
+      .first()
+      .fill("Software Development");
     await page.waitForTimeout(500);
 
     await page.getByTestId("step-mimlos").click();
     await page.waitForTimeout(400);
-    const addMimloBtn = page.locator("button[data-add-mimlo]").first();
+    const addMimloBtn = page.getByTestId(/^add-mimlo-/).first();
     if (await addMimloBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
       await addMimloBtn.click();
       await page.waitForTimeout(200);
-      const mimloInput = page.locator("[data-mimlo-module]").first();
+      const mimloInput = page.getByTestId(/^mimlo-input-/).first();
       if (await mimloInput.isVisible({ timeout: 2000 }).catch(() => false)) {
         await mimloInput.fill("MIMLO 1");
       }
@@ -57,9 +60,9 @@ test.describe("Step 13: Traceability (Sankey Diagram)", () => {
     // 4. Mapping
     await page.getByTestId("step-mapping").click();
     await page.waitForTimeout(400);
-    const checkbox = page.locator('input[type="checkbox"]').first();
+    const checkbox = page.getByTestId(/^mapping-module-checkbox-/).first();
     if (await checkbox.isVisible({ timeout: 3000 }).catch(() => false)) {
-      await checkbox.check();
+      await checkbox.click();
     }
     await page.waitForTimeout(500);
 
@@ -117,47 +120,59 @@ test.describe("Step 13: Traceability Chain", () => {
     await page.getByTestId("step-outcomes").click();
     await page.waitForTimeout(200);
     await page.getByTestId("add-plo-btn").click();
-    await page.locator("[data-plo-id]").first().fill("Design software applications");
+    await page
+      .getByTestId(/^plo-textarea-/)
+      .first()
+      .fill("Design software applications");
     await page.waitForTimeout(300);
 
     // Module
     await page.getByTestId("step-structure").click();
     await page.waitForTimeout(200);
     await page.getByTestId("add-module-btn").click();
-    await page.locator('[data-module-field="title"]').first().fill("Software Development");
+    await page
+      .getByTestId(/^module-title-/)
+      .first()
+      .fill("Software Development");
     await page.waitForTimeout(300);
 
     // MIMLO
     await page.getByTestId("step-mimlos").click();
     await page.waitForTimeout(200);
-    const addMimloBtn = page.locator("button[data-add-mimlo]").first();
+    const addMimloBtn = page.getByTestId(/^add-mimlo-/).first();
     if (await addMimloBtn.isVisible()) {
       await addMimloBtn.click();
-      await page.locator("[data-mimlo-module]").first().fill("Design OO software");
+      await page
+        .getByTestId(/^mimlo-input-/)
+        .first()
+        .fill("Design OO software");
     }
     await page.waitForTimeout(300);
 
     // Assessment linked to MIMLO
     await page.getByTestId("step-assessments").click();
     await page.waitForTimeout(200);
-    const addAsmBtn = page.locator("button[data-add-asm]").first();
+    const addAsmBtn = page.getByTestId(/^add-asm-/).first();
     if (await addAsmBtn.isVisible()) {
       await addAsmBtn.click();
       await page.waitForTimeout(200);
-      await page.locator("[data-asm-title]").first().fill("Programming Project");
+      await page
+        .getByTestId(/^asm-title-/)
+        .first()
+        .fill("Programming Project");
     }
-    const mimloCheckbox = page.locator("[data-asm-mimlo]").first();
+    const mimloCheckbox = page.getByTestId(/^asm-mimlo-/).first();
     if (await mimloCheckbox.isVisible()) {
-      await mimloCheckbox.check();
+      await mimloCheckbox.click();
     }
     await page.waitForTimeout(300);
 
     // Map PLO to Module
     await page.getByTestId("step-mapping").click();
     await page.waitForTimeout(200);
-    const mapCheckbox = page.locator('input[type="checkbox"]').first();
+    const mapCheckbox = page.getByTestId(/^mapping-module-checkbox-/).first();
     if (await mapCheckbox.isVisible()) {
-      await mapCheckbox.check();
+      await mapCheckbox.click();
     }
     await page.waitForTimeout(400);
 
