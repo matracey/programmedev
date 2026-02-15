@@ -5,6 +5,8 @@
  * @module export/json
  */
 
+import { migrateProgramme } from "../utils/migrate-programme.js";
+
 /**
  * Downloads a programme as a JSON file.
  * Creates a downloadable blob with formatted JSON content.
@@ -48,6 +50,7 @@ export async function importJson(file) {
 
 /**
  * Imports and validates a programme from a JSON file.
+ * Applies schema migrations to bring legacy data up to current version.
  *
  * @param {File} file - The file to import
  * @returns {Promise<{success: boolean, programme?: Object, error?: string}>} Import result
@@ -62,7 +65,10 @@ export async function importProgrammeFromJson(file) {
       return { success: false, error: "Invalid JSON structure" };
     }
 
-    return { success: true, programme };
+    // Apply migrations to bring data to current schema version
+    const migrated = migrateProgramme(programme);
+
+    return { success: true, programme: migrated };
   } catch (e) {
     return { success: false, error: /** @type {Error} */ (e).message };
   }
