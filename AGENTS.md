@@ -6,91 +6,112 @@ Guidelines for AI coding agents working with this codebase.
 
 **QQI Programme Design Studio** — A web application for designing academic programmes compliant with Quality and Qualifications Ireland (QQI) standards.
 
-- **Tech Stack**: Vanilla JavaScript (ES2022+), Vite, Bootstrap 5, Playwright
-- **Type Checking**: TypeScript via JSDoc annotations (strict mode)
-- **No Framework**: Manual DOM manipulation, component-based architecture
+- **Tech Stack**: React 18, TypeScript (strict mode), Vite, Bootstrap 5 + react-bootstrap, Vitest, Playwright
+- **UI Framework**: React with functional components, hooks, and react-bootstrap
+- **State Management**: Mutable singleton store (`src/state/store.ts`) with `useProgramme()` hook for React re-renders
+- **Type Checking**: TypeScript in strict mode — all source files are `.ts`/`.tsx` (no `.js` in `src/`)
+- **Styling**: Bootstrap 5 utilities and CSS classes (no inline styles)
+- **Icons**: [Phosphor Icons](https://phosphoricons.com/) via CSS classes
 
 ## Commands
 
 ```bash
-npm run dev          # Start dev server at http://localhost:5173
-npm run build        # Production build to dist/
-npm run test:e2e     # Run Playwright end-to-end tests
-npm run format       # Format code with Prettier
-npm run format:check # Check formatting without changes
+npm run dev            # Start dev server
+npm run build          # Production build to dist/
 
-# TypeScript checking (run after changes)
-npx tsc -p jsconfig.json --noEmit
+# Testing
+npm run test:unit      # Run Vitest unit tests
+npm run test:unit:watch # Run Vitest in watch mode
+npm run test:coverage  # Run unit tests with coverage report
+npm run test:e2e       # Run Playwright end-to-end tests
 
-# Lint checking (enforces curly braces)
-npx eslint "src/**/*.js" "e2e/**/*.js"
+# Code quality
+npm run format         # Format code with Prettier
+npm run format:check   # Check formatting without changes
+npx tsc --noEmit       # TypeScript type checking
+npx eslint "src/**/*.{ts,tsx}" "e2e/**/*.js"  # Lint checking
 ```
 
 ## Directory Structure
 
 ```text
 src/
+├── App.tsx                    # Root React component (step routing, layout)
+├── index.tsx                  # Entry point (React root, theme, state load)
+├── template.ts                # Template page entry point (schedule/descriptor export)
+├── style.css                  # Global styles
+├── types.d.ts                 # Global TypeScript type definitions
 ├── components/
-│   ├── steps/           # Wizard step components (16 files)
-│   │   ├── identity.js  # Programme identity (title, award, NFQ level)
-│   │   ├── outcomes.js  # Programme Learning Outcomes (PLOs)
-│   │   ├── versions.js  # Programme versions and delivery modes
-│   │   ├── stages.js    # Stage/year structure
-│   │   ├── structure.js # Modules (credits, code, title)
-│   │   ├── electives.js # Elective group definitions
-│   │   ├── mimlos.js    # Module learning outcomes
-│   │   ├── assessments.js
-│   │   ├── reading-lists.js
-│   │   ├── effort-hours.js
-│   │   ├── schedule.js
-│   │   ├── mapping.js   # PLO ↔ Module mapping
-│   │   ├── traceability.js
-│   │   ├── snapshot.js  # QQI export summary
-│   │   ├── shared.js    # Shared utilities
-│   │   └── index.js     # Step registry
-│   ├── header.js
-│   ├── steps.js         # Sidebar navigation
-│   ├── flags.js         # Validation warnings
-│   ├── nav.js           # Next/Previous buttons
-│   └── dev-mode.js
-├── export/
-│   ├── json.js          # Import/export JSON
-│   └── word.js          # Word document export
-├── lib/
-│   └── lo-lint.js       # Learning outcome linter
-├── reports/
-│   └── assessment-reports.js
+│   ├── react/                 # App-level React components
+│   │   ├── Header.tsx         # App header (title, import/export, theme)
+│   │   ├── Sidebar.tsx        # Step navigation sidebar
+│   │   ├── Flags.tsx          # Validation warnings panel
+│   │   ├── NavButtons.tsx     # Next/Previous step buttons
+│   │   └── index.ts           # Barrel export
+│   ├── steps/react/           # Wizard step components (14 steps)
+│   │   ├── IdentityStep.tsx   # Programme identity (title, award, NFQ level)
+│   │   ├── OutcomesStep.tsx   # Programme Learning Outcomes (PLOs)
+│   │   ├── VersionsStep.tsx   # Programme versions and delivery modes
+│   │   ├── StagesStep.tsx     # Stage/year structure
+│   │   ├── StructureStep.tsx  # Modules (credits, code, title)
+│   │   ├── ElectivesStep.tsx  # Elective group definitions
+│   │   ├── MimlosStep.tsx     # Module learning outcomes
+│   │   ├── AssessmentsStep.tsx
+│   │   ├── ReadingListsStep.tsx
+│   │   ├── EffortHoursStep.tsx
+│   │   ├── ScheduleStep.tsx
+│   │   ├── MappingStep.tsx    # PLO ↔ MIMLO mapping
+│   │   ├── TraceabilityStep.tsx # Traceability matrix + Sankey diagram
+│   │   └── SnapshotStep.tsx   # QQI export summary
+│   └── ui/                    # Reusable UI components
+│       ├── Accordion/         # Custom accordion (Accordion, AccordionItem, AccordionControls)
+│       ├── Form/              # Form components (FormField, FormInput, FormSelect)
+│       ├── Alert.tsx          # Warning/info alert
+│       ├── Icon.tsx           # Phosphor icon wrapper
+│       ├── SectionCard.tsx    # Card wrapper for step sections
+│       └── index.ts           # Barrel export
+├── hooks/
+│   └── useStore.ts            # useProgramme() hook for React state sync
 ├── state/
-│   └── store.js         # Central state management
+│   └── store.ts               # Central state management (singleton, localStorage)
 ├── utils/
-│   ├── helpers.js
-│   ├── validation.js
-│   ├── migrate-programme.js
-│   ├── dom.js
-│   └── uid.js
-├── types.d.ts           # TypeScript type definitions
-├── main.js              # Application entry point
-└── style.css
+│   ├── validation.ts          # Programme validation rules
+│   ├── helpers.ts             # Formatting, delivery patterns, MIMLO/PLO utils
+│   ├── migrate-programme.ts   # Schema migration (v1→v2→v3→v4)
+│   ├── dom.ts                 # escapeHtml, tagHtml
+│   └── uid.ts                 # Unique ID generation
+├── lib/
+│   └── lo-lint.ts             # Learning outcome linter (vague verb detection)
+├── export/
+│   ├── json.ts                # Import/export programme JSON
+│   ├── word.ts                # Word document export (docxtemplater)
+│   └── schedule-docx.ts       # Schedule DOCX export (docx.js)
+├── reports/
+│   └── assessment-reports.ts  # Assessment report HTML generation
+├── template/
+│   ├── schedule-html.ts       # Schedule table HTML rendering
+│   └── module-descriptors-html.ts  # Module descriptor HTML rendering
+└── test/
+    └── setup.ts               # Vitest test setup
 
-e2e/                     # Playwright tests
-├── XX-feature.spec.js   # Numbered test files
-└── fixtures/            # Test data
+e2e/                           # Playwright end-to-end tests
+├── XX-feature.spec.js         # Numbered test files
+└── fixtures/                  # Test data and helpers
+    ├── test-fixtures.js       # Custom test helpers (loadProgrammeData, getProgrammeData)
+    └── test-data.js           # Sample programme data
 ```
 
 ## Coding Conventions
 
-### JavaScript Style
+### TypeScript Style
 
-```javascript
-// @ts-check at top of every file
-// @ts-check
-
-// K&R style braces - ALWAYS use braces, even for single statements
+```typescript
+// K&R style braces — ALWAYS use braces, even for single statements
 function example() {
   if (condition) {
-    return value; // ✅ Correct - has braces
+    return value; // ✅ Correct — has braces
   }
-  // if (condition) return value;  // ❌ Wrong - missing braces
+  // if (condition) return value;  // ❌ Wrong — missing braces
 }
 
 // ES2022+ syntax required
@@ -98,55 +119,77 @@ const arr = data ?? []; // Nullish coalescing
 obj.prop ??= defaultValue; // Nullish assignment
 value?.nested?.prop; // Optional chaining
 
-// JSDoc for all exported functions
-/**
- * Brief description of what the function does.
- *
- * @param {Programme} p - The programme data
- * @param {string} id - The module ID
- * @returns {Module | undefined} The found module
- */
-export function findModule(p, id) {
+// Explicit type annotations on all exported functions
+export function findModule(p: Programme, id: string): Module | undefined {
   return (p.modules ?? []).find((m) => m.id === id);
 }
 
-// Inline type casts for callbacks
-(p.modules ?? []).forEach((/** @type {Module} */ m) => {
-  // m is typed as Module here
-});
-
-// DOM element casting
-const input = /** @type {HTMLInputElement} */ (document.getElementById("myInput"));
+// Import without file extensions (bundler resolution)
+import { uid } from "../utils/uid";
+import { state, saveDebounced } from "../state/store";
 ```
 
-### HTML Templates
+### React Components
 
-```javascript
-// Always escape user content
-import { escapeHtml } from "../utils/dom.js";
+```tsx
+// Functional components with explicit types
+interface MyStepProps {
+  onSave?: () => void;
+}
 
-const html = `
-  <div class="card">
-    <h5>${escapeHtml(module.title)}</h5>
-    <p>${escapeHtml(module.description ?? "")}</p>
-  </div>
-`;
+export const MyStep: React.FC<MyStepProps> = ({ onSave }) => {
+  const { programme, updateProgramme } = useProgramme();
 
-// Use data-* attributes for event binding
-const button = `<button data-remove-module="${m.id}">Remove</button>`;
+  return (
+    <SectionCard title="My Step" icon="ph-gear">
+      {/* content */}
+    </SectionCard>
+  );
+};
 
-// Wire events after rendering
-document.querySelectorAll("[data-remove-module]").forEach((btn) => {
-  /** @type {HTMLElement} */ (btn).onclick = () => {
-    const id = btn.getAttribute("data-remove-module");
-    // handle removal
-  };
-});
+// Use react-bootstrap components, not raw HTML
+import { Button, Form, Badge, ButtonGroup } from "react-bootstrap";
+
+// Use data-testid for testable elements
+<Button data-testid="add-module-btn" onClick={handleAdd}>
+  <i className="ph ph-plus" aria-hidden="true" /> Add Module
+</Button>;
+```
+
+### Accordion Pattern
+
+The codebase uses a custom `Accordion` component wrapping react-bootstrap. Key rules:
+
+```tsx
+import { Accordion, AccordionItem, AccordionControls } from "../../ui/Accordion";
+
+// AccordionControls MUST be inside <Accordion> to access context
+<Accordion
+  id="modulesAccordion"
+  defaultExpandedKeys={[firstModuleId]}
+>
+  <AccordionControls />  {/* ✅ Inside Accordion */}
+  {modules.map((mod) => (
+    <AccordionItem
+      key={mod.id}
+      eventKey={mod.id}
+      title={mod.title}
+      subtitle={`${mod.credits} credits`}
+      headerActions={<Badge>{mod.mimlos?.length ?? 0} MIMLOs</Badge>}
+    >
+      {/* Item content */}
+    </AccordionItem>
+  ))}
+</Accordion>
+
+// ❌ WRONG — controls outside Accordion cannot access context
+<AccordionControls />
+<Accordion id="myAccordion">...</Accordion>
 ```
 
 ## Type System
 
-Types are defined in `src/types.d.ts`. Key interfaces:
+Types are defined in `src/types.d.ts` as global declarations. Key interfaces:
 
 - **Programme** — Root data structure with all programme information
 - **Module** — Individual module (code, title, credits, assessments, mimlos)
@@ -154,6 +197,9 @@ Types are defined in `src/types.d.ts`. Key interfaces:
 - **ProgrammeVersion** — Version with stages, delivery mode, patterns
 - **Stage** — Year/stage with assigned modules
 - **ModuleAssessment** — Assessment with type, weighting, integrity options
+- **ElectiveDefinition** / **ElectiveGroup** — Elective structure
+
+These types are globally available — do **not** import them.
 
 ### Adding New Properties
 
@@ -163,80 +209,147 @@ Types are defined in `src/types.d.ts`. Key interfaces:
 
 ## State Management
 
-```javascript
-import { state, saveDebounced } from "../state/store.js";
+```typescript
+import { state, saveDebounced, saveNow } from "../state/store";
+import { useProgramme } from "../hooks/useStore";
 
-// Access programme data
+// In React components — use the hook for reactive updates
+const { programme, updateProgramme } = useProgramme();
+
+// Direct state access (for non-React code or read-only)
 const p = state.programme;
 
-// Modify and save
-p.title = "New Title";
-saveDebounced(); // Debounced save to localStorage
-
-// Trigger re-render
-window.render?.();
-```
-
-### Important State Patterns
-
-```javascript
-// Always ensure arrays exist before use
-if (!p.modules) p.modules = [];
-// Or use nullish assignment
-p.modules ??= [];
-
-// Safe iteration
-(p.modules ?? []).forEach((m) => {
-  /* ... */
+// Save patterns
+saveDebounced(); // 400ms debounce for text inputs
+saveDebounced(() => {
+  /* callback after save */
 });
-
-// Finding items
-const module = (p.modules ?? []).find((m) => m.id === targetId);
+saveNow(); // Immediate save for critical operations
 ```
 
 ## Testing
 
-Tests use Playwright in `e2e/` directory.
+### Unit Tests (Vitest + React Testing Library)
 
-```javascript
-// e2e/XX-feature.spec.js
-import { test, expect } from "@playwright/test";
+Unit tests live alongside source files as `*.test.ts` / `*.test.tsx`.
 
-test("should do something", async ({ page }) => {
-  await page.goto("/");
+```typescript
+// src/utils/myUtil.test.ts
+import { describe, expect, it, vi } from "vitest";
+import { myFunction } from "./myUtil";
 
-  // Use data-testid for selectors
-  await page.click('[data-testid="add-module-btn"]');
-  await expect(page.locator('[data-testid="module-item"]')).toHaveCount(1);
+describe("myFunction", () => {
+  it("does the thing", () => {
+    expect(myFunction("input")).toBe("expected");
+  });
 });
 ```
 
-Run tests:
+```tsx
+// src/components/steps/react/MyStep.test.tsx
+import { render, screen, fireEvent, act } from "@testing-library/react";
+import { describe, expect, it, vi, beforeEach } from "vitest";
+import { MyStep } from "./MyStep";
 
-```bash
-# Start dev server first (in separate terminal)
-npm run dev
-
-# Run tests
-npm run test:e2e
+// Mock the store
+vi.mock("../../../state/store", async () => {
+  const actual = await vi.importActual("../../../state/store");
+  return { ...actual, saveNow: vi.fn() };
+});
 ```
+
+### Code Coverage
+
+The project enforces **90% code coverage thresholds** across all metrics (statements, branches, functions, lines) via `vitest.config.ts`. When adding new code, ensure comprehensive tests are written to maintain this standard. Run `npm run test:coverage` to check coverage.
+
+### E2E Tests (Playwright)
+
+E2E tests are in `e2e/` and use custom fixtures:
+
+```javascript
+import { test, expect, loadProgrammeData, getProgrammeData } from "./fixtures/test-fixtures.js";
+
+test("should load and edit programme", async ({ page }) => {
+  await loadProgrammeData(page, testData);
+  await page.getByTestId("step-structure").click();
+  await page.waitForTimeout(300);
+  await page.getByTestId("add-module-btn").click();
+  await page.waitForTimeout(600); // 400ms debounce + buffer
+  const data = await getProgrammeData(page);
+  expect(data.modules.length).toBe(1);
+});
+```
+
+Key E2E patterns:
+
+- Use `data-testid` selectors (not labels — flags panel causes duplicates)
+- Wait 600ms after actions for debounced save
+- Use `loadProgrammeData()` / `getProgrammeData()` for state setup/verification
+- Each test starts with cleared localStorage
+
+## Git Workflow
+
+### Commit Early, Often, and Atomically
+
+**This is critical.** Every commit must be a small, self-contained unit of work that passes all checks independently.
+
+- **Atomic commits**: One logical change per commit (e.g., adding a type, adding a utility function, updating a single component). Never batch unrelated changes.
+- **Green state**: Every commit must compile, lint, and pass unit tests. Never leave the repo broken between commits.
+- **Conventional Commits** format is mandatory:
+  - `feat(scope): description` — new features
+  - `fix(scope): description` — bug fixes
+  - `refactor(scope): description` — non-functional changes
+  - `test(scope): description` — adding or updating tests
+  - `docs(scope): description` — documentation only
+  - Scope examples: `identity`, `structure`, `mapping`, `export`, `validation`, `e2e`, `ui`, `state`
+- **Before each commit**, run the validation checklist (see below). Do not commit code that fails unit tests.
+- Branch names: `feat/short-description`, `fix/short-description`, `refactor/short-description`
+
+### Pull Requests
+
+On completion of a task, **raise a pull request** against the target branch.
+
+- The PR title should follow Conventional Commits format
+- The PR description must include:
+  - A summary of the changes made
+  - Screenshots of any visual changes — inject these as **base64-encoded images** directly in the PR description markdown (e.g., `![Description](data:image/png;base64,...)`)
+  - **Do not commit screenshot files** to the repository
+- To capture screenshots for the PR, use Playwright's browser automation to navigate to relevant pages and take screenshots, then base64-encode the image data and embed it in the PR description
+
+## Validation Checklist
+
+Run these checks before **every** commit:
+
+1. **Unit tests pass**: `npm run test:unit` — all tests green
+2. **Build succeeds**: `npm run build` — no compilation errors
+3. **Formatting clean**: `npm run format` (or `npm run format:check`)
+4. **TypeScript clean**: `npx tsc --noEmit` — no type errors in source code
+
+For final validation before raising a PR, also run:
+
+5. **E2E tests pass**: `npm run test:e2e` (requires dev server running)
+6. **Coverage maintained**: `npm run test:coverage` — meets 90% thresholds
 
 ## Do's and Don'ts
 
 ### ✅ Do
 
-- Run `npm run build` after changes to verify compilation
-- Run `npx tsc -p jsconfig.json --noEmit` to check types
-- Run `npm run format` after adding or modifying code
+- Write unit tests for all new code — maintain 90% coverage
+- Commit early, often, and atomically — one logical change per commit
+- Run unit tests before every commit
+- Use existing UI components from `src/components/ui/`
 - Use existing helpers from `src/utils/`
 - Follow nullish coalescing patterns (`??`, `??=`)
-- Add JSDoc comments to new functions
 - Use `data-testid` attributes for testable elements
-- Escape HTML with `escapeHtml()` for user content
+- Use `escapeHtml()` for any user content rendered as raw HTML
 - Use K&R style braces (opening brace on same line as statement)
+- Use Phosphor icon classes with `aria-hidden="true"` for decorative icons
+- Place `AccordionControls` inside `<Accordion>` (never outside)
 
 ### ❌ Don't
 
+- Commit code that fails unit tests
+- Batch unrelated changes into a single commit
 - Use `@ts-nocheck` or `@ts-ignore` without strong justification
 - Use `||` for null/undefined checks (use `??` instead)
 - Skip null guards on optional array properties
@@ -244,357 +357,66 @@ npm run test:e2e
 - Modify `types.d.ts` without updating affected code
 - Use inline styles (use Bootstrap utilities or CSS classes)
 - Use Allman style braces (opening brace on its own line)
+- Create `.js` files in `src/` — all source must be TypeScript
+- Import files with `.js` extension — use extensionless imports
+- Place `AccordionControls` outside `<Accordion>` — it needs context
 
 ## Common Tasks
 
 ### Adding a New Step Component
 
-1. Create `src/components/steps/new-step.js`
-2. Export `renderNewStep()` and `wireNewStep()` functions
-3. Register in `src/components/steps/index.js`
-4. Add step definition to `STEPS` array in `src/components/steps.js`
+1. Create `src/components/steps/react/NewStep.tsx` with a React functional component
+2. Create `src/components/steps/react/NewStep.test.tsx` with comprehensive tests
+3. Register in `STEP_COMPONENTS` in `src/App.tsx`
+4. Add step definition to `steps` array in `src/state/store.ts`
 
 ### Adding a New Field to Programme
 
 1. Add type to `Programme` interface in `types.d.ts`
-2. Initialize in `defaultProgramme()` in `store.js` if needed
-3. Handle in migration if loading old data (`migrate-programme.js`)
+2. Initialize in `defaultProgramme()` in `store.ts` if needed
+3. Handle in migration if loading old data (`migrate-programme.ts`)
 4. Add UI in appropriate step component
+5. Add validation rules in `validation.ts` if applicable
+6. Write tests for each change
 
-## UI Patterns
+### Adding a New UI Component
 
-### Accordion Pattern
-
-This codebase uses Bootstrap 5 accordions extensively for expandable/collapsible content. Follow these patterns for consistency:
-
-#### Basic Accordion Structure
-
-```javascript
-import {
-  accordionControlsHtml,
-  wireAccordionControls,
-  captureOpenCollapseIds,
-  updateAccordionHeader,
-} from "./shared.js";
-
-// Before rendering, capture which items are expanded (preserves state across re-renders)
-const openCollapseIds = captureOpenCollapseIds("myAccordionId");
-
-// Render accordion with expand/collapse all controls
-const html = `
-  ${accordionControlsHtml("myAccordionId")}
-  <div class="accordion" id="myAccordionId" aria-labelledby="my-heading">
-    ${items.map((item, idx) => renderAccordionItem(item, idx, openCollapseIds)).join("")}
-  </div>
-`;
-
-// Wire up the expand/collapse all buttons after rendering
-wireAccordionControls("myAccordionId");
-```
-
-#### Accordion Item with Header Actions
-
-Header actions (Remove buttons, Add buttons, badges, etc.) are positioned to the right of the expand/collapse content using a flex layout. Actions are placed **inside** the accordion-button.
-
-**⚠️ IMPORTANT: Use `<span role="button">`, not `<button>`**
-
-HTML does not allow `<button>` elements nested inside other `<button>` elements. If you use a `<button>` for header actions, the browser will move it outside the accordion-button, breaking the layout. Always use `<span>` with `role="button"` and `tabindex="0"` for accessibility:
-
-```javascript
-function renderAccordionItem(item, idx, openCollapseIds) {
-  const headingId = `item_${item.id}_heading`;
-  const collapseId = `collapse_item_${item.id}`;
-  const isActive = openCollapseIds.has(collapseId) || (openCollapseIds.size === 0 && idx === 0);
-
-  return `
-    <div class="accordion-item bg-body" data-testid="item-${item.id}">
-      <h2 class="accordion-header" id="${headingId}">
-        <button class="accordion-button ${isActive ? "" : "collapsed"} w-100" 
-                type="button" 
-                data-bs-toggle="collapse" 
-                data-bs-target="#${collapseId}" 
-                aria-expanded="${isActive}" 
-                aria-controls="${collapseId}"
-                data-testid="item-accordion-${item.id}">
-          <div class="d-flex w-100 align-items-center gap-2">
-            <!-- Main content (grows to fill space) -->
-            <div class="flex-grow-1">
-              <div class="fw-semibold">${escapeHtml(item.title)}</div>
-              <div class="small text-secondary">${escapeHtml(item.subtitle)}</div>
-            </div>
-            <!-- Header actions (positioned right, before expand icon) -->
-            <div class="header-actions d-flex align-items-center gap-2 me-2">
-              <!-- ✅ CORRECT: Use <span> with role="button" -->
-              <span class="btn btn-sm btn-outline-primary" role="button" tabindex="0"
-                    data-add-subitem="${item.id}" 
-                    aria-label="Add subitem to ${escapeHtml(item.title)}"
-                    data-testid="add-subitem-${item.id}">
-                <i class="ph ph-plus" aria-hidden="true"></i> Add
-              </span>
-              <span class="badge text-bg-success">Status OK</span>
-              <span class="btn btn-sm btn-outline-danger" role="button" tabindex="0"
-                    data-remove-item="${item.id}" 
-                    aria-label="Remove ${escapeHtml(item.title)}"
-                    data-testid="remove-item-${item.id}">
-                <i class="ph ph-trash" aria-hidden="true"></i> Remove
-              </span>
-              <!-- ❌ WRONG: Do NOT use <button> - browser will move it outside -->
-            </div>
-          </div>
-        </button>
-      </h2>
-      <div id="${collapseId}" class="accordion-collapse collapse ${isActive ? "show" : ""}" 
-           aria-labelledby="${headingId}">
-        <div class="accordion-body">
-          <!-- Accordion content here -->
-        </div>
-      </div>
-    </div>
-  `;
-}
-```
-
-#### Key Accordion Patterns
-
-1. **Preserve expansion state**: Use `captureOpenCollapseIds()` before re-rendering and check against it when setting `isActive`
-2. **Default first item open**: When `openCollapseIds` is empty, default to opening the first item: `(openCollapseIds.size === 0 && idx === 0)`
-3. **Header actions layout**: Use `d-flex w-100 align-items-center gap-2` on a wrapper div inside the accordion-button
-4. **Action positioning**: Use `flex-grow-1` on main content and place actions in a `header-actions` div with `me-2` margin
-5. **Expand/collapse all**: Always include `accordionControlsHtml(accordionId)` above the accordion
-6. **In-place header updates**: Use `updateAccordionHeader(headingId, { title, subtitle })` from `shared.js` to update headers without re-rendering (preserves input focus)
-7. **Use `<span role="button">` for actions**: Never use `<button>` inside the accordion-button - use `<span>` with `role="button"` and `tabindex="0"`
-
-#### Wiring Header Action Event Handlers
-
-Since header actions use `<span>` instead of `<button>`, you must handle both click and keyboard events for accessibility:
-
-```javascript
-// Wire action buttons (use stopPropagation to prevent accordion toggle)
-document.querySelectorAll("[data-add-subitem]").forEach((btn) => {
-  const handler = (e) => {
-    e.stopPropagation(); // Prevent accordion toggle
-    const id = btn.getAttribute("data-add-subitem");
-    // Handle add action...
-  };
-  /** @type {HTMLElement} */ (btn).onclick = handler;
-  /** @type {HTMLElement} */ (btn).onkeydown = (/** @type {KeyboardEvent} */ e) => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      handler(e);
-    }
-  };
-});
-
-// Same pattern for remove buttons
-document.querySelectorAll("[data-remove-item]").forEach((btn) => {
-  const handler = (e) => {
-    e.stopPropagation();
-    const id = btn.getAttribute("data-remove-item");
-    // Handle removal...
-  };
-  /** @type {HTMLElement} */ (btn).onclick = handler;
-  /** @type {HTMLElement} */ (btn).onkeydown = (/** @type {KeyboardEvent} */ e) => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      handler(e);
-    }
-  };
-});
-```
-
-### Debugging
-
-```javascript
-// Programme state is exposed for debugging
-console.log(window.__pds_state?.programme);
-
-// Or in browser console
-__pds_state.programme;
-```
-
-### Icons
-
-This project uses [Phosphor Icons](https://phosphoricons.com/) via CSS classes. Always include `aria-hidden="true"` for decorative icons:
-
-```javascript
-// Icon with text (decorative)
-`<button><i class="ph ph-plus" aria-hidden="true"></i> Add Item</button>`;
-
-// Common icons used:
-// ph-plus         Add/create
-// ph-trash        Remove/delete
-// ph-warning      Error/warning
-// ph-arrow-right  Navigation indicator
-// ph-download-simple  Export/download
-// ph-sun / ph-moon    Theme toggle
-// ph-arrows-out-simple / ph-arrows-in-simple  Expand/collapse
-```
-
-### Validation System
-
-The `validateProgramme()` function in `src/utils/validation.js` returns an array of validation flags:
-
-```javascript
-import { validateProgramme } from "../utils/validation.js";
-
-const flags = validateProgramme(state.programme);
-// Returns: Array<{ type: "error" | "warn", msg: string, step: string }>
-
-// Example flags:
-// { type: "error", msg: "Programme title is missing.", step: "identity" }
-// { type: "warn", msg: "Award type is missing.", step: "identity" }
-
-// Render flags in the sidebar
-import { renderFlags } from "../components/flags.js";
-renderFlags(flags, goToStep); // goToStep is a function(stepKey) that navigates
-```
-
-Validation is re-run on each `render()` call. To update flags after field changes without full re-render, call `renderFlags()` directly.
-
-### Application Modes
-
-The app supports two modes controlled by `state.programme.mode`:
-
-```javascript
-import { setMode, activeSteps } from "../state/store.js";
-
-// PROGRAMME_OWNER (default) - Full access to all steps and editing
-setMode("PROGRAMME_OWNER");
-
-// MODULE_EDITOR - Restricted to specific steps and assigned modules
-setMode("MODULE_EDITOR", ["mod_abc123", "mod_def456"]);
-
-// Get currently visible steps (respects mode)
-const steps = activeSteps(); // Returns filtered step list for current mode
-
-// Check current mode
-if (state.programme.mode === "MODULE_EDITOR") {
-  // Show limited UI
-}
-```
-
-Module Editor mode:
-
-- Only shows steps: MIMLOs, Assessments, Mapping, Snapshot
-- Only allows editing of assigned modules
-- Locks programme-level fields (title, credits, PLOs, etc.)
-
-### Dev Mode Toggle
-
-Steps can include a toggle to switch between modes (only visible with `?dev=true` URL param):
-
-```javascript
-import { getDevModeToggleHtml, wireDevModeToggle } from "../dev-mode.js";
-
-export async function renderMyStep() {
-  const devModeToggleHtml = getDevModeToggleHtml();
-
-  content.innerHTML =
-    devModeToggleHtml +
-    `
-    <div class="card">
-      <!-- Step content -->
-    </div>
-  `;
-
-  // Wire the toggle to trigger re-render on mode change
-  wireDevModeToggle(() => window.render?.());
-  wireMyStep();
-}
-```
+1. Create `src/components/ui/NewComponent.tsx`
+2. Create `src/components/ui/NewComponent.test.tsx`
+3. Export from `src/components/ui/index.ts`
+4. Prefer react-bootstrap primitives where possible
 
 ### UID Generation
 
 Always use `uid()` for generating unique identifiers:
 
-```javascript
-import { uid } from "../utils/uid.js";
+```typescript
+import { uid } from "../utils/uid";
 
-// Generate IDs with semantic prefixes
 const moduleId = uid("mod"); // "mod_550e8400-e29b-..."
 const ploId = uid("plo"); // "plo_550e8400-e29b-..."
 const assessmentId = uid("asm"); // "asm_550e8400-e29b-..."
-const groupId = uid("egrp"); // "egrp_550e8400-e29b-..."
-const definitionId = uid("edef"); // "edef_550e8400-e29b-..."
-
-// Use when creating new items
-p.modules.push({
-  id: uid("mod"),
-  title: "New Module",
-  credits: 0,
-  // ...
-});
 ```
 
-### Save Patterns
+### Validation System
 
-Use `saveDebounced()` for input fields (400ms debounce), with optional callback for post-save actions:
+```typescript
+import { validateProgramme } from "../utils/validation";
+import type { ValidationFlag } from "../utils/validation";
 
-```javascript
-import { state, saveDebounced, saveNow } from "../state/store.js";
-
-// For text inputs - debounced to avoid excessive saves during typing
-input.addEventListener("input", (e) => {
-  state.programme.title = e.target.value;
-  saveDebounced(() => {
-    // Optional: update flags or UI after save completes
-    updateFlagsAndHeader();
-  });
-});
-
-// For selects/checkboxes - can save immediately if preferred
-select.onchange = () => {
-  state.programme.awardType = select.value;
-  saveDebounced(); // Still use debounced for consistency
-  window.render?.(); // Re-render to update dependent UI
-};
-
-// For critical operations - save immediately
-saveNow(); // Synchronous save to localStorage
+const flags: ValidationFlag[] = validateProgramme(state.programme);
+// Returns: Array<{ type: "error" | "warn"; msg: string; step: string }>
 ```
 
-### Playwright Test Fixtures
+### Application Modes
 
-Tests use custom fixtures from `e2e/fixtures/test-fixtures.js`:
+```typescript
+import { setMode, activeSteps } from "../state/store";
 
-```javascript
-// Import custom test and helpers
-import { test, expect, loadProgrammeData, getProgrammeData } from "./fixtures/test-fixtures.js";
-import { higherDiplomaComputing } from "./fixtures/test-data.js";
-
-test.describe("My Feature", () => {
-  test("should load programme data", async ({ page }) => {
-    // Load complete test programme (auto-reloads page)
-    await loadProgrammeData(page, higherDiplomaComputing);
-
-    // Verify data was loaded
-    const data = await getProgrammeData(page);
-    expect(data.title).toBe("Higher Diploma in Computing");
-  });
-
-  test("should start fresh", async ({ page }) => {
-    // Each test starts with cleared localStorage automatically
-    // Navigate to step using data-testid
-    await page.getByTestId("step-structure").click();
-    await page.waitForTimeout(300);
-
-    // Add item and wait for debounced save
-    await page.getByTestId("add-module-btn").click();
-    await page.waitForTimeout(600); // 400ms debounce + buffer
-
-    // Verify in localStorage
-    const data = await getProgrammeData(page);
-    expect(data.modules.length).toBe(1);
-  });
-});
+setMode("PROGRAMME_OWNER"); // Full access
+setMode("MODULE_EDITOR", ["mod_abc", "mod_def"]); // Restricted
+const steps = activeSteps(); // Returns filtered step list for current mode
 ```
-
-Key testing patterns:
-
-- Use `data-testid` attributes, not labels (flags panel causes conflicts)
-- Wait 600ms after actions for debounced save to complete
-- Use `loadProgrammeData()` to set up test state
-- Use `getProgrammeData()` to verify localStorage
 
 ## Planning Large Changes
 
@@ -603,15 +425,18 @@ When a task spans multiple files or introduces a new subsystem:
 1. **Plan first.** Outline the phases and atomic steps before writing code.
 2. **Small steps within phases.** Each commit should compile, lint, and pass tests on its own.
 3. **Maintain green state.** Never leave the repo in a broken state between commits — if a refactor temporarily breaks imports, fix them in the same commit.
-4. **Verify after migration.** After moving code to a new abstraction, run the full validation checklist before continuing to the next phase.
+4. **Verify after each phase.** Run the full validation checklist before continuing to the next phase.
+5. **Raise a PR on completion** with screenshots of any visual changes.
 
 ## Common Pitfalls
 
 - **Debounced save timing in tests:** When testing user input, wait 600ms after actions for the debounced save (400ms) to complete plus buffer time.
-- **Accordion button nesting:** Never use `<button>` inside accordion headers — browsers will move nested buttons outside, breaking layout. Use `<span role="button" tabindex="0">` instead.
+- **AccordionControls outside Accordion:** `AccordionControls` uses `useContext(AccordionContext)` — if placed outside `<Accordion>`, the context is null and expand/collapse all silently does nothing.
 - **Missing null guards:** Always use `??` or `??=` for optional arrays before iteration: `(p.modules ?? []).forEach(...)`.
-- **HTML escaping:** Always use `escapeHtml()` for user-provided content in templates to prevent XSS.
+- **HTML escaping:** Always use `escapeHtml()` for user-provided content rendered as raw HTML to prevent XSS.
 - **Test selector conflicts:** Use `data-testid` attributes rather than labels — the flags panel can cause duplicate label matches.
+- **File extensions in imports:** Never use `.js` or `.ts` extensions in import paths — use extensionless imports with bundler resolution.
+- **Store mock paths in tests:** When mocking the store in tests with `vi.mock(...)`, use the extensionless path (e.g., `"../../../state/store"` not `"../../../state/store.js"`).
 
 ## Dependencies Policy
 
@@ -619,23 +444,3 @@ When a task spans multiple files or introduces a new subsystem:
 - Prefer lightweight, well-maintained packages over large frameworks.
 - Pin major versions in `package.json` (e.g., `"vite": "^5.0.0"` not `"*"`).
 - After installing a new dependency, run the full validation checklist to ensure nothing breaks.
-
-## Git Conventions
-
-- Branch names: `feat/short-description`, `fix/short-description`, `refactor/short-description`.
-- Commit messages: [Conventional Commits](https://www.conventionalcommits.org/) format.
-  - `feat(scope): description` for new features
-  - `fix(scope): description` for bug fixes
-  - `refactor(scope): description` for non-functional changes
-  - Scope examples: `identity`, `structure`, `mapping`, `export`, `validation`, `e2e`
-- **Atomic commits:** Break work into small, atomic steps (e.g., adding a type, adding a utility function, updating a single component). Commit after each step with its own clear and concise conventional commit message. Do not batch unrelated changes into a single commit.
-
-## Validation Checklist
-
-Before considering work complete, verify:
-
-1. `npx tsc -p jsconfig.json --noEmit` passes with no errors.
-2. `npx eslint "src/**/*.js" "e2e/**/*.js"` passes with zero errors.
-3. `npm run build` succeeds.
-4. `npm run test:e2e` passes (requires dev server running).
-5. `npm run format:check` passes (or run `npm run format` to fix).
