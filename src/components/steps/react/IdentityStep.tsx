@@ -15,7 +15,6 @@ import {
   getAwardStandard,
   getAwardStandards,
   SCHOOL_OPTIONS,
-  state,
 } from "../../../state/store";
 import { uid } from "../../../utils/uid";
 import {
@@ -103,7 +102,7 @@ interface StandardSelectorProps {
 const ElectiveGroupRow: React.FC<ElectiveGroupRowProps> = ({
   group,
   groupIndex,
-  definitionId,
+  definitionId: _definitionId,
   onCodeChange,
   onNameChange,
   onRemove,

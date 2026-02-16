@@ -31,7 +31,7 @@ function copyToClipboard(
     setTimeout(() => {
       button.textContent = originalText;
     }, 1500);
-  } catch (err) {
+  } catch {
     statusEl.textContent = "Copy failed - please select manually";
     statusEl.className = "error";
   }

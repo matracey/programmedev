@@ -683,7 +683,7 @@ describe("completionPercent", () => {
     const p = baseProgramme({
       versions: [{ id: "v1", label: "FT", code: "FT", stages: [] } as ProgrammeVersion],
     });
-    const full = baseProgramme();
+    const _full = baseProgramme();
     // Has version but no stages, so 9/10
     expect(completionPercent(p)).toBe(Math.round((9 / 10) * 100));
   });

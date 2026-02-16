@@ -18,7 +18,6 @@ import {
   AccordionControls,
   AccordionItem,
   Alert,
-  HeaderAction,
   Icon,
   SectionCard,
 } from "../../ui";
@@ -247,7 +246,7 @@ const MimloInput: React.FC<MimloInputProps> = ({
  */
 const ModuleAccordionItem: React.FC<ModuleAccordionItemProps> = ({
   module,
-  moduleIndex,
+  moduleIndex: _moduleIndex,
   isHidden,
   onAddMimlo,
   onRemoveMimlo,

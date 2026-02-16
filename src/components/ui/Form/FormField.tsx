@@ -42,7 +42,6 @@ export function FormField({
   className = "",
   column,
 }: FormFieldProps) {
-  const Wrapper = column ? "div" : "div";
   const wrapperClass = column ? `col-${column}${className ? ` ${className}` : ""}` : className;
 
   return (

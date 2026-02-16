@@ -16,7 +16,6 @@ import {
   AccordionControls,
   AccordionItem,
   Alert,
-  HeaderAction,
   Icon,
   SectionCard,
 } from "../../ui";
@@ -448,7 +447,7 @@ export const ReadingListsStep: React.FC = () => {
     [programme.modules, updateProgramme, saveDebounced, updateFlagsAndHeader],
   );
 
-  const toggleModule = useCallback((moduleId: string) => {
+  const _toggleModule = useCallback((moduleId: string) => {
     setExpandedModules((prev) => {
       const next = new Set(prev);
       if (next.has(moduleId)) {

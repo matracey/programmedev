@@ -350,7 +350,7 @@ describe("saveNow", () => {
   });
 
   it("resets saving flag even on error", () => {
-    const origSetItem = localStorage.setItem.bind(localStorage);
+    const _origSetItem = localStorage.setItem.bind(localStorage);
     vi.spyOn(localStorage, "setItem").mockImplementation(() => {
       throw new Error("quota exceeded");
     });

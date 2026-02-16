@@ -112,7 +112,7 @@ export function App(): React.JSX.Element {
   const StepComponent = currentStep ? STEP_COMPONENTS[currentStep.key] : null;
 
   // Validation flags for sidebar display
-  const flags = validateProgramme(programme);
+  const _flags = validateProgramme(programme);
 
   return (
     <>

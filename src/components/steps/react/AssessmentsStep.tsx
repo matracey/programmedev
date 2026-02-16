@@ -541,7 +541,7 @@ const ReportControls: React.FC<{
  * Single assessment input form
  */
 const AssessmentInput: React.FC<AssessmentInputProps> = ({
-  moduleId,
+  moduleId: _moduleId,
   assessment,
   mimlos,
   onUpdate,
