@@ -15,7 +15,6 @@ import {
   getCriteriaList,
   getDescriptor,
   getThreadList,
-  state,
 } from "../../../state/store";
 import { uid } from "../../../utils/uid";
 import {
@@ -45,7 +44,7 @@ interface PLO {
 }
 
 interface LintIssue {
-  severity: "warn" | "error";
+  severity: "warn" | "error" | "info";
   match: string;
   message: string;
   suggestions: string[];
@@ -332,7 +331,7 @@ const MappingControls: React.FC<{
         role="group"
         aria-labelledby={`plo-mapping-heading-${ploId}`}
       >
-        <div style={{ minWidth: 220 }}>
+        <div className="plo-field-criteria">
           <Form.Label className="small mb-1" htmlFor={`plo-criteria-${ploId}`}>
             Criteria
           </Form.Label>
@@ -352,7 +351,7 @@ const MappingControls: React.FC<{
           </Form.Select>
         </div>
 
-        <div style={{ minWidth: 260 }}>
+        <div className="plo-field-thread">
           <Form.Label className="small mb-1" htmlFor={`plo-thread-${ploId}`}>
             Thread
           </Form.Label>
@@ -390,7 +389,7 @@ const MappingControls: React.FC<{
         </div>
       )}
 
-      <div className="mt-2" role="list" aria-label={`Current mappings for PLO ${ploIndex + 1}`}>
+      <div className="mt-2" role="group" aria-label={`Current mappings for PLO ${ploIndex + 1}`}>
         {currentMappings.length === 0 ? (
           <div className="small text-secondary">No mappings yet for this PLO.</div>
         ) : hasMultipleStandards ? (
@@ -560,7 +559,7 @@ const MappingSnapshot: React.FC<{
       <Table size="sm" className="align-middle">
         <thead>
           <tr>
-            <th style={{ width: 90 }}>PLO</th>
+            <th className="plo-col-label">PLO</th>
             <th>PLO Text</th>
             <th>Mapped Standards (at NFQ Level {level ?? ""})</th>
           </tr>

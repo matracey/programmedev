@@ -7,7 +7,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
-import { Badge, Button, ButtonGroup, Nav, Navbar, OverlayTrigger, Popover } from "react-bootstrap";
+import { Badge, Button, ButtonGroup, Navbar, OverlayTrigger, Popover } from "react-bootstrap";
 
 import { exportProgrammeToJson, importProgrammeFromJson } from "../../export/json";
 import { notifyStateChange, useProgramme } from "../../hooks/useStore";
@@ -74,32 +74,29 @@ const CompletionBadge: React.FC<CompletionBadgeProps> = ({
   });
 
   const popoverContent = (
-    <div style={{ maxWidth: 300, maxHeight: 300, overflowY: "auto" }}>
+    <div className="completion-popover-content">
       {flags.length === 0 ? (
         <div className="small text-success fw-bold">All requirements met!</div>
       ) : (
         Object.entries(flagsByStep).map(([step, items]) => (
           <div key={step} className="mb-2">
-            <div
-              className="fw-semibold text-primary"
-              role={onNavigateToStep ? "button" : undefined}
-              tabIndex={onNavigateToStep ? 0 : undefined}
-              onClick={() => onNavigateToStep?.(step)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  onNavigateToStep?.(step);
-                }
-              }}
-              style={{ cursor: onNavigateToStep ? "pointer" : "default" }}
-            >
-              {stepMap[step] || step}
-            </div>
+            {onNavigateToStep ? (
+              <button
+                type="button"
+                className="btn btn-link fw-semibold text-primary p-0 text-start text-decoration-none"
+                onClick={() => onNavigateToStep(step)}
+              >
+                {stepMap[step] || step}
+              </button>
+            ) : (
+              <div className="fw-semibold text-primary">
+                {stepMap[step] || step}
+              </div>
+            )}
             {items.map((flag, idx) => (
               <div
                 key={idx}
-                className={`${flag.type === "error" ? "text-danger" : "text-warning"} ms-2 small`}
-                style={{ marginBottom: 4 }}
+                className={`${flag.type === "error" ? "text-danger" : "text-warning"} ms-2 mb-1 small`}
               >
                 {flag.type === "error" ? "!" : "i"} {flag.msg}
               </div>
@@ -239,10 +236,6 @@ export const Header: React.FC<HeaderProps> = ({ onNavigateToStep }) => {
   const handleExport = useCallback(() => {
     exportProgrammeToJson(programme);
   }, [programme]);
-
-  const handleImportClick = useCallback(() => {
-    fileInputRef.current?.click();
-  }, []);
 
   const handleFileChange = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];

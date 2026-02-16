@@ -238,16 +238,15 @@ const DefinitionAccordionItem: React.FC<DefinitionAccordionItemProps> = ({
       {groups.length === 0 ? (
         <p className="text-muted">
           No groups in this definition.{" "}
-          <a
-            href="#"
-            className="alert-link"
-            onClick={(e) => {
-              e.preventDefault();
+          <button
+            type="button"
+            className="btn btn-link alert-link p-0"
+            onClick={() => {
               onGoToStep("identity");
             }}
           >
             Add groups in Identity step
-          </a>
+          </button>
           .
         </p>
       ) : (
@@ -333,9 +332,12 @@ export const ElectivesStep: React.FC = () => {
   }, []);
 
   // Computed values
-  const modules = (programme.modules ?? []) as Module[];
+  const modules = useMemo(() => (programme.modules ?? []) as Module[], [programme.modules]);
   const electiveModules = useMemo(() => modules.filter((m) => m.isElective === true), [modules]);
-  const electiveDefinitions = (programme.electiveDefinitions ?? []) as ElectiveDefinition[];
+  const electiveDefinitions = useMemo(
+    () => (programme.electiveDefinitions ?? []) as ElectiveDefinition[],
+    [programme.electiveDefinitions],
+  );
 
   // Calculate which modules are assigned to which groups
   const assignedModuleIds = useMemo(() => {
@@ -473,16 +475,15 @@ export const ElectivesStep: React.FC = () => {
             {electiveDefinitions.length === 0 ? (
               <Alert variant="info">
                 No elective definitions created.{" "}
-                <a
-                  href="#"
-                  className="alert-link"
-                  onClick={(e) => {
-                    e.preventDefault();
+                <button
+                  type="button"
+                  className="btn btn-link alert-link p-0"
+                  onClick={() => {
                     handleGoToStep("identity");
                   }}
                 >
                   Go to Identity step
-                </a>{" "}
+                </button>{" "}
                 to create elective definitions with groups.
               </Alert>
             ) : (
@@ -513,16 +514,15 @@ export const ElectivesStep: React.FC = () => {
               <Alert variant="warning" className="mt-3 mb-0">
                 <Icon name="warning" className="me-2" aria-hidden />
                 No elective modules available.{" "}
-                <a
-                  href="#"
-                  className="alert-link"
-                  onClick={(e) => {
-                    e.preventDefault();
+                <button
+                  type="button"
+                  className="btn btn-link alert-link p-0"
+                  onClick={() => {
                     handleGoToStep("structure");
                   }}
                 >
                   Go to Credits &amp; Modules
-                </a>{" "}
+                </button>{" "}
                 to mark some modules as Elective (E).
               </Alert>
             )}

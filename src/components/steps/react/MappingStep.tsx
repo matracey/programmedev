@@ -168,7 +168,7 @@ const MimloCheckbox: React.FC<MimloCheckboxProps> = ({
   ploIndex,
   mimlo,
   mimloIndex,
-  moduleId,
+  moduleId: _moduleId,
   isChecked,
   isDisabled,
   onToggle,
@@ -267,36 +267,30 @@ const ModuleMappingGroup: React.FC<ModuleMappingGroupProps> = ({
           aria-label={`Map PLO ${ploIndex + 1} to all MIMLOs of ${module.title}`}
           data-testid={`mapping-module-checkbox-${ploId}-${module.id}`}
         />
-        <span
-          className={`small fw-semibold flex-grow-1${hasMimlos ? " text-primary-emphasis" : ""}`}
-          role={hasMimlos ? "button" : undefined}
-          tabIndex={hasMimlos ? 0 : undefined}
-          style={hasMimlos ? { cursor: "pointer" } : undefined}
-          onClick={hasMimlos ? () => setIsExpanded(!isExpanded) : undefined}
-          onKeyDown={
-            hasMimlos
-              ? (e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    setIsExpanded(!isExpanded);
-                  }
-                }
-              : undefined
-          }
-          aria-expanded={hasMimlos ? isExpanded : undefined}
-          aria-controls={hasMimlos ? moduleCollapseId : undefined}
-        >
-          {hasMimlos && (
+        {hasMimlos ? (
+          <button
+            type="button"
+            className="btn btn-link small fw-semibold flex-grow-1 text-primary-emphasis p-0 text-start text-decoration-none module-mapping-toggle"
+            onClick={() => setIsExpanded(!isExpanded)}
+            aria-expanded={isExpanded}
+            aria-controls={moduleCollapseId}
+          >
             <Icon
               name={isExpanded ? "caret-down" : "caret-right"}
               className="me-1 collapse-icon"
               aria-hidden
             />
-          )}
-          {moduleTitle}{" "}
-          <span className="text-secondary fw-normal">({Number(module.credits ?? 0)} cr)</span>
-          {isDisabled && <span className="text-secondary fst-italic"> (read-only)</span>}
-        </span>
+            {moduleTitle}{" "}
+            <span className="text-secondary fw-normal">({Number(module.credits ?? 0)} cr)</span>
+            {isDisabled && <span className="text-secondary fst-italic"> (read-only)</span>}
+          </button>
+        ) : (
+          <span className="small fw-semibold flex-grow-1">
+            {moduleTitle}{" "}
+            <span className="text-secondary fw-normal">({Number(module.credits ?? 0)} cr)</span>
+            {isDisabled && <span className="text-secondary fst-italic"> (read-only)</span>}
+          </span>
+        )}
         {hasMimlos ? (
           <Badge className={badgeClass}>
             {selectedCount} / {totalCount} selected
@@ -416,9 +410,9 @@ export const MappingStep: React.FC = () => {
   const updateProgramme = useUpdateProgramme();
   const saveDebounced = useSaveDebounced();
 
-  const plos = (programme.plos ?? []) as PLO[];
-  const modules = (programme.modules ?? []) as Module[];
-  const ploToMimlos = programme.ploToMimlos ?? {};
+  const plos = useMemo(() => (programme.plos ?? []) as PLO[], [programme.plos]);
+  const modules = useMemo(() => (programme.modules ?? []) as Module[], [programme.modules]);
+  const ploToMimlos = useMemo(() => programme.ploToMimlos ?? {}, [programme.ploToMimlos]);
   const isModuleEditor = programme.mode === "MODULE_EDITOR";
   const editableIds = getEditableModuleIds(programme);
 

@@ -214,57 +214,30 @@ describe("Flags", () => {
       expect(mockGoToStep).toHaveBeenCalledWith("identity");
     });
 
-    it("calls onGoToStep on Enter key press", () => {
+    it("handles Enter and Space natively as a button element", () => {
       state.programme.title = "";
 
       render(<Flags onGoToStep={mockGoToStep} />);
 
       const flagItem = screen.getByTestId("flag-error-0");
-      fireEvent.keyDown(flagItem, { key: "Enter" });
-
+      // Native <button> elements handle Enter/Space automatically,
+      // which triggers the click handler — verified via click event
+      expect(flagItem.tagName).toBe("BUTTON");
+      fireEvent.click(flagItem);
       expect(mockGoToStep).toHaveBeenCalledWith("identity");
-    });
-
-    it("calls onGoToStep on Space key press", () => {
-      state.programme.title = "";
-
-      render(<Flags onGoToStep={mockGoToStep} />);
-
-      const flagItem = screen.getByTestId("flag-error-0");
-      fireEvent.keyDown(flagItem, { key: " " });
-
-      expect(mockGoToStep).toHaveBeenCalledWith("identity");
-    });
-
-    it("does not navigate on other key press", () => {
-      state.programme.title = "";
-
-      render(<Flags onGoToStep={mockGoToStep} />);
-
-      const flagItem = screen.getByTestId("flag-error-0");
-      fireEvent.keyDown(flagItem, { key: "Tab" });
-
-      expect(mockGoToStep).not.toHaveBeenCalled();
     });
   });
 
   describe("Accessibility", () => {
-    it("has button role for clickable flags", () => {
+    it("renders clickable flags as native button elements", () => {
       state.programme.title = "";
 
       render(<Flags onGoToStep={mockGoToStep} />);
 
       const flagItem = screen.getByTestId("flag-error-0");
-      expect(flagItem).toHaveAttribute("role", "button");
-    });
-
-    it("has tabindex for keyboard navigation", () => {
-      state.programme.title = "";
-
-      render(<Flags onGoToStep={mockGoToStep} />);
-
-      const flagItem = screen.getByTestId("flag-error-0");
-      expect(flagItem).toHaveAttribute("tabindex", "0");
+      // Native <button> provides implicit role="button" and focusability
+      expect(flagItem.tagName).toBe("BUTTON");
+      expect(flagItem).toHaveAttribute("type", "button");
     });
 
     it("has accessible aria-label for error flags", () => {

@@ -56,41 +56,42 @@ function FlagItem({
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if ((e.key === "Enter" || e.key === " ") && isClickable) {
-      e.preventDefault();
-      handleClick();
-    }
-  };
+  const content = (
+    <div className="d-flex align-items-start gap-2">
+      <span className={`tag tag-${flag.type}`}>
+        <Icon name="warning" /> {isError ? "ERROR" : "WARN"}
+      </span>
+      <div className="flex-grow-1">
+        <div className="small">{flag.msg}</div>
+        {stepTitle && (
+          <div className="flag-step-link small text-muted">
+            <Icon name="arrow-right" /> {stepTitle}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  if (isClickable) {
+    return (
+      <button
+        type="button"
+        className={`flag-item flag-${flag.type} flag-item-clickable`}
+        data-testid={`flag-${flag.type}-${index}`}
+        onClick={handleClick}
+        aria-label={`${isError ? "Error" : "Warning"}: ${flag.msg}. Click to go to ${stepTitle}`}
+      >
+        {content}
+      </button>
+    );
+  }
 
   return (
     <div
       className={`flag-item flag-${flag.type}`}
       data-testid={`flag-${flag.type}-${index}`}
-      onClick={handleClick}
-      onKeyDown={handleKeyDown}
-      style={isClickable ? { cursor: "pointer" } : undefined}
-      role={isClickable ? "button" : undefined}
-      tabIndex={isClickable ? 0 : undefined}
-      aria-label={
-        isClickable
-          ? `${isError ? "Error" : "Warning"}: ${flag.msg}. Click to go to ${stepTitle}`
-          : undefined
-      }
     >
-      <div className="d-flex align-items-start gap-2">
-        <span className={`tag tag-${flag.type}`}>
-          <Icon name="warning" /> {isError ? "ERROR" : "WARN"}
-        </span>
-        <div className="flex-grow-1">
-          <div className="small">{flag.msg}</div>
-          {stepTitle && (
-            <div className="flag-step-link small text-muted">
-              <Icon name="arrow-right" /> {stepTitle}
-            </div>
-          )}
-        </div>
-      </div>
+      {content}
     </div>
   );
 }
