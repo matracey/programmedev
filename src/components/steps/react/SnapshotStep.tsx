@@ -269,7 +269,7 @@ const VersionsSection: React.FC<{
  */
 const MappingMatrix: React.FC<{ programme: Programme }> = ({ programme }) => {
   const plos = programme.plos ?? [];
-  const modules = programme.modules ?? [];
+  const modules = useMemo(() => programme.modules ?? [], [programme.modules]);
 
   // Build module labels
   const moduleLabels: ModuleLabel[] = useMemo(
@@ -312,7 +312,7 @@ const MappingMatrix: React.FC<{ programme: Programme }> = ({ programme }) => {
         <Table size="sm" bordered className="align-middle mb-0">
           <thead>
             <tr>
-              <th style={{ minWidth: 260 }}>PLO</th>
+              <th className="snapshot-col-plo">PLO</th>
               {moduleLabels.map((m) => (
                 <th key={m.id} className="text-center" title={m.full}>
                   {m.label}
@@ -325,7 +325,7 @@ const MappingMatrix: React.FC<{ programme: Programme }> = ({ programme }) => {
               const mappedMimloIds = (programme as any).ploToMimlos?.[o.id] ?? [];
               return (
                 <tr key={o.id}>
-                  <th className="small" style={{ minWidth: 260 }} title={o.text || ""}>
+                  <th className="small snapshot-col-plo" title={o.text || ""}>
                     PLO {i + 1}
                   </th>
                   {moduleLabels.map((m) => {

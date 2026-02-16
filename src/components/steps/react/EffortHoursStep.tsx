@@ -319,11 +319,11 @@ const EffortHoursRow: React.FC<EffortHoursRowProps> = ({
  */
 const ModuleEffortCard: React.FC<ModuleEffortCardProps> = ({
   module,
-  moduleIndex,
+  moduleIndex: _moduleIndex,
   versionModalities,
-  isExpanded,
+  isExpanded: _isExpanded,
   isHidden,
-  onToggle,
+  onToggle: _onToggle,
   onFieldChange,
 }) => {
   const expectedTotal = Number(module.credits ?? 0) * 25;
@@ -357,7 +357,7 @@ const ModuleEffortCard: React.FC<ModuleEffortCardProps> = ({
             >
               <thead>
                 <tr>
-                  <th rowSpan={2} className="align-middle" style={{ minWidth: 150 }} scope="col">
+                  <th rowSpan={2} className="align-middle effort-col-label" scope="col">
                     Version / Modality
                   </th>
                   <th colSpan={2} className="text-center" scope="colgroup">
@@ -371,8 +371,7 @@ const ModuleEffortCard: React.FC<ModuleEffortCardProps> = ({
                   </th>
                   <th
                     rowSpan={2}
-                    className="text-center align-middle"
-                    style={{ minWidth: 80 }}
+                    className="text-center align-middle effort-col-metric"
                     scope="col"
                   >
                     Directed
@@ -381,8 +380,7 @@ const ModuleEffortCard: React.FC<ModuleEffortCardProps> = ({
                   </th>
                   <th
                     rowSpan={2}
-                    className="text-center align-middle"
-                    style={{ minWidth: 80 }}
+                    className="text-center align-middle effort-col-metric"
                     scope="col"
                   >
                     Independent
@@ -394,8 +392,7 @@ const ModuleEffortCard: React.FC<ModuleEffortCardProps> = ({
                   </th>
                   <th
                     rowSpan={2}
-                    className="text-center align-middle"
-                    style={{ minWidth: 80 }}
+                    className="text-center align-middle effort-col-metric"
                     scope="col"
                   >
                     Work-based
@@ -404,8 +401,7 @@ const ModuleEffortCard: React.FC<ModuleEffortCardProps> = ({
                   </th>
                   <th
                     rowSpan={2}
-                    className="text-center align-middle"
-                    style={{ minWidth: 70 }}
+                    className="text-center align-middle effort-col-total"
                     scope="col"
                   >
                     Total
@@ -488,7 +484,7 @@ export const EffortHoursStep: React.FC = () => {
   });
 
   // Get editable module IDs and selected module
-  const editableIds = useMemo(() => editableModuleIds(), [programme.modules, programme.mode]);
+  const editableIds = useMemo(() => editableModuleIds(), [programme.modules, programme.mode]); // eslint-disable-line react-hooks/exhaustive-deps -- editableModuleIds reads from store
   const selectedId = getSelectedModuleId();
   const canPickModule = programme.mode === "MODULE_EDITOR" && editableIds.length > 1;
 
@@ -563,11 +559,11 @@ export const EffortHoursStep: React.FC = () => {
   }, []);
 
   // Expand/collapse all handlers
-  const expandAll = useCallback(() => {
+  const _expandAll = useCallback(() => {
     setExpandedModules(new Set(modulesForEdit.map((m) => m.id)));
   }, [modulesForEdit]);
 
-  const collapseAll = useCallback(() => {
+  const _collapseAll = useCallback(() => {
     setExpandedModules(new Set());
   }, []);
 
@@ -576,7 +572,7 @@ export const EffortHoursStep: React.FC = () => {
     let needsUpdate = false;
     const modules = [...(programme.modules ?? [])];
 
-    modulesForEdit.forEach((m, idx) => {
+    modulesForEdit.forEach((m, _idx) => {
       const moduleIdx = modules.findIndex((mod: LocalModule) => mod.id === m.id);
       if (moduleIdx === -1) {
         return;
@@ -601,6 +597,7 @@ export const EffortHoursStep: React.FC = () => {
       updateProgramme({ modules });
       saveDebounced();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional mount-only initialization
   }, []);
 
   return (

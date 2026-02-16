@@ -11,7 +11,7 @@ import Plotly from "plotly.js-dist-min";
 import { Badge, Button, Form, Nav, Tab, Table } from "react-bootstrap";
 
 import { useProgramme } from "../../../hooks/useStore";
-import { getAwardStandard, getStandardIndicators, state } from "../../../state/store";
+import { getAwardStandard } from "../../../state/store";
 import { validateProgramme } from "../../../utils/validation";
 import { Alert, Icon, SectionCard } from "../../ui";
 
@@ -68,7 +68,7 @@ function buildTraceRows(
   standardsData: Map<string, any>,
 ): { rows: TraceRow[]; stats: TraceStats; coverage: StandardCoverage[] } {
   const traceRows: TraceRow[] = [];
-  const moduleMap = new Map((programme.modules ?? []).map((m) => [m.id, m]));
+  const _moduleMap = new Map((programme.modules ?? []).map((m) => [m.id, m]));
 
   const nfqLevel = Number(programme.nfqLevel ?? 0);
   const standardIds = programme.awardStandardIds ?? [];
@@ -432,7 +432,7 @@ const TraceabilityTable: React.FC<{
 
   return (
     <>
-      <div className="table-responsive" style={{ maxHeight: 600, overflowY: "auto" }}>
+      <div className="table-responsive trace-table-container">
         <Table
           size="sm"
           hover
@@ -441,19 +441,19 @@ const TraceabilityTable: React.FC<{
           aria-label="Traceability matrix showing alignment from award standards to assessments"
           data-testid="traceability-table"
         >
-          <thead className="sticky-top" style={{ background: "var(--bs-body-bg)" }}>
+          <thead className="sticky-top trace-table-head">
             <tr>
-              <th style={{ minWidth: 140 }}>Award Standard</th>
-              <th style={{ minWidth: 60 }}>PLO</th>
-              <th style={{ minWidth: 150 }}>PLO Text</th>
-              <th style={{ minWidth: 80 }}>Module</th>
-              <th style={{ minWidth: 120 }}>Module Title</th>
-              <th style={{ minWidth: 70 }}>MIMLO</th>
-              <th style={{ minWidth: 140 }}>MIMLO Text</th>
-              <th style={{ minWidth: 100 }}>Assessment</th>
-              <th style={{ minWidth: 100 }}>Type</th>
-              <th style={{ minWidth: 60 }}>Weight</th>
-              <th style={{ minWidth: 80 }}>Status</th>
+              <th className="trace-col-140">Award Standard</th>
+              <th className="trace-col-60">PLO</th>
+              <th className="trace-col-150">PLO Text</th>
+              <th className="trace-col-80">Module</th>
+              <th className="trace-col-120">Module Title</th>
+              <th className="trace-col-70">MIMLO</th>
+              <th className="trace-col-140">MIMLO Text</th>
+              <th className="trace-col-100">Assessment</th>
+              <th className="trace-col-100">Type</th>
+              <th className="trace-col-60">Weight</th>
+              <th className="trace-col-80">Status</th>
             </tr>
           </thead>
           <tbody>
@@ -492,13 +492,13 @@ const TraceTableRow: React.FC<{ row: TraceRow }> = ({ row }) => (
   <tr data-status={row.status}>
     <td className={`small ${row.status === "uncovered" ? "fw-bold" : ""}`}>{row.standard}</td>
     <td className="small text-nowrap">{row.ploNum !== "—" ? `PLO ${row.ploNum}` : "—"}</td>
-    <td className="small" style={{ maxWidth: 200 }} title={row.ploText}>
+    <td className="small trace-cell-plo-text" title={row.ploText}>
       {truncateText(row.ploText, 60)}
     </td>
     <td className="small text-nowrap">{row.moduleCode}</td>
     <td className="small">{row.moduleTitle}</td>
     <td className="small text-nowrap">{row.mimloNum !== "—" ? `MIMLO ${row.mimloNum}` : "—"}</td>
-    <td className="small" style={{ maxWidth: 180 }} title={row.mimloText}>
+    <td className="small trace-cell-mimlo-text" title={row.mimloText}>
       {truncateText(row.mimloText, 50)}
     </td>
     <td className="small">{row.assessmentTitle}</td>
@@ -693,9 +693,7 @@ const SankeyDiagram: React.FC<{ rows: TraceRow[] }> = ({ rows }) => {
 
     return () => {
       observer.disconnect();
-      if (chartRef.current) {
-        Plotly.purge(chartRef.current);
-      }
+      Plotly.purge(el);
     };
   }, [sankeyData]);
 
@@ -730,12 +728,7 @@ const SankeyDiagram: React.FC<{ rows: TraceRow[] }> = ({ rows }) => {
       </div>
       <div
         ref={chartRef}
-        style={{
-          width: "100%",
-          height: 600,
-          background: "var(--bs-body-bg)",
-          borderRadius: "0.375rem",
-        }}
+        className="sankey-chart"
         data-testid="traceability-sankey-chart"
       />
     </div>
@@ -809,6 +802,7 @@ export const TraceabilityStep: React.FC = () => {
   const modules = programme.modules ?? [];
   const standardIds = programme.awardStandardIds ?? [];
   const hasMultipleStandards = standardIds.length > 1;
+  const standardIdsKey = standardIds.join(",");
 
   // Load award standards data
   React.useEffect(() => {
@@ -833,7 +827,8 @@ export const TraceabilityStep: React.FC = () => {
     };
 
     loadStandards();
-  }, [standardIds.join(",")]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- standardIdsKey is a stable string representation of standardIds
+  }, [standardIdsKey]);
 
   // Build trace data
   const {

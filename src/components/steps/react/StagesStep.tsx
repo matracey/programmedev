@@ -4,9 +4,9 @@
  * @module components/steps/react/StagesStep
  */
 
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 
-import { Button, Card, Col, Form, Row } from "react-bootstrap";
+import { Button, Card, Col, Form } from "react-bootstrap";
 
 import { notifyStateChange, useProgramme, useSaveDebounced } from "../../../hooks/useStore";
 import { defaultStage, state } from "../../../state/store";
@@ -34,13 +34,6 @@ interface LocalStage {
   creditsTarget: number;
   exitAward?: LocalExitAward;
   modules: LocalStageModule[];
-}
-
-interface LocalProgrammeVersion {
-  id: string;
-  label: string;
-  code: string;
-  stages: LocalStage[];
 }
 
 interface LocalModule {
@@ -133,7 +126,7 @@ const ModuleCheck: React.FC<ModuleCheckProps> = ({
 const StageItem: React.FC<StageItemProps> = ({
   stage,
   stageIndex,
-  versionId,
+  versionId: _versionId,
   allModules,
   onNameChange,
   onSequenceChange,
@@ -291,7 +284,7 @@ export const StagesStep: React.FC = () => {
   const saveDebounced = useSaveDebounced();
 
   // Track expanded accordion items
-  const versions = (programme.versions ?? []) as ProgrammeVersion[];
+  const versions = useMemo(() => (programme.versions ?? []) as ProgrammeVersion[], [programme.versions]);
   const modules = (programme.modules ?? []) as Module[];
 
   // Initialize selectedVersionId if not set
