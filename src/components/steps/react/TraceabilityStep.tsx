@@ -6,13 +6,14 @@
  */
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Badge, Button, Form, Nav, Tab, Table } from "react-bootstrap";
-import Plotly from "plotly.js-dist-min";
 
-import { Alert, Icon, SectionCard } from "../../ui";
+import Plotly from "plotly.js-dist-min";
+import { Badge, Button, Form, Nav, Tab, Table } from "react-bootstrap";
+
 import { useProgramme } from "../../../hooks/useStore";
-import { state, getAwardStandard, getStandardIndicators } from "../../../state/store";
+import { getAwardStandard, getStandardIndicators, state } from "../../../state/store";
 import { validateProgramme } from "../../../utils/validation";
+import { Alert, Icon, SectionCard } from "../../ui";
 
 // ============================================================================
 // Types
@@ -404,18 +405,9 @@ const TraceabilityTable: React.FC<{
   hasMultipleStandards: boolean;
   programme: Programme;
 }> = ({ rows, hasMultipleStandards, programme }) => {
-  if (rows.length === 0) {
-    return (
-      <Alert variant="info" className="mb-0" data-testid="traceability-no-data">
-        No traceability data yet. Add PLOs, map them to modules, define MIMLOs, and create
-        assessments to see the full alignment chain.
-      </Alert>
-    );
-  }
-
   // Group rows by award standard if multiple standards
   const groupedRows = useMemo(() => {
-    if (!hasMultipleStandards) {
+    if (!hasMultipleStandards || rows.length === 0) {
       return null;
     }
     const groups = new Map<string, TraceRow[]>();
@@ -428,6 +420,15 @@ const TraceabilityTable: React.FC<{
     });
     return groups;
   }, [rows, hasMultipleStandards]);
+
+  if (rows.length === 0) {
+    return (
+      <Alert variant="info" className="mb-0" data-testid="traceability-no-data">
+        No traceability data yet. Add PLOs, map them to modules, define MIMLOs, and create
+        assessments to see the full alignment chain.
+      </Alert>
+    );
+  }
 
   return (
     <>

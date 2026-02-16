@@ -6,10 +6,11 @@
  */
 
 import React, { useCallback, useMemo } from "react";
+
 import { Badge, Card, Form, ListGroup } from "react-bootstrap";
-import { Accordion, AccordionControls, AccordionItem, Alert, Icon, SectionCard } from "../../ui";
+
 import { useProgramme, useSaveDebounced, useUpdateProgramme } from "../../../hooks/useStore";
-import { state } from "../../../state/store";
+import { Accordion, AccordionControls, AccordionItem, Alert, Icon, SectionCard } from "../../ui";
 
 // ============================================================================
 // Types
@@ -222,6 +223,7 @@ const ModuleMappingGroup: React.FC<ModuleMappingGroupProps> = ({
 }) => {
   const moduleMimlos = module.mimlos ?? [];
   const mappingState = getModuleMappingState(mappedMimloIds, module);
+  const [isExpanded, setIsExpanded] = React.useState(false);
 
   // In module editor mode, hide modules they can't edit (unless already has mapped MIMLOs)
   if (isModuleEditor && !isEditable && mappingState === "none") {
@@ -243,8 +245,6 @@ const ModuleMappingGroup: React.FC<ModuleMappingGroupProps> = ({
 
   // Module header text
   const moduleTitle = module.code ? `${module.code} — ${module.title}` : module.title;
-
-  const [isExpanded, setIsExpanded] = React.useState(false);
 
   return (
     <div
