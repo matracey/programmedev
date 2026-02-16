@@ -1,3 +1,4 @@
+import jsxA11y from "eslint-plugin-jsx-a11y";
 import pluginReact from "eslint-plugin-react";
 import pluginReactHooks from "eslint-plugin-react-hooks";
 import simpleImportSort from "eslint-plugin-simple-import-sort";
@@ -12,6 +13,7 @@ export default [
   {
     files: ["src/**/*.{ts,tsx}"],
     plugins: {
+      "jsx-a11y": jsxA11y,
       react: pluginReact,
       "react-hooks": pluginReactHooks,
       "simple-import-sort": simpleImportSort,
@@ -29,6 +31,18 @@ export default [
     rules: {
       curly: ["error", "all"],
 
+      // Unused imports
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          varsIgnorePattern: "^_",
+          argsIgnorePattern: "^_",
+        },
+      ],
+
+      // Accessibility
+      ...jsxA11y.configs.recommended.rules,
+
       // React
       "react/react-in-jsx-scope": "off",
       "react/prop-types": "off",
@@ -39,12 +53,8 @@ export default [
       "react-hooks/rules-of-hooks": "error",
       "react-hooks/exhaustive-deps": "warn",
 
-      // TypeScript — warn for pre-existing patterns, fix incrementally
+      // TypeScript
       "@typescript-eslint/no-explicit-any": "warn",
-      "@typescript-eslint/no-unused-vars": [
-        "warn",
-        { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
-      ],
 
       // Import sorting: React → third-party → internal
       "simple-import-sort/imports": [
